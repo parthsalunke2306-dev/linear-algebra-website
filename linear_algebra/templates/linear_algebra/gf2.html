@@ -1,0 +1,127 @@
+{% extends 'linear_algebra/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge-unit">UNIT 1</span>
+        <span class="badge-topic">TOPIC 1.2</span>
+    </div>
+    <h2 class="text-white fw-bold mb-1">Field Axioms via $\mathbb{F}_2$ (Galois Field mod 2)</h2>
+    <p class="text-muted">Explore the 2-element Galois Field $\mathbb{F}_2 = \{0, 1\}$ with addition and multiplication modulo 2 and explicit verification of all 11 Field Axioms.</p>
+</div>
+
+<!-- Stacked Card 1: Truth Tables -->
+<div class="glass-card p-4 mb-4">
+    <h4 class="text-white mb-4"><i class="bi bi-grid-3x3 me-2" style="color: var(--accent-purple);"></i>Galois Field Modulo 2 Truth Tables</h4>
+    
+    <div class="row g-4">
+        <!-- Addition Table -->
+        <div class="col-md-6">
+            <div class="p-4 rounded-3 border border-secondary h-100" style="background: var(--surface-slate);">
+                <h5 class="text-white mb-3"><i class="bi bi-plus-circle text-info me-2"></i>Addition Table ($+$ mod 2 / XOR)</h5>
+                <div class="table-responsive">
+                    <table class="table table-dark table-bordered text-center font-monospace mb-0">
+                        <thead>
+                            <tr class="table-secondary">
+                                <th>$+$ (mod 2)</th>
+                                <th>0</th>
+                                <th>1</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th class="table-secondary">0</th>
+                                <td class="text-info fw-bold">0</td>
+                                <td class="text-warning fw-bold">1</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">1</th>
+                                <td class="text-warning fw-bold">1</td>
+                                <td class="text-info fw-bold">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-muted small mt-3 mb-0">Notice that $1 + 1 = 0 \pmod 2$. Hence every element is its own additive inverse!</p>
+            </div>
+        </div>
+
+        <!-- Multiplication Table -->
+        <div class="col-md-6">
+            <div class="p-4 rounded-3 border border-secondary h-100" style="background: var(--surface-slate);">
+                <h5 class="text-white mb-3"><i class="bi bi-x-circle text-warning me-2"></i>Multiplication Table ($\cdot$ mod 2 / AND)</h5>
+                <div class="table-responsive">
+                    <table class="table table-dark table-bordered text-center font-monospace mb-0">
+                        <thead>
+                            <tr class="table-secondary">
+                                <th>$\cdot$ (mod 2)</th>
+                                <th>0</th>
+                                <th>1</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th class="table-secondary">0</th>
+                                <td class="text-info fw-bold">0</td>
+                                <td class="text-info fw-bold">0</td>
+                            </tr>
+                            <tr>
+                                <th class="table-secondary">1</th>
+                                <td class="text-info fw-bold">0</td>
+                                <td class="text-warning fw-bold">1</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-muted small mt-3 mb-0">The multiplicative identity element is $1$, and $1^{-1} = 1$.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stacked Card 2: 11 Field Axioms Collapsible Accordions -->
+<div class="glass-card p-4 mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+        <h4 class="text-white mb-0"><i class="bi bi-check2-all me-2 text-success"></i>Explicit 11 Field Axiom Verification</h4>
+        {% if result.is_field %}
+        <span class="badge bg-success px-3 py-2 fs-6"><i class="bi bi-shield-check me-1"></i> GF(2) IS A VALID FIELD</span>
+        {% endif %}
+    </div>
+
+    <!-- Accordion for Axioms -->
+    <div class="accordion accordion-custom" id="gf2AxiomsAccordion">
+        {% for axiom in result.axioms %}
+        <div class="accordion-item animate-step" style="animation-delay: {{ forloop.counter0 }}00ms;">
+            <h2 class="accordion-header" id="headingAxiom{{ forloop.counter }}">
+                <button class="accordion-button {% if forloop.counter > 3 %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAxiom{{ forloop.counter }}">
+                    <div class="d-flex align-items-center justify-content-between w-100 me-3">
+                        <span><span class="badge badge-topic me-2">Axiom {{ forloop.counter }}</span> {{ axiom.name }}</span>
+                        {% if axiom.passed %}
+                        <span class="badge bg-success font-monospace ms-auto">VERIFIED PASSED</span>
+                        {% endif %}
+                    </div>
+                </button>
+            </h2>
+            <div id="collapseAxiom{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.counter <= 3 %}show{% endif %}" data-bs-parent="#gf2AxiomsAccordion">
+                <div class="accordion-body">
+                    <div class="text-light mb-2 fs-5 text-center py-2 bg-dark rounded border border-secondary">
+                        $${{ axiom.symbol }}$$
+                    </div>
+                    <p class="text-muted small mb-0"><strong class="text-white">Proof / Verification:</strong> {{ axiom.proof }}</p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- CODE INSPECTOR TAB FOR LEARNING -->
+<div class="code-inspector mt-4 no-print">
+    <div class="code-inspector-header d-flex align-items-center justify-content-between">
+        <span><i class="bi bi-code-slash me-2" style="color: var(--accent-purple);"></i>Backend Python Source Code (math_engine.py)</span>
+        <span class="badge bg-secondary font-monospace">Python Logic</span>
+    </div>
+    <pre><code class="language-python">{{ python_code }}</code></pre>
+</div>
+{% endblock %}

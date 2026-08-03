@@ -1,0 +1,190 @@
+{% extends 'linear_algebra/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge-unit">UNIT 1</span>
+        <span class="badge-topic">TOPIC 1.3</span>
+    </div>
+    <h2 class="text-white fw-bold mb-1">Vectors — Dot Product, Cross Product & 3D Projections</h2>
+    <p class="text-muted">Calculate 3D vector dot products, cross products, angles, projections $\text{proj}_{\mathbf{v}_2}(\mathbf{v}_1)$, and interact with a 3D orbit visualizer.</p>
+</div>
+
+<!-- Stacked Card 1: Vector Controls & 3D Orbit Visualizer -->
+<div class="glass-card p-4 mb-4">
+    <div class="row g-4">
+        <!-- Input Form Column -->
+        <div class="col-lg-5">
+            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                <h5 class="text-white mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Vector Inputs</h5>
+                
+                <!-- Quick Presets -->
+                <div class="d-flex align-items-center gap-1 flex-wrap">
+                    <span class="text-muted small font-monospace me-1"><i class="bi bi-lightning-charge-fill text-warning"></i>PRESETS:</span>
+                    <button type="button" onclick="loadVectorPreset('standard')" class="btn btn-preset">Standard 3D</button>
+                    <button type="button" onclick="loadVectorPreset('orthogonal')" class="btn btn-preset">Orthogonal</button>
+                    <button type="button" onclick="loadVectorPreset('parallel')" class="btn btn-preset">Parallel</button>
+                </div>
+            </div>
+
+            <form method="post" id="vectorForm">
+                {% csrf_token %}
+                <h6 class="text-purple fw-bold mb-2" style="color: var(--accent-purple);">Vector $\mathbf{v}_1$</h6>
+                <div class="row g-2 mb-3">
+                    <div class="col-4"><label class="text-muted small">X</label>{{ form.v1_x }}</div>
+                    <div class="col-4"><label class="text-muted small">Y</label>{{ form.v1_y }}</div>
+                    <div class="col-4"><label class="text-muted small">Z</label>{{ form.v1_z }}</div>
+                </div>
+
+                <h6 class="text-info fw-bold mb-2">Vector $\mathbf{v}_2$</h6>
+                <div class="row g-2 mb-4">
+                    <div class="col-4"><label class="text-muted small">X</label>{{ form.v2_x }}</div>
+                    <div class="col-4"><label class="text-muted small">Y</label>{{ form.v2_y }}</div>
+                    <div class="col-4"><label class="text-muted small">Z</label>{{ form.v2_z }}</div>
+                </div>
+
+                <button type="submit" class="btn btn-gradient w-100">
+                    <i class="bi bi-calculator me-1"></i> Calculate Vector Products
+                </button>
+            </form>
+        </div>
+
+        <!-- 3D Visualizer Canvas Column -->
+        <div class="col-lg-7">
+            <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                <h5 class="text-white mb-0"><i class="bi bi-box me-2 text-success"></i>Interactive 3D Orbit Canvas</h5>
+                <span class="text-muted small"><i class="bi bi-hand-index-thumb me-1"></i> Drag to Orbit 3D View</span>
+            </div>
+            <div class="bg-dark rounded-3 border border-secondary text-center p-2 position-relative">
+                <canvas id="vectorCanvas" style="width: 100%; height: 320px; display: block; cursor: grab;"></canvas>
+            </div>
+            <div class="d-flex flex-wrap align-items-center justify-content-center gap-3 mt-3 text-muted small">
+                <span><i class="bi bi-circle-fill text-info me-1"></i> $\mathbf{v}_1$</span>
+                <span><i class="bi bi-circle-fill text-primary me-1"></i> $\mathbf{v}_2$</span>
+                <span><i class="bi bi-circle-fill text-warning me-1"></i> Projection</span>
+                <span><i class="bi bi-circle-fill text-success me-1"></i> Cross Product $\mathbf{v}_1 \times \mathbf{v}_2$</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stacked Card 2: Computed Vector Results -->
+<div class="glass-card p-4 mb-4">
+    <h4 class="text-white mb-4"><i class="bi bi-bar-chart-steps me-2" style="color: var(--accent-purple);"></i>Computed Vector Results & Geometric Properties</h4>
+    
+    <div class="row g-4">
+        <!-- Dot Product Box -->
+        <div class="col-md-6">
+            <div class="p-4 rounded-3 border border-purple h-100" style="background: var(--surface-slate); border-color: var(--accent-purple) !important;">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="mb-0" style="color: var(--accent-purple);"><i class="bi bi-dot me-1"></i>Dot Product & Angle</h5>
+                    <button onclick="copyToClipboard('\\mathbf{v}_1 \\cdot \\mathbf{v}_2 = {{ result.dot_prod }}')" class="btn btn-copy no-print">
+                        <i class="bi bi-clipboard me-1"></i> Copy
+                    </button>
+                </div>
+                <p class="mb-2 text-muted small"><strong>Formula:</strong> $\mathbf{v}_1 \cdot \mathbf{v}_2 = v_{1x}v_{2x} + v_{1y}v_{2y} + v_{1z}v_{2z}$</p>
+                <div class="fs-4 text-white font-monospace mb-3 text-center py-2 bg-dark rounded">$$\mathbf{v}_1 \cdot \mathbf{v}_2 = {{ result.dot_prod }}$$</div>
+                <ul class="text-light mb-0 ps-3">
+                    <li>Magnitudes: $\|\mathbf{v}_1\| = {{ result.mag1 }}$, $\|\mathbf{v}_2\| = {{ result.mag2 }}$</li>
+                    <li>Angle $\theta$: <strong>{{ result.angle_deg }}°</strong> ({{ result.angle_rad }} rad)</li>
+                    <li>Orthogonal Check: 
+                        {% if result.is_orthogonal %}
+                        <span class="badge bg-success">YES ($\mathbf{v}_1 \perp \mathbf{v}_2$)</span>
+                        {% else %}
+                        <span class="badge bg-secondary">NO</span>
+                        {% endif %}
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Cross Product Box -->
+        <div class="col-md-6">
+            <div class="p-4 rounded-3 border border-success h-100" style="background: var(--surface-slate);">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="text-success mb-0"><i class="bi bi-x-lg me-1"></i>Cross Product & Area</h5>
+                    <button onclick="copyToClipboard('\\mathbf{v}_1 \\times \\mathbf{v}_2 = \\begin{bmatrix} {{ result.cross_prod.0 }} \\\\ {{ result.cross_prod.1 }} \\\\ {{ result.cross_prod.2 }} \\end{bmatrix}')" class="btn btn-copy no-print">
+                        <i class="bi bi-clipboard me-1"></i> Copy
+                    </button>
+                </div>
+                <p class="mb-2 text-muted small"><strong>Formula:</strong> $\mathbf{v}_1 \times \mathbf{v}_2 = (v_{1y}v_{2z} - v_{1z}v_{2y})\hat{i} - \dots$</p>
+                <div class="fs-4 text-white font-monospace mb-3 text-center py-2 bg-dark rounded">$$\mathbf{v}_1 \times \mathbf{v}_2 = \begin{bmatrix} {{ result.cross_prod.0 }} \\ {{ result.cross_prod.1 }} \\ {{ result.cross_prod.2 }} \end{bmatrix}$$</div>
+                <ul class="text-light mb-0 ps-3">
+                    <li>Cross Magnitude $\|\mathbf{v}_1 \times \mathbf{v}_2\|$: {{ result.cross_mag }}</li>
+                    <li>Parallelepiped Area: {{ result.parallelepiped_area }} sq units</li>
+                    <li>Triangle Area: {{ result.triangle_area }} sq units</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Projection Box -->
+        <div class="col-12">
+            <div class="p-4 rounded-3 border border-warning" style="background: var(--surface-slate);">
+                <div class="d-flex align-items-center justify-content-between mb-2">
+                    <h5 class="text-warning mb-0"><i class="bi bi-arrow-down-right-square me-2"></i>Vector Projection $\text{proj}_{\mathbf{v}_2}(\mathbf{v}_1)$</h5>
+                    <button onclick="copyToClipboard('\\text{proj}_{\\mathbf{v}_2}(\\mathbf{v}_1) = \\begin{bmatrix} {{ result.proj_vector.0 }} \\\\ {{ result.proj_vector.1 }} \\\\ {{ result.proj_vector.2 }} \\end{bmatrix}')" class="btn btn-copy no-print">
+                        <i class="bi bi-clipboard me-1"></i> Copy Projection LaTeX
+                    </button>
+                </div>
+                <p class="text-light mb-2">The orthogonal projection of vector $\mathbf{v}_1$ onto vector $\mathbf{v}_2$ is given by:</p>
+                <div class="fs-4 text-white text-center py-2 bg-dark rounded border border-warning mb-2">
+                    $$\text{proj}_{\mathbf{v}_2}(\mathbf{v}_1) = \left(\frac{\mathbf{v}_1 \cdot \mathbf{v}_2}{\|\mathbf{v}_2\|^2}\right) \mathbf{v}_2 = {{ result.proj_scalar }} \cdot \mathbf{v}_2 = \begin{bmatrix} {{ result.proj_vector.0 }} \\ {{ result.proj_vector.1 }} \\ {{ result.proj_vector.2 }} \end{bmatrix}$$
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CODE INSPECTOR TAB FOR LEARNING -->
+<div class="code-inspector mt-4 no-print">
+    <div class="code-inspector-header d-flex align-items-center justify-content-between">
+        <span><i class="bi bi-code-slash me-2" style="color: var(--accent-purple);"></i>Backend Python Source Code (math_engine.py)</span>
+        <span class="badge bg-secondary font-monospace">Python NumPy</span>
+    </div>
+    <pre><code class="language-python">{{ python_code }}</code></pre>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'linear_algebra/js/vectors3d.js' %}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const v1 = [{{ result.v1.0 }}, {{ result.v1.1 }}, {{ result.v1.2 }}];
+        const v2 = [{{ result.v2.0 }}, {{ result.v2.1 }}, {{ result.v2.2 }}];
+        const cross = [{{ result.cross_prod.0 }}, {{ result.cross_prod.1 }}, {{ result.cross_prod.2 }}];
+        const proj = [{{ result.proj_vector.0 }}, {{ result.proj_vector.1 }}, {{ result.proj_vector.2 }}];
+        
+        initVectorCanvas('vectorCanvas', v1, v2, cross, proj);
+    });
+
+    function loadVectorPreset(type) {
+        if (type === 'standard') {
+            document.getElementById('id_v1_x').value = 3;
+            document.getElementById('id_v1_y').value = 4;
+            document.getElementById('id_v1_z').value = 0;
+
+            document.getElementById('id_v2_x').value = 0;
+            document.getElementById('id_v2_y').value = 2;
+            document.getElementById('id_v2_z').value = 5;
+        } else if (type === 'orthogonal') {
+            document.getElementById('id_v1_x').value = 1;
+            document.getElementById('id_v1_y').value = 0;
+            document.getElementById('id_v1_z').value = 0;
+
+            document.getElementById('id_v2_x').value = 0;
+            document.getElementById('id_v2_y').value = 1;
+            document.getElementById('id_v2_z').value = 0;
+        } else if (type === 'parallel') {
+            document.getElementById('id_v1_x').value = 2;
+            document.getElementById('id_v1_y').value = 4;
+            document.getElementById('id_v1_z').value = 6;
+
+            document.getElementById('id_v2_x').value = 1;
+            document.getElementById('id_v2_y').value = 2;
+            document.getElementById('id_v2_z').value = 3;
+        }
+        document.getElementById('vectorForm').submit();
+    }
+</script>
+{% endblock %}
