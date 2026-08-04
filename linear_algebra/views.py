@@ -1,6 +1,9 @@
 import inspect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.forms import AuthenticationForm
 from .forms import GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm, SiteSettingForm, TopicModuleForm
 from .models import SiteSetting, TopicModule, SavedPreset
 from . import math_engine
@@ -32,8 +35,37 @@ def index_view(request):
     }
     return render(request, 'linear_algebra/index.html', context)
 
+def login_view(request):
+    """Admin Login Authentication View."""
+    if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
+        return redirect('linear_algebra:admin_panel')
+
+    form = AuthenticationForm(request, data=request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        user = form.get_user()
+        if user.is_staff or user.is_superuser:
+            login(request, user)
+            messages.success(request, f"Welcome back, Administrator {user.username}!")
+            next_url = request.GET.get('next') or 'linear_algebra:admin_panel'
+            return redirect(next_url)
+        else:
+            messages.error(request, "Access denied: Account does not have Administrator privileges.")
+
+    context = {
+        'title': 'Admin Login',
+        'form': form
+    }
+    return render(request, 'linear_algebra/login.html', context)
+
+def logout_view(request):
+    """Admin Logout View."""
+    logout(request)
+    messages.info(request, "You have been logged out of the Admin Control Center.")
+    return redirect('linear_algebra:index')
+
+@user_passes_test(lambda u: u.is_authenticated and (u.is_staff or u.is_superuser), login_url='linear_algebra:login')
 def admin_panel_view(request):
-    """Custom Admin Control Panel to manage site content without touching code."""
+    """Custom Admin Control Panel restricted ONLY to authenticated administrators."""
     site_settings = SiteSetting.objects.first()
     if not site_settings:
         site_settings = SiteSetting.objects.create()
