@@ -17,11 +17,81 @@ def parse_matrix_input(text):
             rows.append(row)
     return rows
 
+def ensure_default_data():
+    """Seeds SiteSetting and default TopicModules if database is empty."""
+    site_settings, _ = SiteSetting.objects.get_or_create()
+
+    if TopicModule.objects.count() == 0:
+        default_topics = [
+            {
+                'slug': 'gaussian',
+                'topic_code': 'TOPIC 1.1',
+                'title': 'Gaussian Elimination',
+                'unit': 'UNIT 1',
+                'description': 'Row-reduce an augmented matrix step-by-step into Row Echelon Form (REF) & RREF.',
+                'icon_class': 'bi-grid-3x3',
+                'icon_color_class': 'text-info',
+                'display_order': 1,
+            },
+            {
+                'slug': 'gf2',
+                'topic_code': 'TOPIC 1.2',
+                'title': 'Field Axioms GF(2)',
+                'unit': 'UNIT 1',
+                'description': 'Explore 2-element Galois Field F_2 = {0, 1} with addition and multiplication mod 2.',
+                'icon_class': 'bi-shield-check',
+                'icon_color_class': 'text-warning',
+                'display_order': 2,
+            },
+            {
+                'slug': 'vectors',
+                'topic_code': 'TOPIC 1.3',
+                'title': 'Dot & Cross Product',
+                'unit': 'UNIT 1',
+                'description': 'Calculate 3D vector dot products, cross products, angles, projections, and 3D orbit graphics.',
+                'icon_class': 'bi-compass',
+                'icon_color_class': 'text-success',
+                'display_order': 3,
+            },
+            {
+                'slug': 'gram_schmidt',
+                'topic_code': 'TOPIC 2.1',
+                'title': 'Gram–Schmidt',
+                'unit': 'UNIT 2',
+                'description': 'Convert linearly independent vectors into an orthogonal and orthonormal basis.',
+                'icon_class': 'bi-bezier2',
+                'icon_color_class': 'text-info',
+                'display_order': 4,
+            },
+            {
+                'slug': 'cofactor',
+                'topic_code': 'TOPIC 2.2',
+                'title': 'Cofactor Expansion',
+                'unit': 'UNIT 2',
+                'description': 'Calculate matrix determinants along any row or column using sign checkerboards.',
+                'icon_class': 'bi-diagram-3',
+                'icon_color_class': 'text-purple',
+                'display_order': 5,
+            },
+            {
+                'slug': 'diagonalization',
+                'topic_code': 'TOPIC 2.3',
+                'title': 'Diagonalization',
+                'unit': 'UNIT 2',
+                'description': 'Calculate characteristic polynomial, eigenvalues, eigenspaces, and matrix decomposition A = PDP^-1.',
+                'icon_class': 'bi-gem',
+                'icon_color_class': 'text-danger',
+                'display_order': 6,
+            },
+        ]
+        for topic in default_topics:
+            TopicModule.objects.get_or_create(slug=topic['slug'], defaults=topic)
+
+    return site_settings
+
 def index_view(request):
     """Renders main dashboard pulling live settings and active topics from database."""
-    site_settings = SiteSetting.objects.first()
-    if not site_settings:
-        site_settings = SiteSetting.objects.create()
+    site_settings = ensure_default_data()
 
     unit1_topics = TopicModule.objects.filter(unit='UNIT 1', is_active=True)
     unit2_topics = TopicModule.objects.filter(unit='UNIT 2', is_active=True)
