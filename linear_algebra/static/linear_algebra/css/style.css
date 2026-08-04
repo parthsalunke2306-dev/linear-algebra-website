@@ -7,11 +7,11 @@
     --surface-slate: #1E293B;
     --surface-card: rgba(30, 41, 59, 0.85);
     --sidebar-bg: #0B132B;
-    --glass-bg: rgba(255, 255, 255, 0.1);
-    --glass-border: rgba(255, 255, 255, 0.18);
-    --text-main: #FFFFFF;
-    --text-muted: #F1F5F9;
-    --text-subtle: #E2E8F0;
+    --glass-bg: rgba(255, 255, 255, 0.08);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --text-main: #F8FAFC;
+    --text-muted: #CBD5E1;
+    --text-subtle: #94A3B8;
     --accent-purple: #C084FC;
     --accent-purple-glow: rgba(192, 132, 252, 0.35);
     --accent-cyan: #38BDF8;
@@ -31,8 +31,8 @@
     --glass-bg: rgba(15, 23, 42, 0.06);
     --glass-border: rgba(15, 23, 42, 0.15);
     --text-main: #0F172A;
-    --text-muted: #1E293B;
-    --text-subtle: #334155;
+    --text-muted: #334155;
+    --text-subtle: #475569;
     --accent-purple: #6D28D9;
     --accent-purple-glow: rgba(109, 40, 217, 0.2);
     --accent-cyan: #0284C7;
@@ -56,18 +56,22 @@ body {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Typography & Text Visibility Overrides */
+/* Typography & Dynamic Theme Responsive Colors */
 h1, h2, h3, h4, h5, h6, .brand-font {
     font-family: 'Outfit', sans-serif;
     font-weight: 700;
-    color: var(--text-main) !important;
+    color: var(--text-main);
+}
+
+p, span, label, div {
+    color: var(--text-main);
 }
 
 code, pre, .font-monospace {
     font-family: 'JetBrains Mono', monospace !important;
 }
 
-/* Ensure ALL muted, secondary, subtext, descriptions, and labels are 100% crisp and readable */
+/* Dynamic Muted Text Utility */
 .text-muted,
 .text-secondary,
 .form-text,
@@ -75,8 +79,7 @@ p.text-muted,
 span.text-muted,
 div.text-muted,
 small,
-.small,
-.lead.text-muted {
+.small {
     color: var(--text-muted) !important;
     opacity: 1 !important;
 }
@@ -85,11 +88,10 @@ small,
     color: var(--accent-purple) !important;
 }
 
-/* Form Labels & Controls Visibility */
-.form-label,
-label {
-    color: var(--text-main) !important;
-    font-weight: 600 !important;
+/* Form Controls & Labels */
+.form-label, label {
+    color: var(--text-main);
+    font-weight: 600;
 }
 
 .form-control,
@@ -283,7 +285,7 @@ label {
 /* Badges */
 .badge-unit {
     background: linear-gradient(135deg, var(--accent-purple), #818CF8);
-    color: #0F172A;
+    color: #0F172A !important;
     font-size: 0.75rem;
     font-weight: 700;
     padding: 0.35rem 0.75rem;
@@ -293,7 +295,7 @@ label {
 
 .badge-topic {
     background: rgba(192, 132, 252, 0.2);
-    color: var(--accent-purple);
+    color: var(--accent-purple) !important;
     border: 1px solid rgba(192, 132, 252, 0.4);
     font-size: 0.8rem;
     font-weight: 700;

@@ -1,4 +1,5 @@
 from django import forms
+from .models import SiteSetting, TopicModule, SavedPreset
 
 class GaussianForm(forms.Form):
     matrix_text = forms.CharField(
@@ -64,3 +65,29 @@ class DiagonalizationForm(forms.Form):
         initial='4 1\n2 3',
         help_text='Enter a square matrix row by row.'
     )
+
+class SiteSettingForm(forms.ModelForm):
+    class Meta:
+        model = SiteSetting
+        fields = ['site_title', 'hero_subtitle', 'curriculum_badge', 'show_code_inspector']
+        widgets = {
+            'site_title': forms.TextInput(attrs={'class': 'form-control'}),
+            'hero_subtitle': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'curriculum_badge': forms.TextInput(attrs={'class': 'form-control'}),
+            'show_code_inspector': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+        }
+
+class TopicModuleForm(forms.ModelForm):
+    class Meta:
+        model = TopicModule
+        fields = ['topic_code', 'title', 'unit', 'description', 'icon_class', 'icon_color_class', 'is_active', 'display_order']
+        widgets = {
+            'topic_code': forms.TextInput(attrs={'class': 'form-control'}),
+            'title': forms.TextInput(attrs={'class': 'form-control'}),
+            'unit': forms.Select(attrs={'class': 'form-select'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'icon_class': forms.TextInput(attrs={'class': 'form-control'}),
+            'icon_color_class': forms.TextInput(attrs={'class': 'form-control'}),
+            'is_active': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'display_order': forms.NumberInput(attrs={'class': 'form-control'}),
+        }

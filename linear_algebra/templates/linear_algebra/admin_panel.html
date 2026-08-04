@@ -1,0 +1,101 @@
+{% extends 'linear_algebra/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-2 rounded-pill"
+            style="background: rgba(192, 132, 252, 0.15); border: 1px solid rgba(192, 132, 252, 0.35);">
+            <i class="bi bi-sliders" style="color: var(--accent-purple);"></i>
+            <span class="font-monospace small fw-bold" style="color: var(--accent-purple);">NO-CODE WEBSITE MANAGEMENT</span>
+        </div>
+        <h1 class="display-5 fw-bold mb-1">Admin Control Center</h1>
+        <p class="text-muted">Customize website text, titles, and topic module visibility without editing any code.</p>
+    </div>
+    <a href="/admin/" target="_blank" class="btn btn-gradient">
+        <i class="bi bi-shield-lock me-1"></i> Open Django Admin (/admin/)
+    </a>
+</div>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show rounded-3 shadow-sm mb-4" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i> {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="row g-4">
+    <!-- SITE SETTINGS FORM -->
+    <div class="col-lg-6">
+        <div class="glass-card p-4 h-100">
+            <h4 class="mb-3"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Website Global Content Settings</h4>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="update_settings" value="1">
+                
+                <div class="mb-3">
+                    <label class="form-label">Main Website Title</label>
+                    {{ setting_form.site_title }}
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Hero Banner Subtitle Description</label>
+                    {{ setting_form.hero_subtitle }}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Curriculum Badge Text</label>
+                    {{ setting_form.curriculum_badge }}
+                </div>
+
+                <div class="form-check form-switch mb-4">
+                    {{ setting_form.show_code_inspector }}
+                    <label class="form-check-label ms-2" for="{{ setting_form.show_code_inspector.id_for_label }}">
+                        Enable Live Python Code Inspector across Solver pages
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-gradient w-100">
+                    <i class="bi bi-save me-1"></i> Save Website Settings
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- TOPIC MODULES MANAGER -->
+    <div class="col-lg-6">
+        <div class="glass-card p-4 h-100">
+            <h4 class="mb-3"><i class="bi bi-kanban me-2" style="color: var(--accent-purple);"></i>Topic Modules Visibility & Control</h4>
+            <p class="text-muted small mb-3">Enable or disable topics on the main dashboard with 1 click.</p>
+            
+            <div class="list-group list-group-flush border-0">
+                {% for topic in topics %}
+                    <div class="list-group-item bg-transparent border-bottom border-secondary d-flex align-items-center justify-content-between py-3 px-0">
+                        <div>
+                            <span class="badge-topic me-2">{{ topic.topic_code }}</span>
+                            <strong class="text-main">{{ topic.title }}</strong>
+                            <div class="text-muted small mt-1">{{ topic.unit }}</div>
+                        </div>
+                        <form method="POST" class="m-0">
+                            {% csrf_token %}
+                            <input type="hidden" name="toggle_topic" value="1">
+                            <input type="hidden" name="topic_id" value="{{ topic.id }}">
+                            {% if topic.is_active %}
+                                <button type="submit" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                                    <i class="bi bi-eye-fill me-1"></i> Active
+                                </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
+                                    <i class="bi bi-eye-slash-fill me-1"></i> Hidden
+                                </button>
+                            {% endif %}
+                        </form>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
