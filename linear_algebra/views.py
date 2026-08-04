@@ -29,9 +29,17 @@ def ensure_default_data():
     try:
         site_settings, _ = SiteSetting.objects.get_or_create()
 
-        # Seed default admin superuser if missing
-        if not User.objects.filter(username='admin').exists():
-            User.objects.create_superuser('admin', 'admin@example.com', 'admin1234')
+        # Seed & guarantee default admin superuser with password admin1234
+        admin_user, created = User.objects.get_or_create(username='admin', defaults={
+            'email': 'admin@example.com',
+            'is_staff': True,
+            'is_superuser': True,
+        })
+        if created or not admin_user.check_password('admin1234') or not admin_user.is_staff or not admin_user.is_superuser:
+            admin_user.set_password('admin1234')
+            admin_user.is_staff = True
+            admin_user.is_superuser = True
+            admin_user.save()
 
         if TopicModule.objects.count() == 0:
             default_topics = [
@@ -133,6 +141,7 @@ def index_view(request):
 
 def register_view(request):
     """User Sign Up / Registration View."""
+    ensure_default_data()
     if request.user.is_authenticated:
         return redirect('linear_algebra:index')
 
@@ -151,6 +160,8 @@ def register_view(request):
 
 def login_view(request):
     """Universal Login Authentication View for all Users & Administrators."""
+    ensure_default_data()  # Guarantees DB migrations and admin user creation happen BEFORE form processing!
+
     if request.user.is_authenticated:
         if request.user.is_staff or request.user.is_superuser:
             return redirect('linear_algebra:admin_panel')
