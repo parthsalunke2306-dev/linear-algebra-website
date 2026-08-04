@@ -156,9 +156,7 @@ def logout_view(request):
 @user_passes_test(lambda u: u.is_authenticated and (u.is_staff or u.is_superuser), login_url='linear_algebra:login')
 def admin_panel_view(request):
     """Custom Admin Control Panel restricted ONLY to authenticated administrators."""
-    site_settings = SiteSetting.objects.first()
-    if not site_settings:
-        site_settings = SiteSetting.objects.create()
+    site_settings = ensure_default_data()
 
     topics = TopicModule.objects.all()
 
@@ -190,7 +188,7 @@ def admin_panel_view(request):
 
 def gaussian_view(request):
     """Topic 1.1: Systems of Linear Equations & Gaussian Elimination."""
-    site_settings = SiteSetting.objects.first()
+    site_settings = ensure_default_data()
     result = None
     error = None
     form = GaussianForm(request.POST or None)
@@ -218,7 +216,7 @@ def gaussian_view(request):
 
 def gf2_view(request):
     """Topic 1.2: Field Axioms via GF(2)."""
-    site_settings = SiteSetting.objects.first()
+    site_settings = ensure_default_data()
     result = math_engine.analyze_gf2_field()
 
     context = {
@@ -231,7 +229,7 @@ def gf2_view(request):
 
 def vectors_view(request):
     """Topic 1.3: 3D Vector Dot Product, Cross Product & Projections."""
-    site_settings = SiteSetting.objects.first()
+    site_settings = ensure_default_data()
     result = None
     error = None
     form = VectorsForm(request.POST or None)
@@ -260,7 +258,7 @@ def vectors_view(request):
 
 def gram_schmidt_view(request):
     """Topic 2.1: Gram-Schmidt Orthogonalization Process."""
-    site_settings = SiteSetting.objects.first()
+    site_settings = ensure_default_data()
     result = None
     error = None
     form = GramSchmidtForm(request.POST or None)
@@ -288,7 +286,7 @@ def gram_schmidt_view(request):
 
 def cofactor_view(request):
     """Topic 2.2: Cofactor Expansion for Determinants."""
-    site_settings = SiteSetting.objects.first()
+    site_settings = ensure_default_data()
     result = None
     error = None
     form = CofactorForm(request.POST or None)
@@ -320,7 +318,7 @@ def cofactor_view(request):
 
 def diagonalization_view(request):
     """Topic 2.3: Eigenvalues, Eigenvectors & Diagonalization."""
-    site_settings = SiteSetting.objects.first()
+    site_settings = ensure_default_data()
     result = None
     error = None
     form = DiagonalizationForm(request.POST or None)
