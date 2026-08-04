@@ -2,8 +2,9 @@
 {% load static %}
 
 {% block content %}
-<div class="row align-items-center mb-5 py-3">
-    <div class="col-lg-8">
+<!-- HERO SECTION -->
+<div class="row align-items-center mb-5 py-4">
+    <div class="col-lg-7">
         <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill"
             style="background: rgba(192, 132, 252, 0.15); border: 1px solid rgba(192, 132, 252, 0.35);">
             <i class="bi bi-mortarboard-fill" style="color: var(--accent-purple);"></i>
@@ -11,28 +12,56 @@
                 {{ site_settings.curriculum_badge|default:"DATA SCIENCE MATHEMATICS CURRICULUM" }}
             </span>
         </div>
-        <h1 class="display-4 fw-bold mb-3">
+        <h1 class="display-4 fw-bold mb-3 font-outfit">
             {{ site_settings.site_title|default:"Linear Algebra & Field Theory Explorer" }}
         </h1>
-        <p class="lead text-muted mb-0">
-            {{ site_settings.hero_subtitle }}
+        <p class="lead text-muted mb-4">
+            {{ site_settings.hero_subtitle|default:"Explore linear equations, finite fields GF(2), vector spaces, inner products, cofactor expansion, and matrix diagonalization with step-by-step mathematical breakdowns." }}
         </p>
-    </div>
-    <!-- <div class="col-lg-4 text-lg-end d-none d-lg-block">
-        <div class="p-4 rounded-4 text-center glass-card" style="border: 1px solid var(--accent-purple-glow);">
-            <i class="bi bi-braces-asterisk display-3" style="color: var(--accent-purple);"></i>
-            <div class="mt-2 font-monospace fw-bold" style="color: var(--accent-purple);">6 INTERACTIVE MODULES</div>
-            <div class="text-muted small fw-semibold">Unit 1 & Unit 2 Data Science Topics</div>
+        <div class="d-flex flex-wrap align-items-center gap-3">
+            <a href="{% url 'linear_algebra:gaussian' %}" class="btn btn-gradient px-4 py-2">
+                <i class="bi bi-play-circle-fill me-2"></i> Start Exploring
+            </a>
+            <a href="#unit1-section" class="btn btn-preset px-3 py-2">
+                <i class="bi bi-arrow-down-circle me-1"></i> View Modules
+            </a>
         </div>
-    </div> -->
+    </div>
+    <div class="col-lg-5 mt-4 mt-lg-0 text-center text-lg-end">
+        <div class="p-4 rounded-4 text-start glass-card glow-on-hover" style="border: 1px solid var(--accent-purple-glow);">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="badge bg-purple-subtle text-purple font-monospace small px-2 py-1">OVERVIEW</span>
+                <i class="bi bi-cpu-fill fs-2" style="color: var(--accent-purple);"></i>
+            </div>
+            <h5 class="fw-bold mb-2">Interactive Data Science Engine</h5>
+            <p class="text-muted small mb-3">Complete mathematical solver engine with step-by-step LaTeX derivations and GF(2) modular arithmetic.</p>
+            <div class="row g-2 text-center pt-2 border-top border-secondary border-opacity-25">
+                <div class="col-4">
+                    <div class="fw-bold fs-4 text-purple">6</div>
+                    <div class="text-muted small" style="font-size: 0.75rem;">Modules</div>
+                </div>
+                <div class="col-4">
+                    <div class="fw-bold fs-4 text-info">2</div>
+                    <div class="text-muted small" style="font-size: 0.75rem;">Units</div>
+                </div>
+                <div class="col-4">
+                    <div class="fw-bold fs-4 text-success">GF(2)</div>
+                    <div class="text-muted small" style="font-size: 0.75rem;">Fields</div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- UNIT 1 TOPICS -->
 {% if unit1_topics %}
-<div class="mb-5">
-    <div class="d-flex align-items-center gap-2 mb-4">
-        <span class="badge-unit">UNIT 1</span>
-        <h3 class="mb-0">Linear Systems, Fields & Vectors</h3>
+<div id="unit1-section" class="mb-5">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge-unit">UNIT 1</span>
+            <h3 class="mb-0 font-outfit">Linear Systems, Fields & Vectors</h3>
+        </div>
+        <span class="text-muted small d-none d-sm-inline"><i class="bi bi-journal-text me-1"></i> Unit 1 Modules</span>
     </div>
     <div class="row g-4">
         {% for topic in unit1_topics %}
@@ -41,14 +70,16 @@
                 <div>
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <span class="badge-topic">{{ topic.topic_code }}</span>
-                        <i class="bi {{ topic.icon_class }} {{ topic.icon_color_class }} fs-3"></i>
+                        <div class="p-2 rounded-3" style="background: rgba(192, 132, 252, 0.1);">
+                            <i class="bi {{ topic.icon_class }} {{ topic.icon_color_class }} fs-3"></i>
+                        </div>
                     </div>
-                    <h4>{{ topic.title }}</h4>
+                    <h4 class="fw-bold mb-2">{{ topic.title }}</h4>
                     <p class="text-muted small mb-0">
                         {{ topic.description }}
                     </p>
                 </div>
-                <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-3">
+                <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-4">
                     Open Module <i class="bi bi-arrow-right ms-1"></i>
                 </a>
             </div>
@@ -61,9 +92,12 @@
 <!-- UNIT 2 TOPICS -->
 {% if unit2_topics %}
 <div class="mb-5">
-    <div class="d-flex align-items-center gap-2 mb-4">
-        <span class="badge-unit">UNIT 2</span>
-        <h3 class="mb-0">Inner Products, Determinants & Diagonalization</h3>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge-unit">UNIT 2</span>
+            <h3 class="mb-0 font-outfit">Inner Products, Determinants & Diagonalization</h3>
+        </div>
+        <span class="text-muted small d-none d-sm-inline"><i class="bi bi-journal-text me-1"></i> Unit 2 Modules</span>
     </div>
     <div class="row g-4">
         {% for topic in unit2_topics %}
@@ -72,14 +106,16 @@
                 <div>
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <span class="badge-topic">{{ topic.topic_code }}</span>
-                        <i class="bi {{ topic.icon_class }} {{ topic.icon_color_class }} fs-3"></i>
+                        <div class="p-2 rounded-3" style="background: rgba(56, 189, 248, 0.1);">
+                            <i class="bi {{ topic.icon_class }} {{ topic.icon_color_class }} fs-3"></i>
+                        </div>
                     </div>
-                    <h4>{{ topic.title }}</h4>
+                    <h4 class="fw-bold mb-2">{{ topic.title }}</h4>
                     <p class="text-muted small mb-0">
                         {{ topic.description }}
                     </p>
                 </div>
-                <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-3">
+                <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-4">
                     Open Module <i class="bi bi-arrow-right ms-1"></i>
                 </a>
             </div>

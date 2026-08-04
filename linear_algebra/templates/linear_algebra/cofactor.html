@@ -59,6 +59,7 @@
 </div>
 
 <!-- Stacked Card 2: Collapsible Term Accordions -->
+{% if result %}
 <div class="glass-card p-4 mb-4">
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <h4 class="mb-0"><i class="bi bi-diagram-2 me-2" style="color: var(--accent-purple);"></i>Cofactor Expansion along {{ result.expand_by|capfirst }} {{ result.index }}</h4>
@@ -79,7 +80,7 @@
     <!-- Accordion for Expansion Terms -->
     <div class="accordion accordion-custom mb-4" id="cofactorAccordion">
         {% for term in result.terms %}
-        <div class="accordion-item animate-step" style="animation-delay: {{ forloop.counter0 }}00ms;">
+        <div class="accordion-item animate-step">
             <h2 class="accordion-header" id="headingCofactor{{ forloop.counter }}">
                 <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCofactor{{ forloop.counter }}">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
@@ -127,6 +128,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}

@@ -259,10 +259,16 @@ def gf2_view(request):
     site_settings = get_safe_site_settings()
     result = math_engine.analyze_gf2_field()
 
+    a_val = request.POST.get('a_val', 1) if request.method == 'POST' else 1
+    b_val = request.POST.get('b_val', 1) if request.method == 'POST' else 1
+    op_val = request.POST.get('op_val', 'add') if request.method == 'POST' else 'add'
+    arith_result = math_engine.solve_gf2_arithmetic(a_val, b_val, op_val)
+
     context = {
         'title': 'Field Axioms via GF(2)',
         'unit': 'Unit 1 • Topic 2',
         'result': result,
+        'arith_result': arith_result,
         'site_settings': site_settings
     }
     return render(request, 'linear_algebra/gf2.html', context)

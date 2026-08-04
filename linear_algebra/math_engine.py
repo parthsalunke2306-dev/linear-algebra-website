@@ -264,12 +264,42 @@ def analyze_gf2_field():
         'is_field': all(ax['passed'] for ax in axioms)
     }
 
+def solve_gf2_arithmetic(a_val, b_val, op='add'):
+    """
+    Computes step-by-step modular binary arithmetic in GF(2) = {0, 1}.
+    """
+    a = int(a_val) % 2
+    b = int(b_val) % 2
+    
+    if op == 'add':
+        res = (a + b) % 2
+        formula_latex = rf"{a} \oplus {b} = ({a} + {b}) \pmod{{2}} = {res}"
+        explanation = f"In GF(2), addition is equivalent to bitwise XOR: {a} + {b} = {a+b}, and ({a+b}) mod 2 = {res}."
+    elif op == 'mul':
+        res = (a * b) % 2
+        formula_latex = rf"{a} \odot {b} = ({a} \cdot {b}) \pmod{{2}} = {res}"
+        explanation = f"In GF(2), multiplication is equivalent to bitwise AND: {a} · {b} = {a*b}, and ({a*b}) mod 2 = {res}."
+    else:
+        res = (a + b) % 2
+        formula_latex = rf"{a} + {b} \equiv {res} \pmod{{2}}"
+        explanation = "GF(2) binary arithmetic step."
+
+    return {
+        'a': a,
+        'b': b,
+        'op': op,
+        'res': res,
+        'formula_latex': formula_latex,
+        'explanation': explanation
+    }
+
 # ==========================================
 # UNIT 1 - TOPIC 3: Vectors (Dot & Cross Product)
 # ==========================================
 def compute_vector_operations(v1_list, v2_list):
     """
     Computes 3D Vector operations: Dot product, Cross product, Angles, Projections.
+    Returns explicit step-by-step LaTeX derivations for display.
     """
     v1 = np.array(v1_list, dtype=float)
     v2 = np.array(v2_list, dtype=float)
@@ -281,13 +311,32 @@ def compute_vector_operations(v1_list, v2_list):
     cross_prod = np.cross(v1, v2)
     cross_mag = np.linalg.norm(cross_prod)
 
+    # Step-by-step LaTeX strings
+    step_dot_latex = rf"\mathbf{{u}} \cdot \mathbf{{v}} = ({v1[0]} \cdot {v2[0]}) + ({v1[1]} \cdot {v2[1]}) + ({v1[2]} \cdot {v2[2]}) = {v1[0]*v2[0]} + {v1[1]*v2[1]} + {v1[2]*v2[2]} = {round(float(dot_prod), 4)}"
+    
+    step_mag1_latex = rf"\|\mathbf{{u}}\| = \sqrt{{({v1[0]})^2 + ({v1[1]})^2 + ({v1[2]})^2}} = \sqrt{{{round(float(v1[0]**2 + v1[1]**2 + v1[2]**2), 4)}}} = {round(float(mag1), 4)}"
+    step_mag2_latex = rf"\|\mathbf{{v}}\| = \sqrt{{({v2[0]})^2 + ({v2[1]})^2 + ({v2[2]})^2}} = \sqrt{{{round(float(v2[0]**2 + v2[1]**2 + v2[2]**2), 4)}}} = {round(float(mag2), 4)}"
+
+    # Cross product 3x3 expansion
+    c_i = v1[1]*v2[2] - v1[2]*v2[1]
+    c_j = v1[2]*v2[0] - v1[0]*v2[2]
+    c_k = v1[0]*v2[1] - v1[1]*v2[0]
+    step_cross_latex = (
+        r"\mathbf{u} \times \mathbf{v} = \begin{vmatrix} \mathbf{i} & \mathbf{j} & \mathbf{k} \\ "
+        + f"{v1[0]} & {v1[1]} & {v1[2]} \\ {v2[0]} & {v2[1]} & {v2[2]}"
+        + r" \end{vmatrix} = \left( (" + f"{v1[1]}" + r")\cdot(" + f"{v2[2]}" + r") - (" + f"{v1[2]}" + r")\cdot(" + f"{v2[1]}" + r") \right)\mathbf{i} - \left( (" + f"{v1[0]}" + r")\cdot(" + f"{v2[2]}" + r") - (" + f"{v1[2]}" + r")\cdot(" + f"{v2[0]}" + r") \right)\mathbf{j} + \left( (" + f"{v1[0]}" + r")\cdot(" + f"{v2[1]}" + r") - (" + f"{v1[1]}" + r")\cdot(" + f"{v2[0]}" + r") \right)\mathbf{k} = "
+        + f"{round(c_i, 4)}" + r"\mathbf{i} + (" + f"{round(c_j, 4)}" + r")\mathbf{j} + (" + f"{round(c_k, 4)}" + r")\mathbf{k}"
+    )
+
     # Angle calculation
     if mag1 > 0 and mag2 > 0:
         cos_theta = np.clip(dot_prod / (mag1 * mag2), -1.0, 1.0)
         angle_rad = np.arccos(cos_theta)
         angle_deg = np.degrees(angle_rad)
+        step_angle_latex = rf"\cos(\theta) = \frac{{\mathbf{{u}} \cdot \mathbf{{v}}}}{{\|\mathbf{{u}}\| \|\mathbf{{v}}\|}} = \frac{{{round(float(dot_prod), 4)}}}{{{round(float(mag1), 4)} \cdot {round(float(mag2), 4)}}} = {round(float(cos_theta), 4)} \implies \theta = {round(float(angle_deg), 2)}^\circ"
     else:
         cos_theta, angle_rad, angle_deg = 0.0, 0.0, 0.0
+        step_angle_latex = r"\theta = \text{Undefined (zero vector)}"
 
     is_orthogonal = np.isclose(dot_prod, 0.0)
     is_parallel = np.isclose(cross_mag, 0.0)
@@ -296,9 +345,16 @@ def compute_vector_operations(v1_list, v2_list):
     if mag2 > 0:
         proj_scalar = dot_prod / (mag2 ** 2)
         proj_vector = proj_scalar * v2
+        step_proj_latex = (
+            r"\text{proj}_{\mathbf{v}}(\mathbf{u}) = \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{v}\|^2} \mathbf{v} = \frac{"
+            + f"{round(float(dot_prod), 4)}" + r"}{" + f"{round(float(mag2**2), 4)}" + r"} \begin{bmatrix} "
+            + f"{v2[0]} \\ {v2[1]} \\ {v2[2]}" + r" \end{bmatrix} = \begin{bmatrix} "
+            + f"{round(float(proj_vector[0]), 4)} \\ {round(float(proj_vector[1]), 4)} \\ {round(float(proj_vector[2]), 4)}" + r" \end{bmatrix}"
+        )
     else:
         proj_scalar = 0.0
         proj_vector = np.array([0.0, 0.0, 0.0])
+        step_proj_latex = r"\text{proj}_{\mathbf{v}}(\mathbf{u}) = \mathbf{0}"
 
     unit_v1 = (v1 / mag1) if mag1 > 0 else np.array([0.0, 0.0, 0.0])
     unit_v2 = (v2 / mag2) if mag2 > 0 else np.array([0.0, 0.0, 0.0])
@@ -320,7 +376,13 @@ def compute_vector_operations(v1_list, v2_list):
         'is_orthogonal': bool(is_orthogonal),
         'is_parallel': bool(is_parallel),
         'triangle_area': round(float(cross_mag / 2.0), 4),
-        'parallelepiped_area': round(float(cross_mag), 4)
+        'parallelepiped_area': round(float(cross_mag), 4),
+        'step_dot_latex': step_dot_latex,
+        'step_mag1_latex': step_mag1_latex,
+        'step_mag2_latex': step_mag2_latex,
+        'step_cross_latex': step_cross_latex,
+        'step_angle_latex': step_angle_latex,
+        'step_proj_latex': step_proj_latex,
     }
 
 # ==========================================

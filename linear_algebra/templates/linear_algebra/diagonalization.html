@@ -51,12 +51,13 @@
 </div>
 
 <!-- Stacked Card 2: Derivation Sections Accordions -->
+{% if result %}
 <div class="glass-card p-4 mb-4">
     <h4 class="mb-4"><i class="bi bi-diagram-3 me-2" style="color: var(--accent-purple);"></i>Eigenvalue & Diagonalization Derivation</h4>
 
     <div class="accordion accordion-custom mb-4" id="diagAccordion">
         <!-- Section 1: Characteristic Polynomial -->
-        <div class="accordion-item animate-step" style="animation-delay: 100ms;">
+        <div class="accordion-item animate-step">
             <h2 class="accordion-header" id="headingChar">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseChar">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
@@ -79,7 +80,7 @@
         </div>
 
         <!-- Section 2: Eigenvalues & Eigenspaces -->
-        <div class="accordion-item animate-step" style="animation-delay: 200ms;">
+        <div class="accordion-item animate-step">
             <h2 class="accordion-header" id="headingEigen">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEigen">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
@@ -118,7 +119,7 @@
         </div>
 
         <!-- Section 3: Decomposition PDP^-1 -->
-        <div class="accordion-item animate-step" style="animation-delay: 300ms;">
+        <div class="accordion-item animate-step">
             <h2 class="accordion-header" id="headingPDP">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePDP">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
@@ -165,6 +166,7 @@
         </div>
     </div>
 </div>
+{% endif %}
 {% endblock %}
 
 {% block extra_js %}

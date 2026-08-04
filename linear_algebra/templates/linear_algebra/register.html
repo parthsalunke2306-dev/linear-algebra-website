@@ -15,8 +15,18 @@
             </div>
 
             {% if form.errors %}
-                <div class="alert alert-danger rounded-3 py-2 px-3 small mb-3">
-                    <i class="bi bi-exclamation-triangle-fill me-1"></i> Please check the form errors below.
+                <div class="alert alert-danger rounded-3 p-3 small mb-3">
+                    <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle-fill me-1"></i> Please fix the following errors:</div>
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <div class="ms-3">• {{ error }}</div>
+                        {% endfor %}
+                    {% endif %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <div class="ms-3">• <strong>{{ field.label }}:</strong> {{ error }}</div>
+                        {% endfor %}
+                    {% endfor %}
                 </div>
             {% endif %}
 
@@ -26,7 +36,11 @@
                 <div class="mb-3">
                     <label class="form-label text-muted small fw-semibold">USERNAME</label>
                     {{ form.username }}
-                    {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>{% endif %}
+                    {% if form.username.errors %}
+                        {% for err in form.username.errors %}
+                            <div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i> {{ err }}</div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
 
                 <div class="row g-2 mb-3">
@@ -43,19 +57,33 @@
                 <div class="mb-3">
                     <label class="form-label text-muted small fw-semibold">EMAIL ADDRESS</label>
                     {{ form.email }}
-                    {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>{% endif %}
+                    {% if form.email.errors %}
+                        {% for err in form.email.errors %}
+                            <div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i> {{ err }}</div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
 
                 <div class="mb-3">
                     <label class="form-label text-muted small fw-semibold">PASSWORD</label>
                     {{ form.password1 }}
-                    {% if form.password1.errors %}<div class="text-danger small mt-1">{{ form.password1.errors.0 }}</div>{% endif %}
+                    {% if form.password1.errors %}
+                        {% for err in form.password1.errors %}
+                            <div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i> {{ err }}</div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="form-text text-muted" style="font-size: 0.75rem;">Password must be at least 8 characters long and not entirely numeric.</div>
+                    {% endif %}
                 </div>
 
                 <div class="mb-4">
                     <label class="form-label text-muted small fw-semibold">CONFIRM PASSWORD</label>
                     {{ form.password2 }}
-                    {% if form.password2.errors %}<div class="text-danger small mt-1">{{ form.password2.errors.0 }}</div>{% endif %}
+                    {% if form.password2.errors %}
+                        {% for err in form.password2.errors %}
+                            <div class="text-danger small mt-1"><i class="bi bi-x-circle me-1"></i> {{ err }}</div>
+                        {% endfor %}
+                    {% endif %}
                 </div>
 
                 <button type="submit" class="btn btn-gradient w-100 py-2 font-monospace fw-bold mb-3">

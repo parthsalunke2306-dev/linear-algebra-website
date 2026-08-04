@@ -8,12 +8,18 @@ class UserRegisterForm(UserCreationForm):
     first_name = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}))
     last_name = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'username' in self.fields:
+            self.fields['username'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Username'})
+        if 'password1' in self.fields:
+            self.fields['password1'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Password'})
+        if 'password2' in self.fields:
+            self.fields['password2'].widget.attrs.update({'class': 'form-control', 'placeholder': 'Confirm Password'})
+
     class Meta(UserCreationForm.Meta):
         model = User
         fields = ['username', 'first_name', 'last_name', 'email']
-        widgets = {
-            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
-        }
 
 class GaussianForm(forms.Form):
     matrix_text = forms.CharField(
