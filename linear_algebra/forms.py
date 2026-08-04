@@ -83,12 +83,11 @@ class DiagonalizationForm(forms.Form):
 class SiteSettingForm(forms.ModelForm):
     class Meta:
         model = SiteSetting
-        fields = ['site_title', 'hero_subtitle', 'curriculum_badge', 'show_code_inspector']
+        fields = ['site_title', 'hero_subtitle', 'curriculum_badge']
         widgets = {
             'site_title': forms.TextInput(attrs={'class': 'form-control'}),
             'hero_subtitle': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
             'curriculum_badge': forms.TextInput(attrs={'class': 'form-control'}),
-            'show_code_inspector': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
 
 class TopicModuleForm(forms.ModelForm):

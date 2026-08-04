@@ -3,7 +3,7 @@ from .models import SiteSetting, TopicModule, SavedPreset
 
 @admin.register(SiteSetting)
 class SiteSettingAdmin(admin.ModelAdmin):
-    list_display = ('site_title', 'curriculum_badge', 'show_code_inspector', 'updated_at')
+    list_display = ('site_title', 'curriculum_badge', 'updated_at')
 
 @admin.register(TopicModule)
 class TopicModuleAdmin(admin.ModelAdmin):

@@ -2,9 +2,8 @@ from django.db import models
 
 class SiteSetting(models.Model):
     site_title = models.CharField(max_length=200, default="Linear Algebra & Field Theory Explorer")
-    hero_subtitle = models.TextField(default="Interactive step-by-step LaTeX matrix solvers, 3D vector graphics, dynamic matrix resizers, Light/Dark theme toggle, LaTeX formula copy, and live Python code inspection.")
+    hero_subtitle = models.TextField(default="Interactive step-by-step LaTeX matrix solvers, 3D vector graphics, dynamic matrix resizers, Light/Dark theme toggle, and LaTeX formula copy.")
     curriculum_badge = models.CharField(max_length=100, default="DATA SCIENCE MATHEMATICS CURRICULUM")
-    show_code_inspector = models.BooleanField(default=True, help_text="Toggle live Python code inspection tabs across all solver pages")
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

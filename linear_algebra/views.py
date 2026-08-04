@@ -1,4 +1,3 @@
-import inspect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
@@ -137,15 +136,12 @@ def gaussian_view(request):
         matrix_data = parse_matrix_input(form.fields['matrix_text'].initial)
         result = math_engine.solve_gaussian_elimination(matrix_data)
 
-    code_snippet = inspect.getsource(math_engine.solve_gaussian_elimination)
-
     context = {
         'title': 'Gaussian Elimination & Row Operations',
         'unit': 'Unit 1 • Topic 1',
         'form': form,
         'result': result,
         'error': error,
-        'python_code': code_snippet,
         'site_settings': site_settings
     }
     return render(request, 'linear_algebra/gaussian.html', context)
@@ -154,13 +150,11 @@ def gf2_view(request):
     """Topic 1.2: Field Axioms via GF(2)."""
     site_settings = SiteSetting.objects.first()
     result = math_engine.analyze_gf2_field()
-    code_snippet = inspect.getsource(math_engine.analyze_gf2_field)
 
     context = {
         'title': 'Field Axioms via GF(2)',
         'unit': 'Unit 1 • Topic 2',
         'result': result,
-        'python_code': code_snippet,
         'site_settings': site_settings
     }
     return render(request, 'linear_algebra/gf2.html', context)
@@ -184,15 +178,12 @@ def vectors_view(request):
         v2 = [form.fields['v2_x'].initial, form.fields['v2_y'].initial, form.fields['v2_z'].initial]
         result = math_engine.compute_vector_operations(v1, v2)
 
-    code_snippet = inspect.getsource(math_engine.compute_vector_operations)
-
     context = {
         'title': 'Vector Dot Product, Cross Product & Projections',
         'unit': 'Unit 1 • Topic 3',
         'form': form,
         'result': result,
         'error': error,
-        'python_code': code_snippet,
         'site_settings': site_settings
     }
     return render(request, 'linear_algebra/vectors.html', context)
@@ -215,15 +206,12 @@ def gram_schmidt_view(request):
         vectors_data = parse_matrix_input(form.fields['vectors_text'].initial)
         result = math_engine.solve_gram_schmidt(vectors_data)
 
-    code_snippet = inspect.getsource(math_engine.solve_gram_schmidt)
-
     context = {
         'title': 'Gram–Schmidt Orthogonalization Process',
         'unit': 'Unit 2 • Topic 1',
         'form': form,
         'result': result,
         'error': error,
-        'python_code': code_snippet,
         'site_settings': site_settings
     }
     return render(request, 'linear_algebra/gram_schmidt.html', context)
@@ -250,15 +238,12 @@ def cofactor_view(request):
         idx = form.fields['index'].initial - 1
         result = math_engine.solve_cofactor_expansion(matrix_data, expand_by, idx)
 
-    code_snippet = inspect.getsource(math_engine.solve_cofactor_expansion)
-
     context = {
         'title': 'Cofactor Expansion for Determinants',
         'unit': 'Unit 2 • Topic 2',
         'form': form,
         'result': result,
         'error': error,
-        'python_code': code_snippet,
         'site_settings': site_settings
     }
     return render(request, 'linear_algebra/cofactor.html', context)
@@ -281,15 +266,12 @@ def diagonalization_view(request):
         matrix_data = parse_matrix_input(form.fields['matrix_text'].initial)
         result = math_engine.solve_diagonalization(matrix_data)
 
-    code_snippet = inspect.getsource(math_engine.solve_diagonalization)
-
     context = {
         'title': 'Eigenvalues, Eigenvectors & Diagonalization',
         'unit': 'Unit 2 • Topic 3',
         'form': form,
         'result': result,
         'error': error,
-        'python_code': code_snippet,
         'site_settings': site_settings
     }
     return render(request, 'linear_algebra/diagonalization.html', context)
