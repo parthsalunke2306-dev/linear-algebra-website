@@ -4,7 +4,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.forms import AuthenticationForm
-from .forms import GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm, SiteSettingForm, TopicModuleForm
+from .forms import GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm, SiteSettingForm, TopicModuleForm, UserRegisterForm
 from .models import SiteSetting, TopicModule, SavedPreset
 from . import math_engine
 
@@ -35,32 +35,53 @@ def index_view(request):
     }
     return render(request, 'linear_algebra/index.html', context)
 
+def register_view(request):
+    """User Sign Up / Registration View."""
+    if request.user.is_authenticated:
+        return redirect('linear_algebra:index')
+
+    form = UserRegisterForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        user = form.save()
+        login(request, user)
+        messages.success(request, f"Welcome to the platform, {user.username}! Your account was created successfully.")
+        return redirect('linear_algebra:index')
+
+    context = {
+        'title': 'Create Student / User Account',
+        'form': form
+    }
+    return render(request, 'linear_algebra/register.html', context)
+
 def login_view(request):
-    """Admin Login Authentication View."""
-    if request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser):
-        return redirect('linear_algebra:admin_panel')
+    """Universal Login Authentication View for all Users & Administrators."""
+    if request.user.is_authenticated:
+        if request.user.is_staff or request.user.is_superuser:
+            return redirect('linear_algebra:admin_panel')
+        return redirect('linear_algebra:index')
 
     form = AuthenticationForm(request, data=request.POST or None)
     if request.method == 'POST' and form.is_valid():
         user = form.get_user()
+        login(request, user)
         if user.is_staff or user.is_superuser:
-            login(request, user)
             messages.success(request, f"Welcome back, Administrator {user.username}!")
             next_url = request.GET.get('next') or 'linear_algebra:admin_panel'
-            return redirect(next_url)
         else:
-            messages.error(request, "Access denied: Account does not have Administrator privileges.")
+            messages.success(request, f"Welcome back, {user.username}!")
+            next_url = request.GET.get('next') or 'linear_algebra:index'
+        return redirect(next_url)
 
     context = {
-        'title': 'Admin Login',
+        'title': 'User & Admin Sign In',
         'form': form
     }
     return render(request, 'linear_algebra/login.html', context)
 
 def logout_view(request):
-    """Admin Logout View."""
+    """User Logout View."""
     logout(request)
-    messages.info(request, "You have been logged out of the Admin Control Center.")
+    messages.info(request, "You have been logged out successfully.")
     return redirect('linear_algebra:index')
 
 @user_passes_test(lambda u: u.is_authenticated and (u.is_staff or u.is_superuser), login_url='linear_algebra:login')

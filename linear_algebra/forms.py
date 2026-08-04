@@ -1,5 +1,19 @@
 from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
 from .models import SiteSetting, TopicModule, SavedPreset
+
+class UserRegisterForm(UserCreationForm):
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'name@example.com'}))
+    first_name = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}))
+    last_name = forms.CharField(max_length=50, required=False, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}))
+
+    class Meta(UserCreationForm.Meta):
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Username'}),
+        }
 
 class GaussianForm(forms.Form):
     matrix_text = forms.CharField(

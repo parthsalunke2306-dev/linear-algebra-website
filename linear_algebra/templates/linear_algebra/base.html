@@ -85,21 +85,39 @@
                     <i class="bi bi-gem"></i>
                     <span>2.3 Diagonalization</span>
                 </a>
-                <!-- Management & Auth -->
-                <div class="sidebar-section-label">Management</div>
-                {% if user.is_authenticated and user.is_staff %}
-                    <a href="{% url 'linear_algebra:admin_panel' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'admin_panel' %}active{% endif %}">
-                        <i class="bi bi-sliders text-purple"></i>
-                        <span>Control Center</span>
-                    </a>
+                <!-- Account & Management -->
+                <div class="sidebar-section-label">Account & Auth</div>
+                {% if user.is_authenticated %}
+                    <div class="p-2 mb-2 rounded-3" style="background: var(--glass-bg); border: 1px solid var(--glass-border);">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <span class="small fw-bold"><i class="bi bi-person-circle text-purple me-1"></i> {{ user.username }}</span>
+                            {% if user.is_staff or user.is_superuser %}
+                                <span class="badge bg-danger font-monospace" style="font-size: 0.65rem;">ADMIN</span>
+                            {% else %}
+                                <span class="badge bg-info font-monospace text-dark" style="font-size: 0.65rem;">STUDENT</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if user.is_staff or user.is_superuser %}
+                        <a href="{% url 'linear_algebra:admin_panel' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'admin_panel' %}active{% endif %}">
+                            <i class="bi bi-sliders text-purple"></i>
+                            <span>Control Center</span>
+                        </a>
+                    {% endif %}
+
                     <a href="{% url 'linear_algebra:logout' %}" class="sidebar-nav-item text-danger">
                         <i class="bi bi-box-arrow-right text-danger"></i>
-                        <span>Logout ({{ user.username }})</span>
+                        <span>Sign Out</span>
                     </a>
                 {% else %}
                     <a href="{% url 'linear_algebra:login' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'login' %}active{% endif %}">
-                        <i class="bi bi-shield-lock text-warning"></i>
-                        <span>Admin Login</span>
+                        <i class="bi bi-box-arrow-in-right text-info"></i>
+                        <span>Sign In</span>
+                    </a>
+                    <a href="{% url 'linear_algebra:register' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'register' %}active{% endif %}">
+                        <i class="bi bi-person-plus text-success"></i>
+                        <span>Create Account</span>
                     </a>
                 {% endif %}
             </div>
