@@ -7,21 +7,21 @@
         <span class="badge-unit">UNIT 1</span>
         <span class="badge-topic">TOPIC 1.2</span>
     </div>
-    <h2 class="text-white fw-bold mb-1">Field Axioms via $\mathbb{F}_2$ (Galois Field mod 2)</h2>
+    <h2 class="fw-bold mb-1">Field Axioms via $\mathbb{F}_2$ (Galois Field mod 2)</h2>
     <p class="text-muted">Explore the 2-element Galois Field $\mathbb{F}_2 = \{0, 1\}$ with addition and multiplication modulo 2 and explicit verification of all 11 Field Axioms.</p>
 </div>
 
 <!-- Stacked Card 1: Truth Tables -->
 <div class="glass-card p-4 mb-4">
-    <h4 class="text-white mb-4"><i class="bi bi-grid-3x3 me-2" style="color: var(--accent-purple);"></i>Galois Field Modulo 2 Truth Tables</h4>
+    <h4 class="mb-4"><i class="bi bi-grid-3x3 me-2" style="color: var(--accent-purple);"></i>Galois Field Modulo 2 Truth Tables</h4>
     
     <div class="row g-4">
         <!-- Addition Table -->
         <div class="col-md-6">
             <div class="p-4 rounded-3 border border-secondary h-100" style="background: var(--surface-slate);">
-                <h5 class="text-white mb-3"><i class="bi bi-plus-circle text-info me-2"></i>Addition Table ($+$ mod 2 / XOR)</h5>
+                <h5 class="mb-3"><i class="bi bi-plus-circle text-info me-2"></i>Addition Table ($+$ mod 2 / XOR)</h5>
                 <div class="table-responsive">
-                    <table class="table table-dark table-bordered text-center font-monospace mb-0">
+                    <table class="table table-bordered text-center font-monospace mb-0" style="color: var(--text-main); border-color: var(--glass-border);">
                         <thead>
                             <tr class="table-secondary">
                                 <th>$+$ (mod 2)</th>
@@ -50,9 +50,9 @@
         <!-- Multiplication Table -->
         <div class="col-md-6">
             <div class="p-4 rounded-3 border border-secondary h-100" style="background: var(--surface-slate);">
-                <h5 class="text-white mb-3"><i class="bi bi-x-circle text-warning me-2"></i>Multiplication Table ($\cdot$ mod 2 / AND)</h5>
+                <h5 class="mb-3"><i class="bi bi-x-circle text-warning me-2"></i>Multiplication Table ($\cdot$ mod 2 / AND)</h5>
                 <div class="table-responsive">
-                    <table class="table table-dark table-bordered text-center font-monospace mb-0">
+                    <table class="table table-bordered text-center font-monospace mb-0" style="color: var(--text-main); border-color: var(--glass-border);">
                         <thead>
                             <tr class="table-secondary">
                                 <th>$\cdot$ (mod 2)</th>
@@ -83,7 +83,7 @@
 <!-- Stacked Card 2: 11 Field Axioms Collapsible Accordions -->
 <div class="glass-card p-4 mb-4">
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
-        <h4 class="text-white mb-0"><i class="bi bi-check2-all me-2 text-success"></i>Explicit 11 Field Axiom Verification</h4>
+        <h4 class="mb-0"><i class="bi bi-check2-all me-2 text-success"></i>Explicit 11 Field Axiom Verification</h4>
         {% if result.is_field %}
         <span class="badge bg-success px-3 py-2 fs-6"><i class="bi bi-shield-check me-1"></i> GF(2) IS A VALID FIELD</span>
         {% endif %}
@@ -105,10 +105,10 @@
             </h2>
             <div id="collapseAxiom{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.counter <= 3 %}show{% endif %}" data-bs-parent="#gf2AxiomsAccordion">
                 <div class="accordion-body">
-                    <div class="text-light mb-2 fs-5 text-center py-2 bg-dark rounded border border-secondary">
+                    <div class="mb-2 fs-5 text-center py-2 math-box">
                         $${{ axiom.symbol }}$$
                     </div>
-                    <p class="text-muted small mb-0"><strong class="text-white">Proof / Verification:</strong> {{ axiom.proof }}</p>
+                    <p class="text-muted small mb-0"><strong>Proof / Verification:</strong> {{ axiom.proof }}</p>
                 </div>
             </div>
         </div>

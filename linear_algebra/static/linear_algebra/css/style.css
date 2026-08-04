@@ -71,6 +71,24 @@ code, pre, .font-monospace {
     font-family: 'JetBrains Mono', monospace !important;
 }
 
+/* Math Display Box Component - Fully Theme Responsive */
+.math-box {
+    background-color: var(--surface-slate) !important;
+    border: 1px solid var(--glass-border) !important;
+    color: var(--text-main) !important;
+    border-radius: 12px;
+    padding: 0.85rem 1.25rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.math-box, .math-box * {
+    color: var(--text-main) !important;
+}
+
+.MathJax, .MathJax * {
+    color: var(--text-main) !important;
+}
+
 /* Dynamic Muted Text Utility */
 .text-muted,
 .text-secondary,
@@ -377,31 +395,6 @@ small,
     color: var(--accent-purple) !important;
 }
 
-/* Code Inspector */
-.code-inspector {
-    background: #0B0F19;
-    border: 1px solid var(--glass-border);
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-.code-inspector-header {
-    background: var(--surface-slate);
-    padding: 0.75rem 1.25rem;
-    color: var(--text-main);
-    font-weight: 600;
-    font-size: 0.9rem;
-    border-bottom: 1px solid var(--glass-border);
-}
-
-.code-inspector pre {
-    margin: 0;
-    padding: 1.25rem;
-    color: #F1F5F9;
-    font-size: 0.85rem;
-    overflow-x: auto;
-}
-
 /* Toast alert for Copy Feedback */
 .toast-copy {
     position: fixed;
@@ -427,7 +420,6 @@ small,
     .sidebar-custom,
     .btn,
     .no-print,
-    .code-inspector,
     footer,
     .accordion-button::after {
         display: none !important;
@@ -441,7 +433,8 @@ small,
     .glass-card,
     .accordion-item,
     .accordion-button,
-    .accordion-body {
+    .accordion-body,
+    .math-box {
         background: #ffffff !important;
         border: 1px solid #ccc !important;
         color: #000000 !important;
@@ -455,10 +448,5 @@ small,
     .text-warning,
     .text-success {
         color: #000000 !important;
-    }
-
-    .bg-dark {
-        background: #F8FAFC !important;
-        border: 1px solid #ddd !important;
     }
 }

@@ -7,7 +7,7 @@
         <span class="badge-unit">UNIT 1</span>
         <span class="badge-topic">TOPIC 1.3</span>
     </div>
-    <h2 class="text-white fw-bold mb-1">Vectors — Dot Product, Cross Product & 3D Projections</h2>
+    <h2 class="fw-bold mb-1">Vectors — Dot Product, Cross Product & 3D Projections</h2>
     <p class="text-muted">Calculate 3D vector dot products, cross products, angles, projections $\text{proj}_{\mathbf{v}_2}(\mathbf{v}_1)$, and interact with a 3D orbit visualizer.</p>
 </div>
 
@@ -17,7 +17,7 @@
         <!-- Input Form Column -->
         <div class="col-lg-5">
             <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-                <h5 class="text-white mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Vector Inputs</h5>
+                <h5 class="mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Vector Inputs</h5>
                 
                 <!-- Quick Presets -->
                 <div class="d-flex align-items-center gap-1 flex-wrap">
@@ -53,10 +53,10 @@
         <!-- 3D Visualizer Canvas Column -->
         <div class="col-lg-7">
             <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-                <h5 class="text-white mb-0"><i class="bi bi-box me-2 text-success"></i>Interactive 3D Orbit Canvas</h5>
+                <h5 class="mb-0"><i class="bi bi-box me-2 text-success"></i>Interactive 3D Orbit Canvas</h5>
                 <span class="text-muted small"><i class="bi bi-hand-index-thumb me-1"></i> Drag to Orbit 3D View</span>
             </div>
-            <div class="bg-dark rounded-3 border border-secondary text-center p-2 position-relative">
+            <div class="math-box rounded-3 text-center p-2 position-relative">
                 <canvas id="vectorCanvas" style="width: 100%; height: 320px; display: block; cursor: grab;"></canvas>
             </div>
             <div class="d-flex flex-wrap align-items-center justify-content-center gap-3 mt-3 text-muted small">
@@ -71,7 +71,7 @@
 
 <!-- Stacked Card 2: Computed Vector Results -->
 <div class="glass-card p-4 mb-4">
-    <h4 class="text-white mb-4"><i class="bi bi-bar-chart-steps me-2" style="color: var(--accent-purple);"></i>Computed Vector Results & Geometric Properties</h4>
+    <h4 class="mb-4"><i class="bi bi-bar-chart-steps me-2" style="color: var(--accent-purple);"></i>Computed Vector Results & Geometric Properties</h4>
     
     <div class="row g-4">
         <!-- Dot Product Box -->
@@ -84,8 +84,8 @@
                     </button>
                 </div>
                 <p class="mb-2 text-muted small"><strong>Formula:</strong> $\mathbf{v}_1 \cdot \mathbf{v}_2 = v_{1x}v_{2x} + v_{1y}v_{2y} + v_{1z}v_{2z}$</p>
-                <div class="fs-4 text-white font-monospace mb-3 text-center py-2 bg-dark rounded">$$\mathbf{v}_1 \cdot \mathbf{v}_2 = {{ result.dot_prod }}$$</div>
-                <ul class="text-light mb-0 ps-3">
+                <div class="fs-4 font-monospace mb-3 text-center py-2 math-box">$$\mathbf{v}_1 \cdot \mathbf{v}_2 = {{ result.dot_prod }}$$</div>
+                <ul class="mb-0 ps-3">
                     <li>Magnitudes: $\|\mathbf{v}_1\| = {{ result.mag1 }}$, $\|\mathbf{v}_2\| = {{ result.mag2 }}$</li>
                     <li>Angle $\theta$: <strong>{{ result.angle_deg }}°</strong> ({{ result.angle_rad }} rad)</li>
                     <li>Orthogonal Check: 
@@ -109,8 +109,8 @@
                     </button>
                 </div>
                 <p class="mb-2 text-muted small"><strong>Formula:</strong> $\mathbf{v}_1 \times \mathbf{v}_2 = (v_{1y}v_{2z} - v_{1z}v_{2y})\hat{i} - \dots$</p>
-                <div class="fs-4 text-white font-monospace mb-3 text-center py-2 bg-dark rounded">$$\mathbf{v}_1 \times \mathbf{v}_2 = \begin{bmatrix} {{ result.cross_prod.0 }} \\ {{ result.cross_prod.1 }} \\ {{ result.cross_prod.2 }} \end{bmatrix}$$</div>
-                <ul class="text-light mb-0 ps-3">
+                <div class="fs-4 font-monospace mb-3 text-center py-2 math-box">$$\mathbf{v}_1 \times \mathbf{v}_2 = \begin{bmatrix} {{ result.cross_prod.0 }} \\ {{ result.cross_prod.1 }} \\ {{ result.cross_prod.2 }} \end{bmatrix}$$</div>
+                <ul class="mb-0 ps-3">
                     <li>Cross Magnitude $\|\mathbf{v}_1 \times \mathbf{v}_2\|$: {{ result.cross_mag }}</li>
                     <li>Parallelepiped Area: {{ result.parallelepiped_area }} sq units</li>
                     <li>Triangle Area: {{ result.triangle_area }} sq units</li>
@@ -127,8 +127,8 @@
                         <i class="bi bi-clipboard me-1"></i> Copy Projection LaTeX
                     </button>
                 </div>
-                <p class="text-light mb-2">The orthogonal projection of vector $\mathbf{v}_1$ onto vector $\mathbf{v}_2$ is given by:</p>
-                <div class="fs-4 text-white text-center py-2 bg-dark rounded border border-warning mb-2">
+                <p class="mb-2">The orthogonal projection of vector $\mathbf{v}_1$ onto vector $\mathbf{v}_2$ is given by:</p>
+                <div class="fs-4 text-center py-2 math-box border border-warning mb-2">
                     $$\text{proj}_{\mathbf{v}_2}(\mathbf{v}_1) = \left(\frac{\mathbf{v}_1 \cdot \mathbf{v}_2}{\|\mathbf{v}_2\|^2}\right) \mathbf{v}_2 = {{ result.proj_scalar }} \cdot \mathbf{v}_2 = \begin{bmatrix} {{ result.proj_vector.0 }} \\ {{ result.proj_vector.1 }} \\ {{ result.proj_vector.2 }} \end{bmatrix}$$
                 </div>
             </div>

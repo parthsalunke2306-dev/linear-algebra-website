@@ -7,7 +7,7 @@
         <span class="badge-unit">UNIT 2</span>
         <span class="badge-topic">TOPIC 2.3</span>
     </div>
-    <h2 class="text-white fw-bold mb-1">Eigenvalues, Eigenvectors & Diagonalization</h2>
+    <h2 class="fw-bold mb-1">Eigenvalues, Eigenvectors & Diagonalization</h2>
     <p class="text-muted">Calculate characteristic polynomial $\det(A - \lambda I) = 0$, eigenvalues, eigenspace basis vectors, algebraic vs geometric multiplicity, and matrix decomposition $A = P D P^{-1}$.</p>
 </div>
 
@@ -20,7 +20,7 @@
 <!-- Stacked Card 1: Matrix Input & Dynamic Resizer -->
 <div class="glass-card p-4 mb-4">
     <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-        <h5 class="text-white mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Square Matrix Input & Dynamic Controls</h5>
+        <h5 class="mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Square Matrix Input & Dynamic Controls</h5>
         
         <!-- Presets -->
         <div class="d-flex align-items-center gap-1 flex-wrap">
@@ -52,7 +52,7 @@
 
 <!-- Stacked Card 2: Derivation Sections Accordions -->
 <div class="glass-card p-4 mb-4">
-    <h4 class="text-white mb-4"><i class="bi bi-diagram-3 me-2" style="color: var(--accent-purple);"></i>Eigenvalue & Diagonalization Derivation</h4>
+    <h4 class="mb-4"><i class="bi bi-diagram-3 me-2" style="color: var(--accent-purple);"></i>Eigenvalue & Diagonalization Derivation</h4>
 
     <div class="accordion accordion-custom mb-4" id="diagAccordion">
         <!-- Section 1: Characteristic Polynomial -->
@@ -71,7 +71,7 @@
                             <i class="bi bi-clipboard me-1"></i> Copy Poly LaTeX
                         </button>
                     </div>
-                    <div class="p-3 bg-dark rounded border border-secondary">
+                    <div class="p-3 math-box">
                         $$p(\lambda) = {{ result.char_poly_latex }} = 0$$
                     </div>
                 </div>
@@ -92,7 +92,7 @@
                     <div class="row g-3">
                         {% for item in result.eigenvalues_summary %}
                         <div class="col-md-6">
-                            <div class="p-3 rounded-3 border border-secondary h-100" style="background: var(--bg-main);">
+                            <div class="p-3 rounded-3 border border-secondary h-100" style="background: var(--surface-slate);">
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <h5 class="text-warning mb-0">$\lambda_{{ forloop.counter }} = {{ item.eigenvalue_latex }}$</h5>
                                     <button onclick="copyToClipboard('\\lambda = {{ item.eigenvalue_latex|escapejs }}')" class="btn btn-copy no-print">
@@ -104,7 +104,7 @@
                                     <span>Geom Mult: <strong>{{ item.geom_mult }}</strong></span>
                                 </div>
                                 <span class="small fw-semibold d-block mb-1" style="color: var(--accent-purple);">Eigenspace Basis Vector(s):</span>
-                                <div class="d-flex flex-wrap justify-content-center gap-2 bg-dark p-2 rounded border border-secondary">
+                                <div class="d-flex flex-wrap justify-content-center gap-2 math-box p-2">
                                     {% for vec in item.eigenvectors_latex %}
                                     $${{ vec }}$$
                                     {% endfor %}
@@ -151,7 +151,7 @@
                         </div>
                     </div>
 
-                    <div class="p-3 bg-dark rounded border border-success text-center">
+                    <div class="p-3 math-box text-center border border-success">
                         <span class="text-muted small d-block mb-1">Verification Check ($P D P^{-1} \stackrel{?}{=} A$):</span>
                         $${{ result.verification_latex }} = {{ result.matrix_latex }}$$
                     </div>
