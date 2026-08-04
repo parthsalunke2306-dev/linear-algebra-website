@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.models import User
 from .forms import GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm, SiteSettingForm, TopicModuleForm, UserRegisterForm
 from .models import SiteSetting, TopicModule, SavedPreset
 from . import math_engine
@@ -18,7 +19,7 @@ def parse_matrix_input(text):
     return rows
 
 def ensure_default_data():
-    """Seeds SiteSetting and default TopicModules if database is empty or tables don't exist yet."""
+    """Seeds SiteSetting, default admin superuser, and default TopicModules if database is empty or tables don't exist yet."""
     try:
         from django.core.management import call_command
         call_command('migrate', interactive=False)
@@ -27,6 +28,10 @@ def ensure_default_data():
 
     try:
         site_settings, _ = SiteSetting.objects.get_or_create()
+
+        # Seed default admin superuser if missing
+        if not User.objects.filter(username='admin').exists():
+            User.objects.create_superuser('admin', 'admin@example.com', 'admin1234')
 
         if TopicModule.objects.count() == 0:
             default_topics = [
