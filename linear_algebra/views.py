@@ -26,12 +26,28 @@ def parse_matrix_input(text):
     return rows
 
 def ensure_default_data(request=None):
-    """Seeds SiteSetting and default TopicModules if database is empty or tables don't exist yet."""
+    """Seeds SiteSetting, default TopicModules, and Admin account if database is empty or tables don't exist yet."""
     try:
         from django.core.management import call_command
         call_command('migrate', interactive=False)
     except Exception as e:
         print("Migrate exception in ensure_default_data:", e)
+
+    # Auto-seed default Admin Superuser Account
+    try:
+        if not User.objects.filter(username='admin').exists():
+            admin_user = User.objects.create_superuser('admin', 'admin@linearalgebra.app', 'admin123')
+            admin_user.first_name = 'Admin'
+            admin_user.last_name = 'User'
+            admin_user.save()
+        else:
+            admin_user = User.objects.get(username='admin')
+            admin_user.set_password('admin123')
+            admin_user.is_staff = True
+            admin_user.is_superuser = True
+            admin_user.save()
+    except Exception as e:
+        print("Admin user auto-seed error:", e)
 
     # Serverless resilience: Auto-provision user from signed session cookie if ephemeral SQLite db was reset
     if request and hasattr(request, 'session') and hasattr(request, 'user') and not request.user.is_authenticated:
