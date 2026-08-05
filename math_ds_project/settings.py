@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-n-xkg+^wv9+#=nlhwxxp%n5ke&%n*v2&+oefqm3=ix&eh$7-7f')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ['true', '1', 'yes']
 
 ALLOWED_HOSTS = ['*']
 
@@ -105,18 +105,23 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
-# Authentication Protection URL Settings
+# Authentication Protection Redirects
 LOGIN_URL = 'linear_algebra:login'
 LOGIN_REDIRECT_URL = 'linear_algebra:dashboard'
-LOGOUT_REDIRECT_URL = 'linear_algebra:index'
+LOGOUT_REDIRECT_URL = 'linear_algebra:login'
 
-# Email backend configuration for password recovery
+# Email Configuration for Password Reset
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-DEFAULT_FROM_EMAIL = 'support@linear-algebra-explorer.com'
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@linearalgebra.app')
 
 
 # Password validation
-# https://docs.djangoproject.com/en/6.0/topics/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {

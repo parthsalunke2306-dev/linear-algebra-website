@@ -12,7 +12,7 @@ urlpatterns = [
     path('forgot-password/', views.forgot_password_view, name='forgot_password'),
     path('reset-password/<uidb64>/<token>/', views.reset_password_confirm_view, name='reset_password_confirm'),
 
-    # Protected Routes (@login_required)
+    # Protected Routes
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('profile/', views.profile_view, name='profile'),
     path('gaussian/', views.gaussian_view, name='gaussian'),

@@ -6,13 +6,11 @@ from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
-from django.core.mail import send_mail
-from django.conf import settings
 
 from .forms import (
-    GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm,
     UserSignUpForm, UserLoginForm, UserProfileForm, UserPasswordChangeForm,
-    PasswordResetRequestForm, PasswordResetSetNewForm
+    PasswordResetRequestForm, SetNewPasswordForm,
+    GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm
 )
 from .models import SiteSetting, TopicModule, UserCalculationHistory
 from . import math_engine
@@ -96,6 +94,7 @@ def ensure_default_data():
                     'title': 'Diagonalization',
                     'unit': 'UNIT 2',
                     'description': 'Calculate characteristic polynomial, eigenvalues, eigenspaces, and matrix decomposition A = PDP^-1.',
+                    'icon_class': 'bi-gem',
                     'icon_color_class': 'text-danger',
                     'display_order': 6,
                 },
@@ -103,27 +102,7 @@ def ensure_default_data():
             for topic in default_topics:
                 TopicModule.objects.get_or_create(slug=topic['slug'], defaults=topic)
 
-
-
-        # Seed default Admin superuser account if none exists
-        if not User.objects.filter(is_superuser=True).exists():
-            User.objects.create_superuser(
-                username='admin',
-                email='admin@example.com',
-                password='adminpassword123',
-                first_name='Admin',
-                last_name='User'
-            )
-        else:
-            # Reset existing admin password to adminpassword123 for convenience
-            admin_user = User.objects.filter(username='admin').first()
-            if admin_user:
-                admin_user.set_password('adminpassword123')
-                admin_user.save()
-
         return site_settings
-
-
     except Exception as e:
         print("Database seed fallback error:", e)
         return SiteSetting(
@@ -137,12 +116,9 @@ def get_safe_site_settings():
     return ensure_default_data()
 
 
-# ----------------------------------------------------
-# PUBLIC ROUTES
-# ----------------------------------------------------
-
+# PUBLIC VIEWS
 def public_index_view(request):
-    """Public Landing Page showing website overview, features, and authentication CTAs."""
+    """Public landing page displaying website branding, introduction, feature overviews, and Sign In / Sign Up CTAs."""
     site_settings = get_safe_site_settings()
 
     try:
@@ -162,61 +138,75 @@ def public_index_view(request):
 
 
 def signup_view(request):
-    """Public User Sign Up / Registration View."""
+    """User Sign Up / Registration View."""
     ensure_default_data()
     if request.user.is_authenticated:
         return redirect('linear_algebra:dashboard')
 
     form = UserSignUpForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():
-        user = form.save(commit=False)
-        user.username = form.cleaned_data['email']
-        user.set_password(form.cleaned_data['password'])
-        user.save()
+        first_name = form.cleaned_data['first_name']
+        last_name = form.cleaned_data['last_name']
+        username = form.cleaned_data['username']
+        email = form.cleaned_data['email']
+        password = form.cleaned_data['password']
 
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=password,
+            first_name=first_name,
+            last_name=last_name
+        )
         login(request, user)
-        messages.success(request, f"Account created successfully! Welcome to the platform, {user.first_name or user.username}.")
+        messages.success(request, f"Welcome to the platform, {user.first_name or user.username}! Your account has been created successfully.")
         return redirect('linear_algebra:dashboard')
 
     context = {
-        'title': 'Create Your Account',
+        'title': 'Create Account',
         'form': form
     }
     return render(request, 'linear_algebra/signup.html', context)
 
 
 def login_view(request):
-    """Public User Login View."""
+    """User Login View supporting Username or Email authentication."""
     ensure_default_data()
     if request.user.is_authenticated:
         return redirect('linear_algebra:dashboard')
 
     form = UserLoginForm(request.POST or None)
-    next_url = request.GET.get('next', 'linear_algebra:dashboard')
+    next_url = request.GET.get('next', '')
 
     if request.method == 'POST' and form.is_valid():
-        identifier = form.cleaned_data['email_or_username']
+        username_or_email = form.cleaned_data['username_or_email'].strip()
         password = form.cleaned_data['password']
 
-        user = None
-        if '@' in identifier:
+        # Determine if input is email or username
+        user_obj = None
+        if '@' in username_or_email:
             try:
-                user_obj = User.objects.get(email__iexact=identifier)
-                user = authenticate(request, username=user_obj.username, password=password)
+                user_obj = User.objects.get(email__iexact=username_or_email)
             except User.DoesNotExist:
-                user = None
+                user_obj = None
         else:
-            user = authenticate(request, username=identifier, password=password)
+            try:
+                user_obj = User.objects.get(username__iexact=username_or_email)
+            except User.DoesNotExist:
+                user_obj = None
 
-        if user is not None:
-            login(request, user)
-            messages.success(request, f"Welcome back, {user.first_name or user.username}!")
-            return redirect(next_url if next_url.startswith('/') else 'linear_algebra:dashboard')
-        else:
-            messages.error(request, "Invalid email/username or password. Please verify your credentials and try again.")
+        if user_obj:
+            user = authenticate(request, username=user_obj.username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, f"Welcome back, {user.first_name or user.username}!")
+                redirect_target = next_url if next_url and next_url.startswith('/') else 'linear_algebra:dashboard'
+                return redirect(redirect_target)
+
+        messages.error(request, "Invalid login credentials. Please check your username/email and password and try again.")
 
     context = {
-        'title': 'Sign In to Access Tools',
+        'title': 'Sign In',
         'form': form,
         'next': next_url
     }
@@ -224,45 +214,40 @@ def login_view(request):
 
 
 def logout_view(request):
-    """User Logout View."""
+    """Logs out user and invalidates session."""
     logout(request)
-    messages.info(request, "You have been logged out successfully. Access to tools requires signing in.")
-    return redirect('linear_algebra:index')
+    messages.info(request, "You have been logged out successfully.")
+    return redirect('linear_algebra:login')
 
 
 def forgot_password_view(request):
-    """Public Forgot Password Request View."""
+    """Password Reset Request View."""
     form = PasswordResetRequestForm(request.POST or None)
+    reset_link = None
+
     if request.method == 'POST' and form.is_valid():
         email = form.cleaned_data['email']
         try:
             user = User.objects.get(email__iexact=email)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             token = default_token_generator.make_token(user)
-
-            reset_url = request.build_absolute_uri(f"/reset-password/{uid}/{token}/")
-            subject = "Password Reset Instructions - Linear Algebra Explorer"
-            message = f"Hello {user.first_name or user.username},\n\nYou requested a password reset for your account. Please click the link below to set a new password:\n\n{reset_url}\n\nIf you did not request this, please ignore this email.\n\nBest regards,\nLinear Algebra Explorer Team"
-
-            try:
-                send_mail(subject, message, getattr(settings, 'DEFAULT_FROM_EMAIL', 'support@linear-algebra-explorer.com'), [user.email])
-            except Exception as e:
-                print("Password reset email dispatch:", e)
-
-            messages.success(request, f"Password reset instructions have been generated! Click the reset link sent to {email} or use your new password link below.")
-            return render(request, 'linear_algebra/forgot_password.html', {'form': form, 'reset_demo_url': reset_url, 'success_sent': True})
+            reset_link = request.build_absolute_uri(
+                f"/reset-password/{uid}/{token}/"
+            )
+            messages.success(request, f"Password reset instructions generated for {email}.")
         except User.DoesNotExist:
-            messages.error(request, "No registered account was found with that email address. Please check your email or sign up.")
+            messages.info(request, f"If an account exists for {email}, password reset instructions have been generated.")
 
     context = {
-        'title': 'Reset Your Password',
-        'form': form
+        'title': 'Forgot Password',
+        'form': form,
+        'reset_link': reset_link
     }
     return render(request, 'linear_algebra/forgot_password.html', context)
 
 
 def reset_password_confirm_view(request, uidb64, token):
-    """Public Password Reset Confirmation View via Token."""
+    """Set New Password Confirm View."""
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -270,36 +255,32 @@ def reset_password_confirm_view(request, uidb64, token):
         user = None
 
     if user is not None and default_token_generator.check_token(user, token):
-        form = PasswordResetSetNewForm(request.POST or None)
+        form = SetNewPasswordForm(request.POST or None)
         if request.method == 'POST' and form.is_valid():
-            user.set_password(form.cleaned_data['new_password'])
+            new_password = form.cleaned_data['new_password']
+            user.set_password(new_password)
             user.save()
-            messages.success(request, "Your password has been reset successfully! You can now sign in with your new password.")
+            messages.success(request, "Your password has been reset successfully! Please log in with your new password.")
             return redirect('linear_algebra:login')
-
-        context = {
-            'title': 'Set New Password',
-            'form': form,
-            'validlink': True
-        }
-        return render(request, 'linear_algebra/reset_password_confirm.html', context)
     else:
-        context = {
-            'title': 'Invalid Reset Link',
-            'validlink': False
-        }
-        return render(request, 'linear_algebra/reset_password_confirm.html', context)
+        messages.error(request, "The password reset link is invalid or has expired.")
+        form = None
+
+    context = {
+        'title': 'Set New Password',
+        'form': form,
+        'valid_link': user is not None and default_token_generator.check_token(user, token)
+    }
+    return render(request, 'linear_algebra/reset_password_confirm.html', context)
 
 
-# ----------------------------------------------------
-# PROTECTED APPLICATION ROUTES (@login_required)
-# ----------------------------------------------------
+# PROTECTED VIEWS (Requires Authentication)
 
-@login_required
+@login_required(login_url='linear_algebra:login')
 def dashboard_view(request):
     """Authenticated Central User Dashboard."""
     site_settings = get_safe_site_settings()
-    user_calculations = UserCalculationHistory.objects.filter(user=request.user)[:10]
+    user_calculations = UserCalculationHistory.objects.filter(user=request.user)[:5]
 
     try:
         unit1_topics = list(TopicModule.objects.filter(unit='UNIT 1', is_active=True))
@@ -309,40 +290,41 @@ def dashboard_view(request):
         unit2_topics = []
 
     context = {
-        'title': 'User Dashboard & Tools Launcher',
+        'title': 'User Dashboard',
         'site_settings': site_settings,
         'unit1_topics': unit1_topics,
         'unit2_topics': unit2_topics,
         'user_calculations': user_calculations,
-        'total_calculations_count': UserCalculationHistory.objects.filter(user=request.user).count()
     }
     return render(request, 'linear_algebra/dashboard.html', context)
 
 
-@login_required
+@login_required(login_url='linear_algebra:login')
 def profile_view(request):
-    """Authenticated User Profile & Account Settings."""
-    profile_form = UserProfileForm(request.POST or None, instance=request.user, user=request.user)
-    password_form = UserPasswordChangeForm(request.POST or None)
+    """User Profile and Account Settings Page."""
+    profile_form = UserProfileForm(request.POST or None, instance=request.user, prefix='profile')
+    password_form = UserPasswordChangeForm(request.POST or None, prefix='password')
+    user_history = UserCalculationHistory.objects.filter(user=request.user)
 
     if request.method == 'POST':
-        if 'update_profile' in request.POST and profile_form.is_valid():
-            profile_form.save()
-            messages.success(request, "Your profile details have been updated successfully!")
-            return redirect('linear_algebra:profile')
-
-        elif 'change_password' in request.POST and password_form.is_valid():
-            old_pass = password_form.cleaned_data['old_password']
-            if request.user.check_password(old_pass):
-                request.user.set_password(password_form.cleaned_data['new_password'])
-                request.user.save()
-                login(request, request.user)  # Keep session active
-                messages.success(request, "Your password was changed successfully!")
+        if 'update_profile' in request.POST:
+            if profile_form.is_valid():
+                profile_form.save()
+                messages.success(request, "Your profile information was updated successfully!")
                 return redirect('linear_algebra:profile')
-            else:
-                password_form.add_error('old_password', "Current password is incorrect.")
-
-    user_history = UserCalculationHistory.objects.filter(user=request.user)
+        elif 'change_password' in request.POST:
+            if password_form.is_valid():
+                current_pw = password_form.cleaned_data['current_password']
+                if not request.user.check_password(current_pw):
+                    messages.error(request, "Incorrect current password. Password change aborted.")
+                else:
+                    new_pw = password_form.cleaned_data['new_password']
+                    request.user.set_password(new_pw)
+                    request.user.save()
+                    # Re-authenticate session to prevent session drop
+                    login(request, request.user)
+                    messages.success(request, "Your password has been updated successfully!")
+                    return redirect('linear_algebra:profile')
 
     context = {
         'title': 'User Account & Profile Settings',
@@ -353,9 +335,9 @@ def profile_view(request):
     return render(request, 'linear_algebra/profile.html', context)
 
 
-@login_required
+@login_required(login_url='linear_algebra:login')
 def gaussian_view(request):
-    """Protected Topic 1.1: Systems of Linear Equations & Gaussian Elimination."""
+    """Topic 1.1: Systems of Linear Equations & Gaussian Elimination (Protected)."""
     site_settings = get_safe_site_settings()
     result = None
     error = None
@@ -366,14 +348,13 @@ def gaussian_view(request):
         try:
             matrix_data = parse_matrix_input(matrix_text)
             result = math_engine.solve_gaussian_elimination(matrix_data)
-
-            # Record calculation in user's isolated history
+            # Log calculation to user history
             UserCalculationHistory.objects.create(
                 user=request.user,
                 topic_slug='gaussian',
                 topic_title='Gaussian Elimination',
                 input_summary=f"Matrix: {matrix_text.replace(chr(10), ' | ')}",
-                result_summary=f"Solution: {result.get('solution_type', 'Completed')}"
+                result_summary=f"Solution: {result.get('solution_summary', 'Computed')}"
             )
         except Exception as e:
             error = f"Error processing matrix input: {str(e)}"
@@ -392,9 +373,9 @@ def gaussian_view(request):
     return render(request, 'linear_algebra/gaussian.html', context)
 
 
-@login_required
+@login_required(login_url='linear_algebra:login')
 def gf2_view(request):
-    """Protected Topic 1.2: Field Axioms via GF(2)."""
+    """Topic 1.2: Field Axioms via GF(2) (Protected)."""
     site_settings = get_safe_site_settings()
     result = math_engine.analyze_gf2_field()
 
@@ -407,9 +388,9 @@ def gf2_view(request):
     return render(request, 'linear_algebra/gf2.html', context)
 
 
-@login_required
+@login_required(login_url='linear_algebra:login')
 def vectors_view(request):
-    """Protected Topic 1.3: 3D Vector Dot Product, Cross Product & Projections."""
+    """Topic 1.3: 3D Vector Dot Product, Cross Product & Projections (Protected)."""
     site_settings = get_safe_site_settings()
     result = None
     error = None
@@ -420,14 +401,12 @@ def vectors_view(request):
         v2 = [form.cleaned_data['v2_x'], form.cleaned_data['v2_y'], form.cleaned_data['v2_z']]
         try:
             result = math_engine.compute_vector_operations(v1, v2)
-
-            # Record calculation in user's isolated history
             UserCalculationHistory.objects.create(
                 user=request.user,
                 topic_slug='vectors',
                 topic_title='Dot & Cross Product',
                 input_summary=f"v1={v1}, v2={v2}",
-                result_summary=f"Dot={result.get('dot_prod')}, Angle={result.get('angle_deg')}°"
+                result_summary=f"v1.v2={result.get('dot_prod')}, Angle={result.get('angle_deg')}°"
             )
         except Exception as e:
             error = f"Error computing vector operations: {str(e)}"
@@ -447,9 +426,9 @@ def vectors_view(request):
     return render(request, 'linear_algebra/vectors.html', context)
 
 
-@login_required
+@login_required(login_url='linear_algebra:login')
 def gram_schmidt_view(request):
-    """Protected Topic 2.1: Gram-Schmidt Orthogonalization Process."""
+    """Topic 2.1: Gram-Schmidt Orthogonalization Process (Protected)."""
     site_settings = get_safe_site_settings()
     result = None
     error = None
@@ -460,14 +439,12 @@ def gram_schmidt_view(request):
         try:
             vectors_data = parse_matrix_input(vectors_text)
             result = math_engine.solve_gram_schmidt(vectors_data)
-
-            # Record calculation in user's isolated history
             UserCalculationHistory.objects.create(
                 user=request.user,
                 topic_slug='gram_schmidt',
                 topic_title='Gram–Schmidt Process',
                 input_summary=f"Vectors: {vectors_text.replace(chr(10), ' | ')}",
-                result_summary=f"Calculated {len(result.get('steps', []))} orthogonal vectors"
+                result_summary=f"Computed {len(result.get('steps', []))} orthogonal basis vectors"
             )
         except Exception as e:
             error = f"Error processing Gram-Schmidt vectors: {str(e)}"
@@ -486,9 +463,9 @@ def gram_schmidt_view(request):
     return render(request, 'linear_algebra/gram_schmidt.html', context)
 
 
-@login_required
+@login_required(login_url='linear_algebra:login')
 def cofactor_view(request):
-    """Protected Topic 2.2: Cofactor Expansion for Determinants."""
+    """Topic 2.2: Cofactor Expansion for Determinants (Protected)."""
     site_settings = get_safe_site_settings()
     result = None
     error = None
@@ -501,14 +478,12 @@ def cofactor_view(request):
         try:
             matrix_data = parse_matrix_input(matrix_text)
             result = math_engine.solve_cofactor_expansion(matrix_data, expand_by, idx)
-
-            # Record calculation in user's isolated history
             UserCalculationHistory.objects.create(
                 user=request.user,
                 topic_slug='cofactor',
                 topic_title='Cofactor Expansion',
-                input_summary=f"Matrix: {matrix_text.replace(chr(10), ' | ')} (Along {expand_by} {idx+1})",
-                result_summary=f"Det = {result.get('total_det_latex')}"
+                input_summary=f"Matrix: {matrix_text.replace(chr(10), ' | ')} (Expanded along {expand_by} {idx+1})",
+                result_summary=f"det(A) = {result.get('total_det_latex')}"
             )
         except Exception as e:
             error = f"Error calculating Cofactor Expansion: {str(e)}"
@@ -529,9 +504,9 @@ def cofactor_view(request):
     return render(request, 'linear_algebra/cofactor.html', context)
 
 
-@login_required
+@login_required(login_url='linear_algebra:login')
 def diagonalization_view(request):
-    """Protected Topic 2.3: Eigenvalues, Eigenvectors & Diagonalization."""
+    """Topic 2.3: Eigenvalues, Eigenvectors & Diagonalization (Protected)."""
     site_settings = get_safe_site_settings()
     result = None
     error = None
@@ -542,8 +517,6 @@ def diagonalization_view(request):
         try:
             matrix_data = parse_matrix_input(matrix_text)
             result = math_engine.solve_diagonalization(matrix_data)
-
-            # Record calculation in user's isolated history
             UserCalculationHistory.objects.create(
                 user=request.user,
                 topic_slug='diagonalization',
