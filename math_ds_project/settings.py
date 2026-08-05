@@ -21,12 +21,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-n-xkg+^wv9+#=nlhwxxp%n5ke&%n*v2&+oefqm3=ix&eh$7-7f'
+SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-n-xkg+^wv9+#=nlhwxxp%n5ke&%n*v2&+oefqm3=ix&eh$7-7f')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'False').lower() in ['true', '1', 'yes']
 
 ALLOWED_HOSTS = ['*']
+
+# Reverse proxy SSL header for Vercel Serverless HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # CSRF Trusted Origins for Vercel Cloud Deployment
 CSRF_TRUSTED_ORIGINS = [
@@ -102,8 +105,23 @@ else:
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_NAME = 'la_session'
 SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Authentication Protection Redirects
+LOGIN_URL = 'linear_algebra:login'
+LOGIN_REDIRECT_URL = 'linear_algebra:dashboard'
+LOGOUT_REDIRECT_URL = 'linear_algebra:login'
+
+# Email Configuration for Password Reset
+EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@linearalgebra.app')
 
 
 # Password validation

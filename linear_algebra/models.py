@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class SiteSetting(models.Model):
     site_title = models.CharField(max_length=200, default="Linear Algebra & Field Theory Explorer")
@@ -48,3 +49,20 @@ class SavedPreset(models.Model):
 
     def __str__(self):
         return f"{self.topic.title} - {self.title}"
+
+
+class UserCalculationHistory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='calculations')
+    topic_slug = models.CharField(max_length=50)
+    topic_title = models.CharField(max_length=150)
+    input_summary = models.TextField()
+    result_summary = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "User Calculation History"
+        verbose_name_plural = "User Calculation Histories"
+
+    def __str__(self):
+        return f"{self.user.username} - {self.topic_title} ({self.created_at.strftime('%Y-%m-%d %H:%M')})"

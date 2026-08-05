@@ -1,0 +1,88 @@
+{% extends 'linear_algebra/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-md-7 col-lg-6">
+        <div class="glass-card p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 p-3" style="background: rgba(192, 132, 252, 0.15); border: 1px solid var(--accent-purple-glow);">
+                    <i class="bi bi-person-plus-fill fs-2" style="color: var(--accent-purple);"></i>
+                </div>
+                <h3 class="fw-bold mb-1">Create Account</h3>
+                <p class="text-muted small">Sign up to access protected linear algebra tools, solvers & personal calculation history.</p>
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger glass-card border-0 text-white mb-4">
+                {% for error in form.non_field_errors %}
+                <div><i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}</div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <form method="post" id="signupForm" novalidate>
+                {% csrf_token %}
+
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold">First Name</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                        <div class="text-danger small mt-1">{{ form.first_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold">Last Name</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                        <div class="text-danger small mt-1">{{ form.last_name.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Username</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                    <div class="text-danger small mt-1">{{ form.username.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Email Address</label>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                    <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Password</label>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                    <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-semibold">Confirm Password</label>
+                    {{ form.confirm_password }}
+                    {% if form.confirm_password.errors %}
+                    <div class="text-danger small mt-1">{{ form.confirm_password.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-gradient w-100 py-2 fs-6">
+                    <i class="bi bi-person-check-fill me-2"></i> Register Account
+                </button>
+            </form>
+
+            <div class="text-center mt-4 pt-3 border-top border-secondary">
+                <span class="text-muted small me-1">Already have an account?</span>
+                <a href="{% url 'linear_algebra:login' %}" class="fw-semibold text-decoration-none" style="color: var(--accent-purple);">Sign In</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -7,7 +7,7 @@
     <div class="col-lg-7">
         <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill"
             style="background: rgba(192, 132, 252, 0.15); border: 1px solid rgba(192, 132, 252, 0.35);">
-            <i class="bi bi-mortarboard-fill" style="color: var(--accent-purple);"></i>
+            <i class="bi bi-shield-lock-fill" style="color: var(--accent-purple);"></i>
             <span class="font-monospace small fw-bold" style="color: var(--accent-purple);">
                 {{ site_settings.curriculum_badge|default:"DATA SCIENCE MATHEMATICS CURRICULUM" }}
             </span>
@@ -18,14 +18,23 @@
         <p class="lead text-muted mb-4">
             {{ site_settings.hero_subtitle|default:"Explore linear equations, finite fields GF(2), vector spaces, inner products, cofactor expansion, and matrix diagonalization with step-by-step mathematical breakdowns." }}
         </p>
-        <div class="d-flex flex-wrap align-items-center gap-3">
-            <a href="{% url 'linear_algebra:gaussian' %}" class="btn btn-gradient px-4 py-2">
-                <i class="bi bi-play-circle-fill me-2"></i> Start Exploring
+
+        {% if not user.is_authenticated %}
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <a href="{% url 'linear_algebra:signup' %}" class="btn btn-gradient px-4 py-2 fs-6">
+                <i class="bi bi-person-plus-fill me-2"></i> Create Account to Access Tools
             </a>
-            <a href="#unit1-section" class="btn btn-preset px-3 py-2">
-                <i class="bi bi-arrow-down-circle me-1"></i> View Modules
+            <a href="{% url 'linear_algebra:login' %}" class="btn btn-preset px-4 py-2 fs-6">
+                <i class="bi bi-box-arrow-in-right me-2"></i> Existing User Sign In
             </a>
         </div>
+        {% else %}
+        <div class="d-flex align-items-center gap-3">
+            <a href="{% url 'linear_algebra:dashboard' %}" class="btn btn-gradient px-4 py-2 fs-6">
+                <i class="bi bi-speedometer2 me-2"></i> Go to My User Dashboard
+            </a>
+        </div>
+        {% endif %}
     </div>
     <div class="col-lg-5 mt-4 mt-lg-0 text-center text-lg-end">
         <div class="p-4 rounded-4 text-start glass-card glow-on-hover" style="border: 1px solid var(--accent-purple-glow);">
@@ -49,6 +58,30 @@
                     <div class="text-muted small" style="font-size: 0.75rem;">Fields</div>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+<!-- Features Preview Section -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="glass-card p-4 h-100">
+            <i class="bi bi-lock-fill fs-2 text-warning mb-3 d-block"></i>
+            <h5>Server-Side Protection</h5>
+            <p class="text-muted small mb-0">Every calculation tool is protected with server-side authentication. Direct URL bypass is strictly prevented.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 h-100">
+            <i class="bi bi-journal-text fs-2 text-info mb-3 d-block"></i>
+            <h5>Personal Calculation Log</h5>
+            <p class="text-muted small mb-0">Your matrix computations and vector projections are saved directly to your isolated user account history.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 h-100">
+            <i class="bi bi-box-seam fs-2 text-success mb-3 d-block"></i>
+            <h5>3D Graphics & LaTeX</h5>
+            <p class="text-muted small mb-0">Interactive 3D orbit visualizer, step-by-step LaTeX formula derivations, and 1-click clipboard LaTeX export.</p>
         </div>
     </div>
 </div>
@@ -79,9 +112,15 @@
                         {{ topic.description }}
                     </p>
                 </div>
-                <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-4">
+                {% if user.is_authenticated %}
+                <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-3">
                     Open Module <i class="bi bi-arrow-right ms-1"></i>
                 </a>
+                {% else %}
+                <a href="{% url 'linear_algebra:login' %}?next={% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-preset w-100 mt-3">
+                    <i class="bi bi-lock-fill me-1"></i> Sign In to Access Tool
+                </a>
+                {% endif %}
             </div>
         </div>
         {% endfor %}
@@ -115,9 +154,15 @@
                         {{ topic.description }}
                     </p>
                 </div>
-                <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-4">
+                {% if user.is_authenticated %}
+                <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-3">
                     Open Module <i class="bi bi-arrow-right ms-1"></i>
                 </a>
+                {% else %}
+                <a href="{% url 'linear_algebra:login' %}?next={% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-preset w-100 mt-3">
+                    <i class="bi bi-lock-fill me-1"></i> Sign In to Access Tool
+                </a>
+                {% endif %}
             </div>
         </div>
         {% endfor %}

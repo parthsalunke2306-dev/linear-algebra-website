@@ -213,7 +213,7 @@
     <aside class="sidebar-custom no-print">
         <div>
             <!-- Branding Header -->
-            <a href="{% url 'linear_algebra:index' %}" class="sidebar-brand d-block mb-3">
+            <a href="{% if user.is_authenticated %}{% url 'linear_algebra:dashboard' %}{% else %}{% url 'linear_algebra:index' %}{% endif %}" class="sidebar-brand d-block mb-3">
                 <div class="d-flex align-items-center gap-2">
                     <i class="bi bi-cpu-fill fs-4" style="color: var(--accent-purple);"></i>
                     <span>Linear Algebra</span>
@@ -221,11 +221,30 @@
                 <div class="sidebar-subbrand">DATA SCIENCE MATHEMATICS</div>
             </a>
 
+            <!-- User Status Badge -->
+            {% if user.is_authenticated %}
+            <div class="p-2 mb-3 rounded-3 border border-secondary" style="background: var(--surface-card);">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="avatar-circle rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width: 34px; height: 34px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); font-size: 0.85rem;">
+                        {{ user.first_name|default:user.username|slice:":1"|upper }}
+                    </div>
+                    <div class="overflow-hidden">
+                        <div class="fw-bold text-truncate" style="font-size: 0.85rem;">{{ user.first_name|default:user.username }}</div>
+                        <div class="text-muted small text-truncate" style="font-size: 0.75rem;">{{ user.email }}</div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Active Topic Selector Dropdown -->
             <div class="mb-3">
-                <label class="sidebar-mini-label">ACTIVE TOPIC</label>
+                <label class="sidebar-mini-label">ACTIVE MODULE</label>
                 <select class="form-select sidebar-select" onchange="if (this.value) window.location.href=this.value;">
-                    <option value="{% url 'linear_algebra:index' %}" {% if request.resolver_match.url_name == 'index' %}selected{% endif %}>Overview Dashboard</option>
+                    {% if user.is_authenticated %}
+                        <option value="{% url 'linear_algebra:dashboard' %}" {% if request.resolver_match.url_name == 'dashboard' %}selected{% endif %}>User Dashboard</option>
+                    {% else %}
+                        <option value="{% url 'linear_algebra:index' %}" {% if request.resolver_match.url_name == 'index' %}selected{% endif %}>Public Overview</option>
+                    {% endif %}
                     <option value="{% url 'linear_algebra:gaussian' %}" {% if request.resolver_match.url_name == 'gaussian' %}selected{% endif %}>1.1 Gaussian Elimination</option>
                     <option value="{% url 'linear_algebra:gf2' %}" {% if request.resolver_match.url_name == 'gf2' %}selected{% endif %}>1.2 Field Axioms GF(2)</option>
                     <option value="{% url 'linear_algebra:vectors' %}" {% if request.resolver_match.url_name == 'vectors' %}selected{% endif %}>1.3 Dot & Cross Product</option>
@@ -239,67 +258,68 @@
 
             <!-- Navigation Links -->
             <div class="sidebar-nav">
-                <a href="{% url 'linear_algebra:index' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
-                    <i class="bi bi-grid-1x2-fill"></i>
-                    <span>Dashboard</span>
-                </a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'linear_algebra:dashboard' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                        <i class="bi bi-grid-1x2-fill"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="{% url 'linear_algebra:profile' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                        <i class="bi bi-person-circle"></i>
+                        <span>My Account</span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'linear_algebra:index' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+                        <i class="bi bi-house-door-fill"></i>
+                        <span>Home Overview</span>
+                    </a>
+                {% endif %}
 
-                <!-- Unit 1 -->
-                <div class="sidebar-section-label">Unit 1 Topics</div>
+                <!-- Protected Solvers -->
+                <div class="sidebar-section-label">Protected Tools</div>
                 <a href="{% url 'linear_algebra:gaussian' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'gaussian' %}active{% endif %}">
                     <i class="bi bi-grid-3x3"></i>
                     <span>1.1 Gaussian Elimination</span>
+                    {% if not user.is_authenticated %}<i class="bi bi-lock-fill ms-auto small text-muted"></i>{% endif %}
                 </a>
                 <a href="{% url 'linear_algebra:gf2' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'gf2' %}active{% endif %}">
                     <i class="bi bi-shield-check"></i>
                     <span>1.2 Field Axioms GF(2)</span>
+                    {% if not user.is_authenticated %}<i class="bi bi-lock-fill ms-auto small text-muted"></i>{% endif %}
                 </a>
                 <a href="{% url 'linear_algebra:vectors' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'vectors' %}active{% endif %}">
                     <i class="bi bi-compass"></i>
                     <span>1.3 Dot & Cross Product</span>
+                    {% if not user.is_authenticated %}<i class="bi bi-lock-fill ms-auto small text-muted"></i>{% endif %}
                 </a>
-
-                <!-- Unit 2 -->
-                <div class="sidebar-section-label">Unit 2 Topics</div>
                 <a href="{% url 'linear_algebra:gram_schmidt' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'gram_schmidt' %}active{% endif %}">
                     <i class="bi bi-bezier2"></i>
                     <span>2.1 Gram–Schmidt</span>
+                    {% if not user.is_authenticated %}<i class="bi bi-lock-fill ms-auto small text-muted"></i>{% endif %}
                 </a>
                 <a href="{% url 'linear_algebra:cofactor' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'cofactor' %}active{% endif %}">
                     <i class="bi bi-diagram-3"></i>
                     <span>2.2 Cofactor Expansion</span>
+                    {% if not user.is_authenticated %}<i class="bi bi-lock-fill ms-auto small text-muted"></i>{% endif %}
                 </a>
                 <a href="{% url 'linear_algebra:diagonalization' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'diagonalization' %}active{% endif %}">
                     <i class="bi bi-gem"></i>
                     <span>2.3 Diagonalization</span>
+                    {% if not user.is_authenticated %}<i class="bi bi-lock-fill ms-auto small text-muted"></i>{% endif %}
                 </a>
 
-                <!-- Management & Auth -->
-                <div class="sidebar-section-label">Account</div>
+                <!-- Auth CTAs -->
+                <div class="sidebar-section-label">Account Security</div>
                 {% if user.is_authenticated %}
-                    <div class="px-2 py-1 mb-2 rounded-2" style="background: rgba(255,255,255,0.04);">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <span class="small font-monospace" style="font-size: 0.8rem;"><i class="bi bi-person-fill text-purple me-1"></i> {{ user.username }}</span>
-                            {% if user.is_staff or user.is_superuser %}
-                                <span class="badge bg-danger font-monospace" style="font-size: 0.6rem;">ADMIN</span>
-                            {% else %}
-                                <span class="badge bg-info font-monospace text-dark" style="font-size: 0.6rem;">STUDENT</span>
-                            {% endif %}
-                        </div>
-                    </div>
-
-                    {% if user.is_staff or user.is_superuser %}
-                        <a href="{% url 'linear_algebra:admin_panel' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'admin_panel' %}active{% endif %}">
-                            <i class="bi bi-sliders text-purple"></i>
-                            <span>Control Center</span>
-                        </a>
-                    {% endif %}
+                    <a href="{% url 'linear_algebra:logout' %}" class="sidebar-nav-item text-danger">
+                        <i class="bi bi-box-arrow-right"></i>
+                        <span>Sign Out</span>
+                    </a>
                 {% else %}
                     <a href="{% url 'linear_algebra:login' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'login' %}active{% endif %}">
                         <i class="bi bi-box-arrow-in-right text-info"></i>
                         <span>Sign In</span>
                     </a>
-                    <a href="{% url 'linear_algebra:register' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'register' %}active{% endif %}">
+                    <a href="{% url 'linear_algebra:signup' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'signup' %}active{% endif %}">
                         <i class="bi bi-person-plus text-success"></i>
                         <span>Create Account</span>
                     </a>
@@ -326,6 +346,7 @@
                 </button>
             </div>
 
+            <!-- Bottom Log Out Link (EventLedger Style at Bottom Left) -->
             {% if user.is_authenticated %}
                 <a href="{% url 'linear_algebra:logout' %}" class="sidebar-logout-link">
                     <i class="bi bi-box-arrow-right"></i>
@@ -337,7 +358,26 @@
 
     <!-- Main Content Wrapper -->
     <main class="main-content-wrapper">
-        <div class="container-fluid py-4">
+        <div class="container-fluid">
+            <!-- Messages Alert Bar -->
+            {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show glass-card border-0 text-white mb-2" role="alert">
+                    {% if message.tags == 'success' %}
+                        <i class="bi bi-check-circle-fill me-2 text-success"></i>
+                    {% elif message.tags == 'error' %}
+                        <i class="bi bi-exclamation-triangle-fill me-2 text-danger"></i>
+                    {% else %}
+                        <i class="bi bi-info-circle-fill me-2 text-info"></i>
+                    {% endif %}
+                    {{ message }}
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             {% block content %}
             {% endblock %}
         </div>
