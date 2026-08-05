@@ -1,0 +1,161 @@
+{% extends 'linear_algebra/base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Welcome Header Banner -->
+<div class="glass-card p-4 p-md-5 mb-4 rounded-4">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill"
+                style="background: rgba(52, 211, 153, 0.15); border: 1px solid rgba(52, 211, 153, 0.35);">
+                <i class="bi bi-shield-check text-success"></i>
+                <span class="font-monospace small fw-bold text-success">AUTHENTICATED SESSION</span>
+            </div>
+            <h1 class="fw-bold mb-2">
+                Welcome, {{ user.first_name|default:user.username }}! 👋
+            </h1>
+            <p class="text-muted mb-0">
+                Logged in as <strong class="text-purple" style="color: var(--accent-purple);">{{ user.email }}</strong> | Account status: <span class="badge bg-success">VERIFIED</span>
+            </p>
+        </div>
+        <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+            <div class="d-flex align-items-center justify-content-lg-end gap-2">
+                <a href="{% url 'linear_algebra:profile' %}" class="btn btn-preset">
+                    <i class="bi bi-person-gear me-1"></i> Profile & Settings
+                </a>
+                <a href="{% url 'linear_algebra:logout' %}" class="btn btn-outline-danger" style="border-radius: 12px;">
+                    <i class="bi bi-box-arrow-right me-1"></i> Log Out
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="glass-card p-4 rounded-4 text-center">
+            <i class="bi bi-calculator-fill fs-2 mb-2 text-info"></i>
+            <div class="display-6 fw-bold text-info">{{ total_calculations_count }}</div>
+            <div class="text-muted small">Total Calculations Run</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 rounded-4 text-center">
+            <i class="bi bi-unlock-fill fs-2 mb-2 text-success"></i>
+            <div class="display-6 fw-bold text-success">6 / 6</div>
+            <div class="text-muted small">Interactive Tools Unlocked</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 rounded-4 text-center">
+            <i class="bi bi-shield-lock-fill fs-2 mb-2" style="color: var(--accent-purple);"></i>
+            <div class="display-6 fw-bold" style="color: var(--accent-purple);">100%</div>
+            <div class="text-muted small">Server-Side Data Privacy</div>
+        </div>
+    </div>
+</div>
+
+<!-- Protected Tools Grid Launcher -->
+<h3 class="fw-bold mb-3"><i class="bi bi-grid-3x3-gap-fill me-2 text-purple" style="color: var(--accent-purple);"></i> Linear Algebra Tools Launcher</h3>
+
+{% if unit1_topics %}
+<div class="mb-4">
+    <div class="sidebar-section-label mb-2 fw-bold text-muted">UNIT 1: LINEAR SYSTEMS & VECTORS</div>
+    <div class="row g-4">
+        {% for topic in unit1_topics %}
+        <div class="col-md-4">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge-topic">{{ topic.topic_code }}</span>
+                        <i class="bi {{ topic.icon_class }} {{ topic.icon_color_class }} fs-3"></i>
+                    </div>
+                    <h5>{{ topic.title }}</h5>
+                    <p class="text-muted small mb-0">
+                        {{ topic.description }}
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-3">
+                    Launch Tool <i class="bi bi-arrow-right-short ms-1 fs-5"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+{% if unit2_topics %}
+<div class="mb-4">
+    <div class="sidebar-section-label mb-2 fw-bold text-muted">UNIT 2: DETERMINANTS & DIAGONALIZATION</div>
+    <div class="row g-4">
+        {% for topic in unit2_topics %}
+        <div class="col-md-4">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge-topic">{{ topic.topic_code }}</span>
+                        <i class="bi {{ topic.icon_class }} {{ topic.icon_color_class }} fs-3"></i>
+                    </div>
+                    <h5>{{ topic.title }}</h5>
+                    <p class="text-muted small mb-0">
+                        {{ topic.description }}
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-3">
+                    Launch Tool <i class="bi bi-arrow-right-short ms-1 fs-5"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Recent User Calculation History (Isolated) -->
+<div class="glass-card p-4 rounded-4 mt-5">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h4 class="fw-bold mb-0"><i class="bi bi-clock-history me-2 text-info"></i> Recent Calculation History</h4>
+        <a href="{% url 'linear_algebra:profile' %}" class="small text-purple text-decoration-none" style="color: var(--accent-purple);">View All History</a>
+    </div>
+
+    {% if user_calculations %}
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0" style="background: transparent;">
+                <thead>
+                    <tr class="text-muted small">
+                        <th>Tool</th>
+                        <th>Input Details</th>
+                        <th>Result Summary</th>
+                        <th>Timestamp</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for calc in user_calculations %}
+                    <tr>
+                        <td>
+                            <span class="badge bg-purple font-monospace" style="background: var(--accent-purple-glow); color: var(--accent-purple);">
+                                {{ calc.topic_title }}
+                            </span>
+                        </td>
+                        <td class="font-monospace small text-muted">{{ calc.input_summary|truncatechars:50 }}</td>
+                        <td class="font-monospace small text-success">{{ calc.result_summary|truncatechars:40 }}</td>
+                        <td class="small text-muted">{{ calc.created_at|date:"M d, H:i" }}</td>
+                        <td class="text-end">
+                            <a href="{% url 'linear_algebra:'|add:calc.topic_slug %}" class="btn btn-sm btn-outline-info">Re-open</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="text-center py-4 text-muted">
+            <i class="bi bi-journal-x fs-2 d-block mb-2 opacity-50"></i>
+            You haven't performed any calculations yet. Launch one of the tools above to start!
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

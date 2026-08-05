@@ -1,0 +1,58 @@
+{% extends 'linear_algebra/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-lg-5 col-md-7">
+        <div class="glass-card p-4 p-md-5 rounded-4">
+            <div class="text-center mb-4">
+                <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: var(--accent-purple-glow);">
+                    <i class="bi bi-box-arrow-in-right fs-2" style="color: var(--accent-purple);"></i>
+                </div>
+                <h2 class="fw-bold">Sign In</h2>
+                <p class="text-muted small">Enter your credentials to access protected application tools & dashboard</p>
+            </div>
+
+            <form method="post" id="loginForm" novalidate>
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger glass-card p-3 mb-3 small">
+                        {% for error in form.non_field_errors %}
+                            <div><i class="bi bi-exclamation-triangle-fill me-1"></i> {{ error }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Email Address or Username</label>
+                    {{ form.email_or_username }}
+                    {% if form.email_or_username.errors %}
+                        <div class="text-danger small mt-1">{{ form.email_or_username.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <div class="d-flex align-items-center justify-content-between mb-1">
+                        <label class="form-label small fw-semibold mb-0">Password</label>
+                        <a href="{% url 'linear_algebra:forgot_password' %}" class="small text-purple text-decoration-none" style="color: var(--accent-purple);">Forgot Password?</a>
+                    </div>
+                    {{ form.password }}
+                    {% if form.password.errors %}
+                        <div class="text-danger small mt-1">{{ form.password.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-gradient w-100 py-2 fs-6 mb-3">
+                    <i class="bi bi-unlock-fill me-1"></i> Sign In to Account
+                </button>
+            </form>
+
+            <div class="text-center border-top border-secondary opacity-25 pt-3 mt-2">
+                <span class="text-muted small">Don't have an account yet?</span>
+                <a href="{% url 'linear_algebra:signup' %}" class="fw-bold ms-1 text-purple" style="color: var(--accent-purple);">Create Account</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

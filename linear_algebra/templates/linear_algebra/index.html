@@ -2,37 +2,94 @@
 {% load static %}
 
 {% block content %}
-<div class="row align-items-center mb-5 py-3">
-    <div class="col-lg-8">
-        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill"
-            style="background: rgba(192, 132, 252, 0.15); border: 1px solid rgba(192, 132, 252, 0.35);">
-            <i class="bi bi-mortarboard-fill" style="color: var(--accent-purple);"></i>
-            <span class="font-monospace small fw-bold" style="color: var(--accent-purple);">
-                {{ site_settings.curriculum_badge|default:"DATA SCIENCE MATHEMATICS CURRICULUM" }}
-            </span>
+<!-- Hero Banner -->
+<div class="glass-card p-5 mb-5 rounded-4">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill"
+                style="background: rgba(192, 132, 252, 0.15); border: 1px solid rgba(192, 132, 252, 0.35);">
+                <i class="bi bi-mortarboard-fill" style="color: var(--accent-purple);"></i>
+                <span class="font-monospace small fw-bold" style="color: var(--accent-purple);">
+                    {{ site_settings.curriculum_badge|default:"DATA SCIENCE MATHEMATICS CURRICULUM" }}
+                </span>
+            </div>
+            <h1 class="display-4 fw-bold mb-3">
+                {{ site_settings.site_title|default:"Linear Algebra & Field Theory Explorer" }}
+            </h1>
+            <p class="lead text-muted mb-4">
+                {{ site_settings.hero_subtitle }}
+            </p>
+
+            {% if user.is_authenticated %}
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <a href="{% url 'linear_algebra:dashboard' %}" class="btn btn-gradient btn-lg">
+                        <i class="bi bi-speedometer2 me-2"></i> Go to My Dashboard
+                    </a>
+                    <a href="{% url 'linear_algebra:profile' %}" class="btn btn-preset btn-lg">
+                        <i class="bi bi-person-circle me-2"></i> Account Profile
+                    </a>
+                </div>
+            {% else %}
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <a href="{% url 'linear_algebra:signup' %}" class="btn btn-gradient btn-lg">
+                        <i class="bi bi-person-plus-fill me-2"></i> Create Free Account
+                    </a>
+                    <a href="{% url 'linear_algebra:login' %}" class="btn btn-preset btn-lg">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Sign In
+                    </a>
+                </div>
+            {% endif %}
         </div>
-        <h1 class="display-4 fw-bold mb-3">
-            {{ site_settings.site_title|default:"Linear Algebra & Field Theory Explorer" }}
-        </h1>
-        <p class="lead text-muted mb-0">
-            {{ site_settings.hero_subtitle }}
-        </p>
+        <div class="col-lg-4 text-lg-end d-none d-lg-block">
+            <div class="p-4 rounded-4 text-center glass-card" style="border: 1px solid var(--accent-purple-glow);">
+                <i class="bi bi-shield-lock-fill display-3" style="color: var(--accent-purple);"></i>
+                <div class="mt-3 font-monospace fw-bold" style="color: var(--accent-purple);">SECURE PLATFORM</div>
+                <div class="text-muted small fw-semibold">Sign in to unlock interactive step-by-step math solvers & 3D visualizations</div>
+            </div>
+        </div>
     </div>
-    <!-- <div class="col-lg-4 text-lg-end d-none d-lg-block">
-        <div class="p-4 rounded-4 text-center glass-card" style="border: 1px solid var(--accent-purple-glow);">
-            <i class="bi bi-braces-asterisk display-3" style="color: var(--accent-purple);"></i>
-            <div class="mt-2 font-monospace fw-bold" style="color: var(--accent-purple);">6 INTERACTIVE MODULES</div>
-            <div class="text-muted small fw-semibold">Unit 1 & Unit 2 Data Science Topics</div>
-        </div>
-    </div> -->
 </div>
 
-<!-- UNIT 1 TOPICS -->
+<!-- About Section -->
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="glass-card p-4 h-100">
+            <i class="bi bi-cpu-fill fs-2 mb-3" style="color: var(--accent-purple);"></i>
+            <h5>Data Science Focus</h5>
+            <p class="text-muted small mb-0">
+                Built specifically for Data Science students to master core mathematical algorithms using SymPy and NumPy engines.
+            </p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 h-100">
+            <i class="bi bi-layers-half fs-2 mb-3 text-info"></i>
+            <h5>Step-by-Step Derivations</h5>
+            <p class="text-muted small mb-0">
+                Every tool provides full step-by-step derivations, submatrix expansions, LaTeX formulas, and instant copy options.
+            </p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="glass-card p-4 h-100">
+            <i class="bi bi-shield-check fs-2 mb-3 text-success"></i>
+            <h5>Protected User Accounts</h5>
+            <p class="text-muted small mb-0">
+                User accounts feature server-side authentication, password reset tokens, and isolated calculation history.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- UNIT 1 TOPICS PREVIEW -->
 {% if unit1_topics %}
 <div class="mb-5">
-    <div class="d-flex align-items-center gap-2 mb-4">
-        <span class="badge-unit">UNIT 1</span>
-        <h3 class="mb-0">Linear Systems, Fields & Vectors</h3>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge-unit">UNIT 1</span>
+            <h3 class="mb-0">Linear Systems, Fields & Vectors</h3>
+        </div>
+        <span class="badge bg-secondary font-monospace">3 Interactive Tools</span>
     </div>
     <div class="row g-4">
         {% for topic in unit1_topics %}
@@ -48,9 +105,15 @@
                         {{ topic.description }}
                     </p>
                 </div>
-                <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-3">
-                    Open Module <i class="bi bi-arrow-right ms-1"></i>
-                </a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-3">
+                        Open Tool <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                {% else %}
+                    <a href="{% url 'linear_algebra:login' %}?next={% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-preset w-100 mt-3">
+                        <i class="bi bi-lock-fill me-1"></i> Sign In to Access Tool
+                    </a>
+                {% endif %}
             </div>
         </div>
         {% endfor %}
@@ -58,12 +121,15 @@
 </div>
 {% endif %}
 
-<!-- UNIT 2 TOPICS -->
+<!-- UNIT 2 TOPICS PREVIEW -->
 {% if unit2_topics %}
 <div class="mb-5">
-    <div class="d-flex align-items-center gap-2 mb-4">
-        <span class="badge-unit">UNIT 2</span>
-        <h3 class="mb-0">Inner Products, Determinants & Diagonalization</h3>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge-unit">UNIT 2</span>
+            <h3 class="mb-0">Inner Products, Determinants & Diagonalization</h3>
+        </div>
+        <span class="badge bg-secondary font-monospace">3 Interactive Tools</span>
     </div>
     <div class="row g-4">
         {% for topic in unit2_topics %}
@@ -79,9 +145,15 @@
                         {{ topic.description }}
                     </p>
                 </div>
-                <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-3">
-                    Open Module <i class="bi bi-arrow-right ms-1"></i>
-                </a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-3">
+                        Open Tool <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                {% else %}
+                    <a href="{% url 'linear_algebra:login' %}?next={% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-preset w-100 mt-3">
+                        <i class="bi bi-lock-fill me-1"></i> Sign In to Access Tool
+                    </a>
+                {% endif %}
             </div>
         </div>
         {% endfor %}
