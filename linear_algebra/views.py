@@ -1,11 +1,6 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import user_passes_test
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import User
-from .forms import GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm, SiteSettingForm, TopicModuleForm, UserRegisterForm
-from .models import SiteSetting, TopicModule, SavedPreset
+from django.shortcuts import render
+from .forms import GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm
+from .models import SiteSetting, TopicModule
 from . import math_engine
 
 def parse_matrix_input(text):
@@ -19,7 +14,7 @@ def parse_matrix_input(text):
     return rows
 
 def ensure_default_data():
-    """Seeds SiteSetting, default admin superuser, and default TopicModules if database is empty or tables don't exist yet."""
+    """Seeds SiteSetting and default TopicModules if database is empty or tables don't exist yet."""
     try:
         from django.core.management import call_command
         call_command('migrate', interactive=False)
@@ -28,18 +23,6 @@ def ensure_default_data():
 
     try:
         site_settings, _ = SiteSetting.objects.get_or_create()
-
-        # Seed & guarantee default admin superuser with password admin1234
-        admin_user, created = User.objects.get_or_create(username='admin', defaults={
-            'email': 'admin@example.com',
-            'is_staff': True,
-            'is_superuser': True,
-        })
-        if created or not admin_user.check_password('admin1234') or not admin_user.is_staff or not admin_user.is_superuser:
-            admin_user.set_password('admin1234')
-            admin_user.is_staff = True
-            admin_user.is_superuser = True
-            admin_user.save()
 
         if TopicModule.objects.count() == 0:
             default_topics = [
@@ -138,93 +121,6 @@ def index_view(request):
         'unit2_topics': unit2_topics,
     }
     return render(request, 'linear_algebra/index.html', context)
-
-def register_view(request):
-    """User Sign Up / Registration View."""
-    ensure_default_data()
-    if request.user.is_authenticated:
-        return redirect('linear_algebra:index')
-
-    form = UserRegisterForm(request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        user = form.save()
-        login(request, user)
-        messages.success(request, f"Welcome to the platform, {user.username}! Your account was created successfully.")
-        return redirect('linear_algebra:index')
-
-    context = {
-        'title': 'Create Student / User Account',
-        'form': form
-    }
-    return render(request, 'linear_algebra/register.html', context)
-
-def login_view(request):
-    """Universal Login Authentication View for all Users & Administrators."""
-    ensure_default_data()  # Guarantees DB migrations and admin user creation happen BEFORE form processing!
-
-    if request.user.is_authenticated:
-        if request.user.is_staff or request.user.is_superuser:
-            return redirect('linear_algebra:admin_panel')
-        return redirect('linear_algebra:index')
-
-    form = AuthenticationForm(request, data=request.POST or None)
-    if request.method == 'POST' and form.is_valid():
-        user = form.get_user()
-        login(request, user)
-        if user.is_staff or user.is_superuser:
-            messages.success(request, f"Welcome back, Administrator {user.username}!")
-            next_url = request.GET.get('next') or 'linear_algebra:admin_panel'
-        else:
-            messages.success(request, f"Welcome back, {user.username}!")
-            next_url = request.GET.get('next') or 'linear_algebra:index'
-        return redirect(next_url)
-
-    context = {
-        'title': 'User & Admin Sign In',
-        'form': form
-    }
-    return render(request, 'linear_algebra/login.html', context)
-
-def logout_view(request):
-    """User Logout View."""
-    logout(request)
-    messages.info(request, "You have been logged out successfully.")
-    return redirect('linear_algebra:index')
-
-@user_passes_test(lambda u: u.is_authenticated and (u.is_staff or u.is_superuser), login_url='linear_algebra:login')
-def admin_panel_view(request):
-    """Custom Admin Control Panel restricted ONLY to authenticated administrators."""
-    site_settings = get_safe_site_settings()
-    try:
-        topics = TopicModule.objects.all()
-    except Exception:
-        topics = []
-
-    if request.method == 'POST':
-        if 'update_settings' in request.POST and site_settings:
-            setting_form = SiteSettingForm(request.POST, instance=site_settings)
-            if setting_form.is_valid():
-                setting_form.save()
-                messages.success(request, "Website Settings updated successfully!")
-                return redirect('linear_algebra:admin_panel')
-        elif 'toggle_topic' in request.POST:
-            topic_id = request.POST.get('topic_id')
-            topic = get_object_or_404(TopicModule, id=topic_id)
-            topic.is_active = not topic.is_active
-            topic.save()
-            status = "enabled" if topic.is_active else "disabled"
-            messages.info(request, f"Topic '{topic.title}' has been {status}.")
-            return redirect('linear_algebra:admin_panel')
-
-    setting_form = SiteSettingForm(instance=site_settings) if site_settings else None
-
-    context = {
-        'title': 'Website Control Center & Admin Panel',
-        'site_settings': site_settings,
-        'setting_form': setting_form,
-        'topics': topics,
-    }
-    return render(request, 'linear_algebra/admin_panel.html', context)
 
 def gaussian_view(request):
     """Topic 1.1: Systems of Linear Equations & Gaussian Elimination."""
