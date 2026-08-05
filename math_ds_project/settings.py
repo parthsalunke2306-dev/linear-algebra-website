@@ -28,6 +28,9 @@ DEBUG = os.environ.get('DEBUG', 'False').lower() in ['true', '1', 'yes']
 
 ALLOWED_HOSTS = ['*']
 
+# Reverse proxy SSL header for Vercel Serverless HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 # CSRF Trusted Origins for Vercel Cloud Deployment
 CSRF_TRUSTED_ORIGINS = [
     'https://linear-algebra-website.vercel.app',
@@ -102,6 +105,7 @@ else:
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_NAME = 'la_session'
 SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 

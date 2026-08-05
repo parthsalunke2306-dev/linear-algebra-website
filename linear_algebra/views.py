@@ -25,13 +25,30 @@ def parse_matrix_input(text):
             rows.append(row)
     return rows
 
-def ensure_default_data():
+def ensure_default_data(request=None):
     """Seeds SiteSetting and default TopicModules if database is empty or tables don't exist yet."""
     try:
         from django.core.management import call_command
         call_command('migrate', interactive=False)
     except Exception as e:
         print("Migrate exception in ensure_default_data:", e)
+
+    # Serverless resilience: Auto-provision user from signed session cookie if ephemeral SQLite db was reset
+    if request and hasattr(request, 'session') and hasattr(request, 'user') and not request.user.is_authenticated:
+        session_username = request.session.get('auth_username')
+        session_email = request.session.get('auth_email')
+        if session_username:
+            try:
+                user, created = User.objects.get_or_create(
+                    username=session_username,
+                    defaults={
+                        'email': session_email or f"{session_username}@example.com",
+                        'first_name': request.session.get('auth_first_name', '')
+                    }
+                )
+                login(request, user)
+            except Exception as e:
+                print("Serverless auto-login error:", e)
 
     try:
         site_settings, _ = SiteSetting.objects.get_or_create()
@@ -111,15 +128,15 @@ def ensure_default_data():
             curriculum_badge="DATA SCIENCE MATHEMATICS CURRICULUM"
         )
 
-def get_safe_site_settings():
+def get_safe_site_settings(request=None):
     """Safely retrieves SiteSetting without raising DB errors."""
-    return ensure_default_data()
+    return ensure_default_data(request)
 
 
 # PUBLIC VIEWS
 def public_index_view(request):
     """Public landing page displaying website branding, introduction, feature overviews, and Sign In / Sign Up CTAs."""
-    site_settings = get_safe_site_settings()
+    site_settings = get_safe_site_settings(request)
 
     try:
         unit1_topics = list(TopicModule.objects.filter(unit='UNIT 1', is_active=True))
@@ -139,7 +156,7 @@ def public_index_view(request):
 
 def signup_view(request):
     """User Sign Up / Registration View."""
-    ensure_default_data()
+    ensure_default_data(request)
     if request.user.is_authenticated:
         return redirect('linear_algebra:dashboard')
 
@@ -159,6 +176,9 @@ def signup_view(request):
             last_name=last_name
         )
         login(request, user)
+        request.session['auth_username'] = user.username
+        request.session['auth_email'] = user.email
+        request.session['auth_first_name'] = user.first_name
         messages.success(request, f"Welcome to the platform, {user.first_name or user.username}! Your account has been created successfully.")
         return redirect('linear_algebra:dashboard')
 
@@ -171,12 +191,12 @@ def signup_view(request):
 
 def login_view(request):
     """User Login View supporting Username or Email authentication."""
-    ensure_default_data()
+    ensure_default_data(request)
     if request.user.is_authenticated:
         return redirect('linear_algebra:dashboard')
 
     form = UserLoginForm(request.POST or None)
-    next_url = request.GET.get('next', '')
+    next_url = request.POST.get('next') or request.GET.get('next') or ''
 
     if request.method == 'POST' and form.is_valid():
         username_or_email = form.cleaned_data['username_or_email'].strip()
@@ -199,6 +219,9 @@ def login_view(request):
             user = authenticate(request, username=user_obj.username, password=password)
             if user is not None:
                 login(request, user)
+                request.session['auth_username'] = user.username
+                request.session['auth_email'] = user.email
+                request.session['auth_first_name'] = user.first_name
                 messages.success(request, f"Welcome back, {user.first_name or user.username}!")
                 redirect_target = next_url if next_url and next_url.startswith('/') else 'linear_algebra:dashboard'
                 return redirect(redirect_target)
@@ -222,6 +245,7 @@ def logout_view(request):
 
 def forgot_password_view(request):
     """Password Reset Request View."""
+    ensure_default_data(request)
     form = PasswordResetRequestForm(request.POST or None)
     reset_link = None
 
@@ -248,6 +272,7 @@ def forgot_password_view(request):
 
 def reset_password_confirm_view(request, uidb64, token):
     """Set New Password Confirm View."""
+    ensure_default_data(request)
     try:
         uid = force_str(urlsafe_base64_decode(uidb64))
         user = User.objects.get(pk=uid)
@@ -279,7 +304,7 @@ def reset_password_confirm_view(request, uidb64, token):
 @login_required(login_url='linear_algebra:login')
 def dashboard_view(request):
     """Authenticated Central User Dashboard."""
-    site_settings = get_safe_site_settings()
+    site_settings = get_safe_site_settings(request)
     user_calculations = UserCalculationHistory.objects.filter(user=request.user)[:5]
 
     try:
@@ -302,6 +327,7 @@ def dashboard_view(request):
 @login_required(login_url='linear_algebra:login')
 def profile_view(request):
     """User Profile and Account Settings Page."""
+    ensure_default_data(request)
     profile_form = UserProfileForm(request.POST or None, instance=request.user, prefix='profile')
     password_form = UserPasswordChangeForm(request.POST or None, prefix='password')
     user_history = UserCalculationHistory.objects.filter(user=request.user)
@@ -310,6 +336,9 @@ def profile_view(request):
         if 'update_profile' in request.POST:
             if profile_form.is_valid():
                 profile_form.save()
+                request.session['auth_username'] = request.user.username
+                request.session['auth_email'] = request.user.email
+                request.session['auth_first_name'] = request.user.first_name
                 messages.success(request, "Your profile information was updated successfully!")
                 return redirect('linear_algebra:profile')
         elif 'change_password' in request.POST:
@@ -323,6 +352,9 @@ def profile_view(request):
                     request.user.save()
                     # Re-authenticate session to prevent session drop
                     login(request, request.user)
+                    request.session['auth_username'] = request.user.username
+                    request.session['auth_email'] = request.user.email
+                    request.session['auth_first_name'] = request.user.first_name
                     messages.success(request, "Your password has been updated successfully!")
                     return redirect('linear_algebra:profile')
 
@@ -338,7 +370,7 @@ def profile_view(request):
 @login_required(login_url='linear_algebra:login')
 def gaussian_view(request):
     """Topic 1.1: Systems of Linear Equations & Gaussian Elimination (Protected)."""
-    site_settings = get_safe_site_settings()
+    site_settings = get_safe_site_settings(request)
     result = None
     error = None
     form = GaussianForm(request.POST or None)
@@ -376,7 +408,7 @@ def gaussian_view(request):
 @login_required(login_url='linear_algebra:login')
 def gf2_view(request):
     """Topic 1.2: Field Axioms via GF(2) (Protected)."""
-    site_settings = get_safe_site_settings()
+    site_settings = get_safe_site_settings(request)
     result = math_engine.analyze_gf2_field()
 
     context = {
@@ -391,7 +423,7 @@ def gf2_view(request):
 @login_required(login_url='linear_algebra:login')
 def vectors_view(request):
     """Topic 1.3: 3D Vector Dot Product, Cross Product & Projections (Protected)."""
-    site_settings = get_safe_site_settings()
+    site_settings = get_safe_site_settings(request)
     result = None
     error = None
     form = VectorsForm(request.POST or None)
@@ -429,7 +461,7 @@ def vectors_view(request):
 @login_required(login_url='linear_algebra:login')
 def gram_schmidt_view(request):
     """Topic 2.1: Gram-Schmidt Orthogonalization Process (Protected)."""
-    site_settings = get_safe_site_settings()
+    site_settings = get_safe_site_settings(request)
     result = None
     error = None
     form = GramSchmidtForm(request.POST or None)
@@ -466,7 +498,7 @@ def gram_schmidt_view(request):
 @login_required(login_url='linear_algebra:login')
 def cofactor_view(request):
     """Topic 2.2: Cofactor Expansion for Determinants (Protected)."""
-    site_settings = get_safe_site_settings()
+    site_settings = get_safe_site_settings(request)
     result = None
     error = None
     form = CofactorForm(request.POST or None)
@@ -507,7 +539,7 @@ def cofactor_view(request):
 @login_required(login_url='linear_algebra:login')
 def diagonalization_view(request):
     """Topic 2.3: Eigenvalues, Eigenvectors & Diagonalization (Protected)."""
-    site_settings = get_safe_site_settings()
+    site_settings = get_safe_site_settings(request)
     result = None
     error = None
     form = DiagonalizationForm(request.POST or None)
