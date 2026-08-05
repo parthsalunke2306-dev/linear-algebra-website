@@ -96,7 +96,6 @@ def ensure_default_data():
                     'title': 'Diagonalization',
                     'unit': 'UNIT 2',
                     'description': 'Calculate characteristic polynomial, eigenvalues, eigenspaces, and matrix decomposition A = PDP^-1.',
-                    'icon_class': 'bi-gem',
                     'icon_color_class': 'text-danger',
                     'display_order': 6,
                 },
@@ -104,7 +103,27 @@ def ensure_default_data():
             for topic in default_topics:
                 TopicModule.objects.get_or_create(slug=topic['slug'], defaults=topic)
 
+
+
+        # Seed default Admin superuser account if none exists
+        if not User.objects.filter(is_superuser=True).exists():
+            User.objects.create_superuser(
+                username='admin',
+                email='admin@example.com',
+                password='adminpassword123',
+                first_name='Admin',
+                last_name='User'
+            )
+        else:
+            # Reset existing admin password to adminpassword123 for convenience
+            admin_user = User.objects.filter(username='admin').first()
+            if admin_user:
+                admin_user.set_password('adminpassword123')
+                admin_user.save()
+
         return site_settings
+
+
     except Exception as e:
         print("Database seed fallback error:", e)
         return SiteSetting(
