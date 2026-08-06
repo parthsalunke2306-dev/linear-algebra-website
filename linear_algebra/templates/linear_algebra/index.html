@@ -7,9 +7,9 @@
     <div class="col-lg-7">
         <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill"
             style="background: rgba(192, 132, 252, 0.15); border: 1px solid rgba(192, 132, 252, 0.35);">
-            <i class="bi bi-shield-lock-fill" style="color: var(--accent-purple);"></i>
+            <i class="bi bi-unlock-fill" style="color: var(--accent-purple);"></i>
             <span class="font-monospace small fw-bold" style="color: var(--accent-purple);">
-                {{ site_settings.curriculum_badge|default:"DATA SCIENCE MATHEMATICS CURRICULUM" }}
+                {{ site_settings.curriculum_badge|default:"OPEN ACCESS DATA SCIENCE MATHEMATICS PLATFORM" }}
             </span>
         </div>
         <h1 class="display-4 fw-bold mb-3 font-outfit">
@@ -19,30 +19,22 @@
             {{ site_settings.hero_subtitle|default:"Explore linear equations, finite fields GF(2), vector spaces, inner products, cofactor expansion, and matrix diagonalization with step-by-step mathematical breakdowns." }}
         </p>
 
-        {% if not user.is_authenticated %}
         <div class="d-flex align-items-center gap-3 flex-wrap">
-            <a href="{% url 'linear_algebra:signup' %}" class="btn btn-gradient px-4 py-2 fs-6">
-                <i class="bi bi-person-plus-fill me-2"></i> Create Account to Access Tools
+            <a href="{% url 'linear_algebra:gaussian' %}" class="btn btn-gradient px-4 py-2 fs-6">
+                <i class="bi bi-play-circle-fill me-2"></i> Launch Gaussian Solver
             </a>
-            <a href="{% url 'linear_algebra:login' %}" class="btn btn-preset px-4 py-2 fs-6">
-                <i class="bi bi-box-arrow-in-right me-2"></i> Existing User Sign In
-            </a>
-        </div>
-        {% else %}
-        <div class="d-flex align-items-center gap-3">
-            <a href="{% url 'linear_algebra:dashboard' %}" class="btn btn-gradient px-4 py-2 fs-6">
-                <i class="bi bi-speedometer2 me-2"></i> Go to My User Dashboard
+            <a href="#unit1-section" class="btn btn-preset px-4 py-2 fs-6">
+                <i class="bi bi-grid-3x3-gap-fill me-2"></i> Explore All 6 Solvers
             </a>
         </div>
-        {% endif %}
     </div>
     <div class="col-lg-5 mt-4 mt-lg-0 text-center text-lg-end">
         <div class="p-4 rounded-4 text-start glass-card glow-on-hover" style="border: 1px solid var(--accent-purple-glow);">
             <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="badge bg-purple-subtle text-purple font-monospace small px-2 py-1">OVERVIEW</span>
+                <span class="badge bg-purple-subtle text-purple font-monospace small px-2 py-1">OPEN ENGINE</span>
                 <i class="bi bi-cpu-fill fs-2" style="color: var(--accent-purple);"></i>
             </div>
-            <h5 class="fw-bold mb-2">Interactive Data Science Engine</h5>
+            <h5 class="fw-bold mb-2">Interactive Mathematics Engine</h5>
             <p class="text-muted small mb-3">Complete mathematical solver engine with step-by-step LaTeX derivations and GF(2) modular arithmetic.</p>
             <div class="row g-2 text-center pt-2 border-top border-secondary border-opacity-25">
                 <div class="col-4">
@@ -61,20 +53,21 @@
         </div>
     </div>
 </div>
-<!-- Features Preview Section -->
+
+<!-- Features Overview Section -->
 <div class="row g-4 mb-5">
     <div class="col-md-4">
         <div class="glass-card p-4 h-100">
-            <i class="bi bi-lock-fill fs-2 text-warning mb-3 d-block"></i>
-            <h5>Server-Side Protection</h5>
-            <p class="text-muted small mb-0">Every calculation tool is protected with server-side authentication. Direct URL bypass is strictly prevented.</p>
+            <i class="bi bi-lightning-charge-fill fs-2 text-warning mb-3 d-block"></i>
+            <h5>Open Instant Access</h5>
+            <p class="text-muted small mb-0">No login or registration required. All interactive linear algebra tools are freely accessible to all users.</p>
         </div>
     </div>
     <div class="col-md-4">
         <div class="glass-card p-4 h-100">
-            <i class="bi bi-journal-text fs-2 text-info mb-3 d-block"></i>
-            <h5>Personal Calculation Log</h5>
-            <p class="text-muted small mb-0">Your matrix computations and vector projections are saved directly to your isolated user account history.</p>
+            <i class="bi bi-calculator-fill fs-2 text-info mb-3 d-block"></i>
+            <h5>Step-by-Step Derivations</h5>
+            <p class="text-muted small mb-0">Compute row operations, REF, RREF, Gram–Schmidt orthogonalization, and cofactor expansions step-by-step.</p>
         </div>
     </div>
     <div class="col-md-4">
@@ -112,15 +105,9 @@
                         {{ topic.description }}
                     </p>
                 </div>
-                {% if user.is_authenticated %}
                 <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-3">
-                    Open Module <i class="bi bi-arrow-right ms-1"></i>
+                    <i class="bi bi-play-circle-fill me-1"></i> Launch Solver Tool
                 </a>
-                {% else %}
-                <a href="{% url 'linear_algebra:login' %}?next={% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-preset w-100 mt-3">
-                    <i class="bi bi-lock-fill me-1"></i> Sign In to Access Tool
-                </a>
-                {% endif %}
             </div>
         </div>
         {% endfor %}
@@ -154,15 +141,9 @@
                         {{ topic.description }}
                     </p>
                 </div>
-                {% if user.is_authenticated %}
                 <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-3">
-                    Open Module <i class="bi bi-arrow-right ms-1"></i>
+                    <i class="bi bi-play-circle-fill me-1"></i> Launch Solver Tool
                 </a>
-                {% else %}
-                <a href="{% url 'linear_algebra:login' %}?next={% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-preset w-100 mt-3">
-                    <i class="bi bi-lock-fill me-1"></i> Sign In to Access Tool
-                </a>
-                {% endif %}
             </div>
         </div>
         {% endfor %}

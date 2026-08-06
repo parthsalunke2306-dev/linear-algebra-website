@@ -1,6 +1,5 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth.models import User
 from . import math_engine
 
 class MathEngineTests(TestCase):
@@ -41,17 +40,13 @@ class MathEngineTests(TestCase):
         res = math_engine.solve_diagonalization(matrix)
         self.assertTrue(res['is_diagonalizable'])
 
-class SolverViewsTests(TestCase):
+class PublicOpenAccessViewsTests(TestCase):
     def setUp(self):
         self.client = Client()
-        self.user = User.objects.create_user(username='testuser', password='password123')
 
-    def test_public_view_status_code(self):
-        response = self.client.get(reverse('linear_algebra:index'))
-        self.assertEqual(response.status_code, 200)
-
-    def test_protected_views_unauthenticated(self):
-        protected_urls = [
+    def test_all_solver_urls_open_access(self):
+        public_urls = [
+            reverse('linear_algebra:index'),
             reverse('linear_algebra:gaussian'),
             reverse('linear_algebra:gf2'),
             reverse('linear_algebra:vectors'),
@@ -59,21 +54,6 @@ class SolverViewsTests(TestCase):
             reverse('linear_algebra:cofactor'),
             reverse('linear_algebra:diagonalization'),
         ]
-        for url in protected_urls:
+        for url in public_urls:
             response = self.client.get(url)
-            self.assertEqual(response.status_code, 302)
-
-    def test_protected_views_authenticated(self):
-        self.client.login(username='testuser', password='password123')
-        protected_urls = [
-            reverse('linear_algebra:dashboard'),
-            reverse('linear_algebra:gaussian'),
-            reverse('linear_algebra:gf2'),
-            reverse('linear_algebra:vectors'),
-            reverse('linear_algebra:gram_schmidt'),
-            reverse('linear_algebra:cofactor'),
-            reverse('linear_algebra:diagonalization'),
-        ]
-        for url in protected_urls:
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.status_code, 200, f"URL {url} failed with status {response.status_code}")
