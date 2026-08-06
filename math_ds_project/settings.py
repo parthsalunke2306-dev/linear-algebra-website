@@ -70,7 +70,6 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'linear_algebra.middleware.DatabaseResilienceMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -102,7 +101,7 @@ WSGI_APPLICATION = 'math_ds_project.wsgi.application'
 
 
 # Database Configuration
-# Supports Supabase / PostgreSQL via DATABASE_URL or SQLite fallback
+# Primary: Supabase / PostgreSQL via DATABASE_URL or SQLite fallback
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
@@ -139,14 +138,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
-# Ensure standard keys exist in default database dict
-DATABASES['default'].setdefault('ATOMIC_REQUESTS', False)
-DATABASES['default'].setdefault('AUTOCOMMIT', True)
-DATABASES['default'].setdefault('CONN_MAX_AGE', 0)
-DATABASES['default'].setdefault('CONN_HEALTH_CHECKS', False)
-DATABASES['default'].setdefault('OPTIONS', {})
-DATABASES['default'].setdefault('TIME_ZONE', None)
 
 # Cryptographically Signed Cookie-Based Sessions for Serverless Resilience
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
