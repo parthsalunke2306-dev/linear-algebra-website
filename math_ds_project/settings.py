@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
+import re
 import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -105,6 +106,18 @@ WSGI_APPLICATION = 'math_ds_project.wsgi.application'
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
 if DATABASE_URL:
+    # Auto-convert direct Supabase port 5432 (IPv6 only) to IPv4 Pooler host (port 6543) for Vercel lambdas
+    if 'supabase.co' in DATABASE_URL and 'pooler.supabase.com' not in DATABASE_URL:
+        ref_match = re.search(r'db\.([a-z0-9]+)\.supabase\.co', DATABASE_URL)
+        if ref_match:
+            project_ref = ref_match.group(1)
+            # Rewrite host to IPv4 Transaction Pooler domain
+            DATABASE_URL = re.sub(
+                r'postgres(ql)?://([^:]+):([^@]+)@db\.[a-z0-9]+\.supabase\.co:?\d*/(.*)',
+                rf'postgresql://postgres.{project_ref}:\3@aws-0-ap-south-1.pooler.supabase.com:6543/\4',
+                DATABASE_URL
+            )
+
     DATABASES = {
         'default': dj_database_url.config(
             default=DATABASE_URL,

@@ -1,9 +1,9 @@
 from django.db import connections, DEFAULT_DB_ALIAS
-from django.db.utils import OperationalError
+from django.core.management import call_command
 
 class DatabaseResilienceMiddleware:
     """Middleware that catches database connection failures (e.g. unreachable PostgreSQL pooler)
-    and gracefully falls back to local SQLite with all required Django keys to prevent HTTP 500 errors."""
+    and gracefully falls back to local SQLite with complete table auto-migration to prevent HTTP 500 errors."""
     
     def __init__(self, get_response):
         self.get_response = get_response
@@ -32,6 +32,12 @@ class DatabaseResilienceMiddleware:
                 }
                 settings.DATABASES['default'] = fallback_db
                 connections[DEFAULT_DB_ALIAS].close()
+
+                # Automatically migrate SQLite fallback database so auth_user and all tables exist instantly
+                try:
+                    call_command('migrate', interactive=False)
+                except Exception as m_err:
+                    print("Fallback migration error:", m_err)
             except Exception as inner_e:
                 print("Fallback switch error:", inner_e)
 
