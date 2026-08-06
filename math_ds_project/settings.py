@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -98,10 +99,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'math_ds_project.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
+# Database Configuration
+# Supports Supabase / PostgreSQL via DATABASE_URL or SQLite fallback
 
-if os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV'):
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
+    }
+elif os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
