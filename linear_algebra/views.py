@@ -26,14 +26,14 @@ def parse_matrix_input(text):
     return rows
 
 def ensure_default_data(request=None):
-    """Seeds SiteSetting, default TopicModules, and Admin account if database is empty or tables don't exist yet."""
+    """Seeds SiteSetting, default TopicModules, and default accounts if database is empty or tables don't exist yet."""
     try:
         from django.core.management import call_command
         call_command('migrate', interactive=False)
     except Exception as e:
         print("Migrate exception in ensure_default_data:", e)
 
-    # Auto-seed default Admin Superuser Account
+    # Auto-seed default Admin and User Accounts
     try:
         if not User.objects.filter(username='admin').exists():
             admin_user = User.objects.create_superuser('admin', 'admin@linearalgebra.app', 'admin123')
@@ -46,10 +46,20 @@ def ensure_default_data(request=None):
             admin_user.is_staff = True
             admin_user.is_superuser = True
             admin_user.save()
-    except Exception as e:
-        print("Admin user auto-seed error:", e)
 
-    # Serverless resilience: Auto-provision user from signed session cookie if ephemeral SQLite db was reset
+        if not User.objects.filter(username='23parth06').exists():
+            parth_user = User.objects.create_user('23parth06', 'parthsalunke2306@gmail.com', 'Parth@123')
+            parth_user.first_name = 'Parth'
+            parth_user.last_name = 'Salunke'
+            parth_user.save()
+        else:
+            parth_user = User.objects.get(username='23parth06')
+            parth_user.set_password('Parth@123')
+            parth_user.save()
+    except Exception as e:
+        print("User auto-seed error:", e)
+
+    # Serverless resilience: Auto-provision user from signed session cookie if ephemeral db was reset
     if request and hasattr(request, 'session') and hasattr(request, 'user') and not request.user.is_authenticated:
         session_username = request.session.get('auth_username')
         session_email = request.session.get('auth_email')
@@ -222,13 +232,13 @@ def login_view(request):
         user_obj = None
         if '@' in username_or_email:
             try:
-                user_obj = User.objects.get(email__iexact=username_or_email)
-            except User.DoesNotExist:
+                user_obj = User.objects.filter(email__iexact=username_or_email).first()
+            except Exception:
                 user_obj = None
         else:
             try:
-                user_obj = User.objects.get(username__iexact=username_or_email)
-            except User.DoesNotExist:
+                user_obj = User.objects.filter(username__iexact=username_or_email).first()
+            except Exception:
                 user_obj = None
 
         if user_obj:
@@ -268,14 +278,17 @@ def forgot_password_view(request):
     if request.method == 'POST' and form.is_valid():
         email = form.cleaned_data['email']
         try:
-            user = User.objects.get(email__iexact=email)
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = default_token_generator.make_token(user)
-            reset_link = request.build_absolute_uri(
-                f"/reset-password/{uid}/{token}/"
-            )
-            messages.success(request, f"Password reset instructions generated for {email}.")
-        except User.DoesNotExist:
+            user = User.objects.filter(email__iexact=email).first()
+            if user:
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                token = default_token_generator.make_token(user)
+                reset_link = request.build_absolute_uri(
+                    f"/reset-password/{uid}/{token}/"
+                )
+                messages.success(request, f"Password reset instructions generated for {email}.")
+            else:
+                messages.info(request, f"If an account exists for {email}, password reset instructions have been generated.")
+        except Exception:
             messages.info(request, f"If an account exists for {email}, password reset instructions have been generated.")
 
     context = {
@@ -321,7 +334,11 @@ def reset_password_confirm_view(request, uidb64, token):
 def dashboard_view(request):
     """Authenticated Central User Dashboard."""
     site_settings = get_safe_site_settings(request)
-    user_calculations = UserCalculationHistory.objects.filter(user=request.user)[:5]
+
+    try:
+        user_calculations = list(UserCalculationHistory.objects.filter(user=request.user)[:5])
+    except Exception:
+        user_calculations = []
 
     try:
         unit1_topics = list(TopicModule.objects.filter(unit='UNIT 1', is_active=True))
@@ -346,7 +363,11 @@ def profile_view(request):
     ensure_default_data(request)
     profile_form = UserProfileForm(request.POST or None, instance=request.user, prefix='profile')
     password_form = UserPasswordChangeForm(request.POST or None, prefix='password')
-    user_history = UserCalculationHistory.objects.filter(user=request.user)
+
+    try:
+        user_history = list(UserCalculationHistory.objects.filter(user=request.user))
+    except Exception:
+        user_history = []
 
     if request.method == 'POST':
         if 'update_profile' in request.POST:
@@ -366,7 +387,6 @@ def profile_view(request):
                     new_pw = password_form.cleaned_data['new_password']
                     request.user.set_password(new_pw)
                     request.user.save()
-                    # Re-authenticate session to prevent session drop
                     login(request, request.user)
                     request.session['auth_username'] = request.user.username
                     request.session['auth_email'] = request.user.email
@@ -396,14 +416,16 @@ def gaussian_view(request):
         try:
             matrix_data = parse_matrix_input(matrix_text)
             result = math_engine.solve_gaussian_elimination(matrix_data)
-            # Log calculation to user history
-            UserCalculationHistory.objects.create(
-                user=request.user,
-                topic_slug='gaussian',
-                topic_title='Gaussian Elimination',
-                input_summary=f"Matrix: {matrix_text.replace(chr(10), ' | ')}",
-                result_summary=f"Solution: {result.get('solution_summary', 'Computed')}"
-            )
+            try:
+                UserCalculationHistory.objects.create(
+                    user=request.user,
+                    topic_slug='gaussian',
+                    topic_title='Gaussian Elimination',
+                    input_summary=f"Matrix: {matrix_text.replace(chr(10), ' | ')}",
+                    result_summary=f"Solution: {result.get('solution_summary', 'Computed')}"
+                )
+            except Exception:
+                pass
         except Exception as e:
             error = f"Error processing matrix input: {str(e)}"
     else:
@@ -427,16 +449,10 @@ def gf2_view(request):
     site_settings = get_safe_site_settings(request)
     result = math_engine.analyze_gf2_field()
 
-    a_val = request.POST.get('a_val', 1) if request.method == 'POST' else 1
-    b_val = request.POST.get('b_val', 1) if request.method == 'POST' else 1
-    op_val = request.POST.get('op_val', 'add') if request.method == 'POST' else 'add'
-    arith_result = math_engine.solve_gf2_arithmetic(a_val, b_val, op_val)
-
     context = {
         'title': 'Field Axioms via GF(2)',
         'unit': 'Unit 1 • Topic 2',
         'result': result,
-        'arith_result': arith_result,
         'site_settings': site_settings
     }
     return render(request, 'linear_algebra/gf2.html', context)
@@ -455,13 +471,16 @@ def vectors_view(request):
         v2 = [form.cleaned_data['v2_x'], form.cleaned_data['v2_y'], form.cleaned_data['v2_z']]
         try:
             result = math_engine.compute_vector_operations(v1, v2)
-            UserCalculationHistory.objects.create(
-                user=request.user,
-                topic_slug='vectors',
-                topic_title='Dot & Cross Product',
-                input_summary=f"v1={v1}, v2={v2}",
-                result_summary=f"v1.v2={result.get('dot_prod')}, Angle={result.get('angle_deg')}°"
-            )
+            try:
+                UserCalculationHistory.objects.create(
+                    user=request.user,
+                    topic_slug='vectors',
+                    topic_title='Dot & Cross Product',
+                    input_summary=f"v1={v1}, v2={v2}",
+                    result_summary=f"v1.v2={result.get('dot_prod')}, Angle={result.get('angle_deg')}°"
+                )
+            except Exception:
+                pass
         except Exception as e:
             error = f"Error computing vector operations: {str(e)}"
     else:
@@ -493,13 +512,16 @@ def gram_schmidt_view(request):
         try:
             vectors_data = parse_matrix_input(vectors_text)
             result = math_engine.solve_gram_schmidt(vectors_data)
-            UserCalculationHistory.objects.create(
-                user=request.user,
-                topic_slug='gram_schmidt',
-                topic_title='Gram–Schmidt Process',
-                input_summary=f"Vectors: {vectors_text.replace(chr(10), ' | ')}",
-                result_summary=f"Computed {len(result.get('steps', []))} orthogonal basis vectors"
-            )
+            try:
+                UserCalculationHistory.objects.create(
+                    user=request.user,
+                    topic_slug='gram_schmidt',
+                    topic_title='Gram–Schmidt Process',
+                    input_summary=f"Vectors: {vectors_text.replace(chr(10), ' | ')}",
+                    result_summary=f"Computed {len(result.get('steps', []))} orthogonal basis vectors"
+                )
+            except Exception:
+                pass
         except Exception as e:
             error = f"Error processing Gram-Schmidt vectors: {str(e)}"
     else:
@@ -532,13 +554,16 @@ def cofactor_view(request):
         try:
             matrix_data = parse_matrix_input(matrix_text)
             result = math_engine.solve_cofactor_expansion(matrix_data, expand_by, idx)
-            UserCalculationHistory.objects.create(
-                user=request.user,
-                topic_slug='cofactor',
-                topic_title='Cofactor Expansion',
-                input_summary=f"Matrix: {matrix_text.replace(chr(10), ' | ')} (Expanded along {expand_by} {idx+1})",
-                result_summary=f"det(A) = {result.get('total_det_latex')}"
-            )
+            try:
+                UserCalculationHistory.objects.create(
+                    user=request.user,
+                    topic_slug='cofactor',
+                    topic_title='Cofactor Expansion',
+                    input_summary=f"Matrix: {matrix_text.replace(chr(10), ' | ')} (Expanded along {expand_by} {idx+1})",
+                    result_summary=f"det(A) = {result.get('total_det_latex')}"
+                )
+            except Exception:
+                pass
         except Exception as e:
             error = f"Error calculating Cofactor Expansion: {str(e)}"
     else:
@@ -571,13 +596,16 @@ def diagonalization_view(request):
         try:
             matrix_data = parse_matrix_input(matrix_text)
             result = math_engine.solve_diagonalization(matrix_data)
-            UserCalculationHistory.objects.create(
-                user=request.user,
-                topic_slug='diagonalization',
-                topic_title='Diagonalization',
-                input_summary=f"Matrix: {matrix_text.replace(chr(10), ' | ')}",
-                result_summary=f"Diagonalizable: {result.get('is_diagonalizable')}"
-            )
+            try:
+                UserCalculationHistory.objects.create(
+                    user=request.user,
+                    topic_slug='diagonalization',
+                    topic_title='Diagonalization',
+                    input_summary=f"Matrix: {matrix_text.replace(chr(10), ' | ')}",
+                    result_summary=f"Diagonalizable: {result.get('is_diagonalizable')}"
+                )
+            except Exception:
+                pass
         except Exception as e:
             error = f"Error in Diagonalization computation: {str(e)}"
     else:
