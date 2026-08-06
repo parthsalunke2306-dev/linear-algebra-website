@@ -3,7 +3,7 @@ from django.db.utils import OperationalError
 
 class DatabaseResilienceMiddleware:
     """Middleware that catches database connection failures (e.g. unreachable PostgreSQL pooler)
-    and gracefully falls back to local SQLite to prevent HTTP 500 errors."""
+    and gracefully falls back to local SQLite with all required Django keys to prevent HTTP 500 errors."""
     
     def __init__(self, get_response):
         self.get_response = get_response
@@ -16,10 +16,21 @@ class DatabaseResilienceMiddleware:
             print("Database connection exception caught by ResilienceMiddleware, switching to SQLite fallback:", e)
             try:
                 from django.conf import settings
-                settings.DATABASES['default'] = {
+                fallback_db = {
                     'ENGINE': 'django.db.backends.sqlite3',
                     'NAME': '/tmp/db.sqlite3',
+                    'ATOMIC_REQUESTS': False,
+                    'AUTOCOMMIT': True,
+                    'CONN_MAX_AGE': 0,
+                    'CONN_HEALTH_CHECKS': False,
+                    'OPTIONS': {},
+                    'TIME_ZONE': None,
+                    'USER': '',
+                    'PASSWORD': '',
+                    'HOST': '',
+                    'PORT': '',
                 }
+                settings.DATABASES['default'] = fallback_db
                 connections[DEFAULT_DB_ALIAS].close()
             except Exception as inner_e:
                 print("Fallback switch error:", inner_e)

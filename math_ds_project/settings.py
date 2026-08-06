@@ -127,6 +127,14 @@ else:
         }
     }
 
+# Ensure standard keys exist in default database dict
+DATABASES['default'].setdefault('ATOMIC_REQUESTS', False)
+DATABASES['default'].setdefault('AUTOCOMMIT', True)
+DATABASES['default'].setdefault('CONN_MAX_AGE', 0)
+DATABASES['default'].setdefault('CONN_HEALTH_CHECKS', False)
+DATABASES['default'].setdefault('OPTIONS', {})
+DATABASES['default'].setdefault('TIME_ZONE', None)
+
 # Cryptographically Signed Cookie-Based Sessions for Serverless Resilience
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 SESSION_COOKIE_NAME = 'la_session'
