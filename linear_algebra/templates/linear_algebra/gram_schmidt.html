@@ -7,7 +7,7 @@
         <span class="badge-unit">UNIT 2</span>
         <span class="badge-topic">TOPIC 2.1</span>
     </div>
-    <h2 class="fw-bold mb-1">Gram–Schmidt Orthogonalization Process</h2>
+    <h2 class="text-white fw-bold mb-1">Gram–Schmidt Orthogonalization Process</h2>
     <p class="text-muted">Algorithm to convert a set of linearly independent vectors $\{\mathbf{v}_1, \mathbf{v}_2, \dots\}$ into an orthogonal basis $\{\mathbf{u}_1, \mathbf{u}_2, \dots\}$ and orthonormal basis $\{\mathbf{e}_1, \mathbf{e}_2, \dots\}$.</p>
 </div>
 
@@ -20,7 +20,7 @@
 <!-- Stacked Card 1: Vector Inputs & Presets -->
 <div class="glass-card p-4 mb-4">
     <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-        <h5 class="mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Vector Set Input & Resizer</h5>
+        <h5 class="text-white mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Vector Set Input & Resizer</h5>
         
         <!-- Presets -->
         <div class="d-flex align-items-center gap-1 flex-wrap">
@@ -50,13 +50,12 @@
 </div>
 
 <!-- Stacked Card 2: Collapsible Vector Step Accordions -->
-{% if result %}
 <div class="glass-card p-4 mb-4">
-    <h4 class="mb-4"><i class="bi bi-diagram-3 me-2" style="color: var(--accent-purple);"></i>Step-by-Step Vector Orthogonalization</h4>
+    <h4 class="text-white mb-4"><i class="bi bi-diagram-3 me-2" style="color: var(--accent-purple);"></i>Step-by-Step Vector Orthogonalization</h4>
 
     <div class="accordion accordion-custom mb-4" id="gsAccordion">
         {% for step in result.steps %}
-        <div class="accordion-item animate-step">
+        <div class="accordion-item animate-step" style="animation-delay: {{ forloop.counter0 }}00ms;">
             <h2 class="accordion-header" id="headingGS{{ forloop.counter }}">
                 <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGS{{ forloop.counter }}">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
@@ -80,7 +79,7 @@
                         </div>
                         <div class="col-md-8">
                             {% for proj in step.proj_explanations %}
-                            <div class="p-2 math-box mb-2 overflow-x-auto text-center small">
+                            <div class="p-2 bg-dark rounded border border-secondary mb-2 overflow-x-auto text-center small">
                                 $${{ proj }}$$
                             </div>
                             {% empty %}
@@ -114,12 +113,20 @@
             </button>
         </div>
         <p class="text-muted mb-3">Checking dot products of all normalized unit vectors to verify identity matrix $I$ ($\delta_{ij}$):</p>
-        <div class="fs-4 text-center py-2 math-box border border-success">
+        <div class="fs-4 text-white text-center py-2 bg-dark rounded border border-success">
             $${{ result.ortho_check_latex }}$$
         </div>
     </div>
 </div>
-{% endif %}
+
+<!-- CODE INSPECTOR TAB FOR LEARNING -->
+<div class="code-inspector mt-4 no-print">
+    <div class="code-inspector-header d-flex align-items-center justify-content-between">
+        <span><i class="bi bi-code-slash me-2" style="color: var(--accent-purple);"></i>Backend Python Source Code (math_engine.py)</span>
+        <span class="badge bg-secondary font-monospace">Python SymPy</span>
+    </div>
+    <pre><code class="language-python">{{ python_code }}</code></pre>
+</div>
 {% endblock %}
 
 {% block extra_js %}

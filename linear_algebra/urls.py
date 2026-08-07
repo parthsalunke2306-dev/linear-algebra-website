@@ -4,8 +4,7 @@ from . import views
 app_name = 'linear_algebra'
 
 urlpatterns = [
-    # Public Open Access Solver Tools
-    path('', views.public_index_view, name='index'),
+    path('', views.index_view, name='index'),
     path('gaussian/', views.gaussian_view, name='gaussian'),
     path('gf2/', views.gf2_view, name='gf2'),
     path('vectors/', views.vectors_view, name='vectors'),

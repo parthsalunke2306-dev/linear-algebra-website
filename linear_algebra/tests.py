@@ -40,12 +40,12 @@ class MathEngineTests(TestCase):
         res = math_engine.solve_diagonalization(matrix)
         self.assertTrue(res['is_diagonalizable'])
 
-class PublicOpenAccessViewsTests(TestCase):
+class SolverViewsTests(TestCase):
     def setUp(self):
         self.client = Client()
 
-    def test_all_solver_urls_open_access(self):
-        public_urls = [
+    def test_view_status_codes(self):
+        urls = [
             reverse('linear_algebra:index'),
             reverse('linear_algebra:gaussian'),
             reverse('linear_algebra:gf2'),
@@ -54,6 +54,7 @@ class PublicOpenAccessViewsTests(TestCase):
             reverse('linear_algebra:cofactor'),
             reverse('linear_algebra:diagonalization'),
         ]
-        for url in public_urls:
+        for url in urls:
             response = self.client.get(url)
-            self.assertEqual(response.status_code, 200, f"URL {url} failed with status {response.status_code}")
+            self.assertEqual(response.status_code, 200)
+

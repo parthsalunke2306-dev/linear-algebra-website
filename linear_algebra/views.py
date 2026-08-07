@@ -1,10 +1,6 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-
-from .forms import (
-    GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm
-)
-from .models import SiteSetting, TopicModule, UserCalculationHistory
+import inspect
+from django.shortcuts import render
+from .forms import GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm
 from . import math_engine
 
 def parse_matrix_input(text):
@@ -17,116 +13,15 @@ def parse_matrix_input(text):
             rows.append(row)
     return rows
 
-def ensure_default_data(request=None):
-    """Seeds SiteSetting and default TopicModules if database is empty."""
-    try:
-        site_settings, _ = SiteSetting.objects.get_or_create()
-
-        if TopicModule.objects.count() == 0:
-            default_topics = [
-                {
-                    'slug': 'gaussian',
-                    'topic_code': 'TOPIC 1.1',
-                    'title': 'Gaussian Elimination',
-                    'unit': 'UNIT 1',
-                    'description': 'Row-reduce an augmented matrix step-by-step into Row Echelon Form (REF) & RREF.',
-                    'icon_class': 'bi-grid-3x3',
-                    'icon_color_class': 'text-info',
-                    'display_order': 1,
-                },
-                {
-                    'slug': 'gf2',
-                    'topic_code': 'TOPIC 1.2',
-                    'title': 'Field Axioms GF(2)',
-                    'unit': 'UNIT 1',
-                    'description': 'Explore 2-element Galois Field F_2 = {0, 1} with addition and multiplication mod 2.',
-                    'icon_class': 'bi-shield-check',
-                    'icon_color_class': 'text-warning',
-                    'display_order': 2,
-                },
-                {
-                    'slug': 'vectors',
-                    'topic_code': 'TOPIC 1.3',
-                    'title': 'Dot & Cross Product',
-                    'unit': 'UNIT 1',
-                    'description': 'Calculate 3D vector dot products, cross products, angles, projections, and 3D orbit graphics.',
-                    'icon_class': 'bi-compass',
-                    'icon_color_class': 'text-success',
-                    'display_order': 3,
-                },
-                {
-                    'slug': 'gram_schmidt',
-                    'topic_code': 'TOPIC 2.1',
-                    'title': 'Gram–Schmidt',
-                    'unit': 'UNIT 2',
-                    'description': 'Convert linearly independent vectors into an orthogonal and orthonormal basis.',
-                    'icon_class': 'bi-bezier2',
-                    'icon_color_class': 'text-info',
-                    'display_order': 4,
-                },
-                {
-                    'slug': 'cofactor',
-                    'topic_code': 'TOPIC 2.2',
-                    'title': 'Cofactor Expansion',
-                    'unit': 'UNIT 2',
-                    'description': 'Calculate matrix determinants along any row or column using sign checkerboards.',
-                    'icon_class': 'bi-diagram-3',
-                    'icon_color_class': 'text-purple',
-                    'display_order': 5,
-                },
-                {
-                    'slug': 'diagonalization',
-                    'topic_code': 'TOPIC 2.3',
-                    'title': 'Diagonalization',
-                    'unit': 'UNIT 2',
-                    'description': 'Calculate characteristic polynomial, eigenvalues, eigenspaces, and matrix decomposition A = PDP^-1.',
-                    'icon_class': 'bi-gem',
-                    'icon_color_class': 'text-danger',
-                    'display_order': 6,
-                },
-            ]
-            for topic in default_topics:
-                TopicModule.objects.get_or_create(slug=topic['slug'], defaults=topic)
-
-        return site_settings
-    except Exception as e:
-        print("Database seed fallback error:", e)
-        return SiteSetting(
-            site_title="Linear Algebra & Field Theory Explorer",
-            hero_subtitle="Interactive step-by-step LaTeX matrix solvers, 3D vector graphics, dynamic matrix resizers, Light/Dark theme toggle, and LaTeX formula copy.",
-            curriculum_badge="DATA SCIENCE MATHEMATICS CURRICULUM"
-        )
-
-def get_safe_site_settings(request=None):
-    """Safely retrieves SiteSetting without raising DB errors."""
-    return ensure_default_data(request)
-
-
-# PUBLIC OPEN ACCESS VIEWS (No Authentication Required)
-
-def public_index_view(request):
-    """Public interactive dashboard with all 6 linear algebra tools open to everyone."""
-    site_settings = get_safe_site_settings(request)
-
-    try:
-        unit1_topics = list(TopicModule.objects.filter(unit='UNIT 1', is_active=True))
-        unit2_topics = list(TopicModule.objects.filter(unit='UNIT 2', is_active=True))
-    except Exception:
-        unit1_topics = []
-        unit2_topics = []
-
+def index_view(request):
+    """Renders main dashboard showing Unit 1 & Unit 2 topics."""
     context = {
-        'title': getattr(site_settings, 'site_title', "Linear Algebra & Field Theory Explorer"),
-        'site_settings': site_settings,
-        'unit1_topics': unit1_topics,
-        'unit2_topics': unit2_topics,
+        'title': 'Linear Algebra & Data Science Explorer',
     }
     return render(request, 'linear_algebra/index.html', context)
 
-
 def gaussian_view(request):
-    """Topic 1.1: Systems of Linear Equations & Gaussian Elimination (Open Access)."""
-    site_settings = get_safe_site_settings(request)
+    """Topic 1.1: Systems of Linear Equations & Gaussian Elimination."""
     result = None
     error = None
     form = GaussianForm(request.POST or None)
@@ -139,8 +34,11 @@ def gaussian_view(request):
         except Exception as e:
             error = f"Error processing matrix input: {str(e)}"
     else:
+        # Default computation on initial page load
         matrix_data = parse_matrix_input(form.fields['matrix_text'].initial)
         result = math_engine.solve_gaussian_elimination(matrix_data)
+
+    code_snippet = inspect.getsource(math_engine.solve_gaussian_elimination)
 
     context = {
         'title': 'Gaussian Elimination & Row Operations',
@@ -148,28 +46,25 @@ def gaussian_view(request):
         'form': form,
         'result': result,
         'error': error,
-        'site_settings': site_settings
+        'python_code': code_snippet
     }
     return render(request, 'linear_algebra/gaussian.html', context)
 
-
 def gf2_view(request):
-    """Topic 1.2: Field Axioms via GF(2) (Open Access)."""
-    site_settings = get_safe_site_settings(request)
+    """Topic 1.2: Field Axioms via GF(2)."""
     result = math_engine.analyze_gf2_field()
+    code_snippet = inspect.getsource(math_engine.analyze_gf2_field)
 
     context = {
         'title': 'Field Axioms via GF(2)',
         'unit': 'Unit 1 • Topic 2',
         'result': result,
-        'site_settings': site_settings
+        'python_code': code_snippet
     }
     return render(request, 'linear_algebra/gf2.html', context)
 
-
 def vectors_view(request):
-    """Topic 1.3: 3D Vector Dot Product, Cross Product & Projections (Open Access)."""
-    site_settings = get_safe_site_settings(request)
+    """Topic 1.3: 3D Vector Dot Product, Cross Product & Projections."""
     result = None
     error = None
     form = VectorsForm(request.POST or None)
@@ -186,20 +81,20 @@ def vectors_view(request):
         v2 = [form.fields['v2_x'].initial, form.fields['v2_y'].initial, form.fields['v2_z'].initial]
         result = math_engine.compute_vector_operations(v1, v2)
 
+    code_snippet = inspect.getsource(math_engine.compute_vector_operations)
+
     context = {
         'title': 'Vector Dot Product, Cross Product & Projections',
         'unit': 'Unit 1 • Topic 3',
         'form': form,
         'result': result,
         'error': error,
-        'site_settings': site_settings
+        'python_code': code_snippet
     }
     return render(request, 'linear_algebra/vectors.html', context)
 
-
 def gram_schmidt_view(request):
-    """Topic 2.1: Gram-Schmidt Orthogonalization Process (Open Access)."""
-    site_settings = get_safe_site_settings(request)
+    """Topic 2.1: Gram-Schmidt Orthogonalization Process."""
     result = None
     error = None
     form = GramSchmidtForm(request.POST or None)
@@ -215,20 +110,20 @@ def gram_schmidt_view(request):
         vectors_data = parse_matrix_input(form.fields['vectors_text'].initial)
         result = math_engine.solve_gram_schmidt(vectors_data)
 
+    code_snippet = inspect.getsource(math_engine.solve_gram_schmidt)
+
     context = {
         'title': 'Gram–Schmidt Orthogonalization Process',
         'unit': 'Unit 2 • Topic 1',
         'form': form,
         'result': result,
         'error': error,
-        'site_settings': site_settings
+        'python_code': code_snippet
     }
     return render(request, 'linear_algebra/gram_schmidt.html', context)
 
-
 def cofactor_view(request):
-    """Topic 2.2: Cofactor Expansion for Determinants (Open Access)."""
-    site_settings = get_safe_site_settings(request)
+    """Topic 2.2: Cofactor Expansion for Determinants."""
     result = None
     error = None
     form = CofactorForm(request.POST or None)
@@ -236,7 +131,7 @@ def cofactor_view(request):
     if request.method == 'POST' and form.is_valid():
         matrix_text = form.cleaned_data['matrix_text']
         expand_by = form.cleaned_data['expand_by']
-        idx = form.cleaned_data['index'] - 1
+        idx = form.cleaned_data['index'] - 1  # 0-based
         try:
             matrix_data = parse_matrix_input(matrix_text)
             result = math_engine.solve_cofactor_expansion(matrix_data, expand_by, idx)
@@ -248,20 +143,20 @@ def cofactor_view(request):
         idx = form.fields['index'].initial - 1
         result = math_engine.solve_cofactor_expansion(matrix_data, expand_by, idx)
 
+    code_snippet = inspect.getsource(math_engine.solve_cofactor_expansion)
+
     context = {
         'title': 'Cofactor Expansion for Determinants',
         'unit': 'Unit 2 • Topic 2',
         'form': form,
         'result': result,
         'error': error,
-        'site_settings': site_settings
+        'python_code': code_snippet
     }
     return render(request, 'linear_algebra/cofactor.html', context)
 
-
 def diagonalization_view(request):
-    """Topic 2.3: Eigenvalues, Eigenvectors & Diagonalization (Open Access)."""
-    site_settings = get_safe_site_settings(request)
+    """Topic 2.3: Eigenvalues, Eigenvectors & Diagonalization."""
     result = None
     error = None
     form = DiagonalizationForm(request.POST or None)
@@ -277,12 +172,14 @@ def diagonalization_view(request):
         matrix_data = parse_matrix_input(form.fields['matrix_text'].initial)
         result = math_engine.solve_diagonalization(matrix_data)
 
+    code_snippet = inspect.getsource(math_engine.solve_diagonalization)
+
     context = {
         'title': 'Eigenvalues, Eigenvectors & Diagonalization',
         'unit': 'Unit 2 • Topic 3',
         'form': form,
         'result': result,
         'error': error,
-        'site_settings': site_settings
+        'python_code': code_snippet
     }
     return render(request, 'linear_algebra/diagonalization.html', context)

@@ -2,152 +2,187 @@
 {% load static %}
 
 {% block content %}
-<!-- HERO SECTION -->
-<div class="row align-items-center mb-5 py-4">
-    <div class="col-lg-7">
+<div class="row align-items-center mb-5 py-3">
+    <div class="col-lg-8">
         <div class="d-inline-flex align-items-center gap-2 px-3 py-1 mb-3 rounded-pill"
             style="background: rgba(192, 132, 252, 0.15); border: 1px solid rgba(192, 132, 252, 0.35);">
-            <i class="bi bi-unlock-fill" style="color: var(--accent-purple);"></i>
-            <span class="font-monospace small fw-bold" style="color: var(--accent-purple);">
-                {{ site_settings.curriculum_badge|default:"OPEN ACCESS DATA SCIENCE MATHEMATICS PLATFORM" }}
-            </span>
+            <i class="bi bi-mortarboard-fill" style="color: var(--accent-purple);"></i>
+            <span class="font-monospace small fw-bold" style="color: var(--accent-purple);">DATA SCIENCE MATHEMATICS
+                CURRICULUM</span>
         </div>
-        <h1 class="display-4 fw-bold mb-3 font-outfit">
-            {{ site_settings.site_title|default:"Linear Algebra & Field Theory Explorer" }}
+        <h1 class="display-4 fw-bold mb-3">
+            Linear Algebra & <span
+                style="background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Field
+                Theory</span> Explorer
         </h1>
-        <p class="lead text-muted mb-4">
-            {{ site_settings.hero_subtitle|default:"Explore linear equations, finite fields GF(2), vector spaces, inner products, cofactor expansion, and matrix diagonalization with step-by-step mathematical breakdowns." }}
+        <p class="lead text-muted mb-0">
+            Interactive step-by-step LaTeX matrix solvers, 3D vector graphics, dynamic matrix resizers, Light/Dark theme
+            toggle, LaTeX formula copy, and live Python code inspection.
         </p>
-
-        <div class="d-flex align-items-center gap-3 flex-wrap">
-            <a href="{% url 'linear_algebra:gaussian' %}" class="btn btn-gradient px-4 py-2 fs-6">
-                <i class="bi bi-play-circle-fill me-2"></i> Launch Gaussian Solver
-            </a>
-            <a href="#unit1-section" class="btn btn-preset px-4 py-2 fs-6">
-                <i class="bi bi-grid-3x3-gap-fill me-2"></i> Explore All 6 Solvers
-            </a>
-        </div>
     </div>
-    <div class="col-lg-5 mt-4 mt-lg-0 text-center text-lg-end">
-        <div class="p-4 rounded-4 text-start glass-card glow-on-hover" style="border: 1px solid var(--accent-purple-glow);">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <span class="badge bg-purple-subtle text-purple font-monospace small px-2 py-1">OPEN ENGINE</span>
-                <i class="bi bi-cpu-fill fs-2" style="color: var(--accent-purple);"></i>
-            </div>
-            <h5 class="fw-bold mb-2">Interactive Mathematics Engine</h5>
-            <p class="text-muted small mb-3">Complete mathematical solver engine with step-by-step LaTeX derivations and GF(2) modular arithmetic.</p>
-            <div class="row g-2 text-center pt-2 border-top border-secondary border-opacity-25">
-                <div class="col-4">
-                    <div class="fw-bold fs-4 text-purple">6</div>
-                    <div class="text-muted small" style="font-size: 0.75rem;">Modules</div>
-                </div>
-                <div class="col-4">
-                    <div class="fw-bold fs-4 text-info">2</div>
-                    <div class="text-muted small" style="font-size: 0.75rem;">Units</div>
-                </div>
-                <div class="col-4">
-                    <div class="fw-bold fs-4 text-success">GF(2)</div>
-                    <div class="text-muted small" style="font-size: 0.75rem;">Fields</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Features Overview Section -->
-<div class="row g-4 mb-5">
-    <div class="col-md-4">
-        <div class="glass-card p-4 h-100">
-            <i class="bi bi-lightning-charge-fill fs-2 text-warning mb-3 d-block"></i>
-            <h5>Open Instant Access</h5>
-            <p class="text-muted small mb-0">No login or registration required. All interactive linear algebra tools are freely accessible to all users.</p>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="glass-card p-4 h-100">
-            <i class="bi bi-calculator-fill fs-2 text-info mb-3 d-block"></i>
-            <h5>Step-by-Step Derivations</h5>
-            <p class="text-muted small mb-0">Compute row operations, REF, RREF, Gram–Schmidt orthogonalization, and cofactor expansions step-by-step.</p>
-        </div>
-    </div>
-    <div class="col-md-4">
-        <div class="glass-card p-4 h-100">
-            <i class="bi bi-box-seam fs-2 text-success mb-3 d-block"></i>
-            <h5>3D Graphics & LaTeX</h5>
-            <p class="text-muted small mb-0">Interactive 3D orbit visualizer, step-by-step LaTeX formula derivations, and 1-click clipboard LaTeX export.</p>
+    <div class="col-lg-4 text-lg-end d-none d-lg-block">
+        <div class="p-4 rounded-4 text-center glass-card" style="border: 1px solid var(--accent-purple-glow);">
+            <i class="bi bi-braces-asterisk display-3" style="color: var(--accent-purple);"></i>
+            <div class="mt-2 font-monospace fw-bold" style="color: var(--accent-purple);">6 INTERACTIVE MODULES</div>
+            <div class="text-muted small fw-semibold">Unit 1 & Unit 2 Data Science Topics</div>
         </div>
     </div>
 </div>
 
 <!-- UNIT 1 TOPICS -->
-{% if unit1_topics %}
-<div id="unit1-section" class="mb-5">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <div class="d-flex align-items-center gap-2">
-            <span class="badge-unit">UNIT 1</span>
-            <h3 class="mb-0 font-outfit">Linear Systems, Fields & Vectors</h3>
-        </div>
-        <span class="text-muted small d-none d-sm-inline"><i class="bi bi-journal-text me-1"></i> Unit 1 Modules</span>
+<div class="mb-5">
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <span class="badge-unit">UNIT 1</span>
+        <h3 class="mb-0">Linear Systems, Fields & Vectors</h3>
     </div>
     <div class="row g-4">
-        {% for topic in unit1_topics %}
+        <!-- Topic 1.1 -->
         <div class="col-md-4">
             <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
                 <div>
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <span class="badge-topic">{{ topic.topic_code }}</span>
-                        <div class="p-2 rounded-3" style="background: rgba(192, 132, 252, 0.1);">
-                            <i class="bi {{ topic.icon_class }} {{ topic.icon_color_class }} fs-3"></i>
-                        </div>
+                        <span class="badge-topic">TOPIC 1.1</span>
+                        <i class="bi bi-grid-3x3 text-info fs-3"></i>
                     </div>
-                    <h4 class="fw-bold mb-2">{{ topic.title }}</h4>
+                    <h4>Gaussian Elimination</h4>
                     <p class="text-muted small mb-0">
-                        {{ topic.description }}
+                        Row-reduce augmented matrices step-by-step ($R_i \leftarrow R_i - c R_j$) into REF & RREF with
+                        automatic solution type classification.
                     </p>
                 </div>
-                <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-3">
-                    <i class="bi bi-play-circle-fill me-1"></i> Launch Solver Tool
+                <a href="{% url 'linear_algebra:gaussian' %}" class="btn btn-gradient w-100 mt-3">
+                    Launch Solver <i class="bi bi-arrow-right ms-1"></i>
                 </a>
             </div>
         </div>
-        {% endfor %}
+
+        <!-- Topic 1.2 -->
+        <div class="col-md-4">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge-topic">TOPIC 1.2</span>
+                        <i class="bi bi-shield-check text-warning fs-3"></i>
+                    </div>
+                    <h4>Field Axioms via GF(2)</h4>
+                    <p class="text-muted small mb-0">
+                        Explore Galois Field $\mathbb{F}_2 = \{0, 1\}$ with full $+ / \times$ modulo 2 truth tables and
+                        explicit verification of all 11 Field Axioms.
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:gf2' %}" class="btn btn-gradient w-100 mt-3">
+                    Explore Field <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Topic 1.3 -->
+        <div class="col-md-4">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge-topic">TOPIC 1.3</span>
+                        <i class="bi bi-compass text-success fs-3"></i>
+                    </div>
+                    <h4>Dot & Cross Product</h4>
+                    <p class="text-muted small mb-0">
+                        Calculate 3D vector dot products, cross products, magnitudes, angles, vector projections
+                        $\text{proj}_{\mathbf{u}}(\mathbf{v})$, with an interactive 3D canvas.
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:vectors' %}" class="btn btn-gradient w-100 mt-3">
+                    Open 3D Visualizer <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
     </div>
 </div>
-{% endif %}
 
 <!-- UNIT 2 TOPICS -->
-{% if unit2_topics %}
 <div class="mb-5">
-    <div class="d-flex align-items-center justify-content-between mb-4">
-        <div class="d-flex align-items-center gap-2">
-            <span class="badge-unit">UNIT 2</span>
-            <h3 class="mb-0 font-outfit">Inner Products, Determinants & Diagonalization</h3>
-        </div>
-        <span class="text-muted small d-none d-sm-inline"><i class="bi bi-journal-text me-1"></i> Unit 2 Modules</span>
+    <div class="d-flex align-items-center gap-2 mb-4">
+        <span class="badge-unit">UNIT 2</span>
+        <h3 class="mb-0">Inner Products, Determinants & Diagonalization</h3>
     </div>
     <div class="row g-4">
-        {% for topic in unit2_topics %}
+        <!-- Topic 2.1 -->
         <div class="col-md-4">
             <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
                 <div>
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <span class="badge-topic">{{ topic.topic_code }}</span>
-                        <div class="p-2 rounded-3" style="background: rgba(56, 189, 248, 0.1);">
-                            <i class="bi {{ topic.icon_class }} {{ topic.icon_color_class }} fs-3"></i>
-                        </div>
+                        <span class="badge-topic">TOPIC 2.1</span>
+                        <i class="bi bi-bezier2 fs-3" style="color: var(--accent-purple);"></i>
                     </div>
-                    <h4 class="fw-bold mb-2">{{ topic.title }}</h4>
+                    <h4>Gram–Schmidt Process</h4>
                     <p class="text-muted small mb-0">
-                        {{ topic.description }}
+                        Transform linearly independent vectors into an orthogonal & orthonormal basis step-by-step with
+                        vector projections and inner product matrix checks.
                     </p>
                 </div>
-                <a href="{% url 'linear_algebra:'|add:topic.slug %}" class="btn btn-gradient w-100 mt-3">
-                    <i class="bi bi-play-circle-fill me-1"></i> Launch Solver Tool
+                <a href="{% url 'linear_algebra:gram_schmidt' %}" class="btn btn-gradient w-100 mt-3">
+                    Start Process <i class="bi bi-arrow-right ms-1"></i>
                 </a>
             </div>
         </div>
-        {% endfor %}
+
+        <!-- Topic 2.2 -->
+        <div class="col-md-4">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge-topic">TOPIC 2.2</span>
+                        <i class="bi bi-diagram-3 text-danger fs-3"></i>
+                    </div>
+                    <h4>Cofactor Expansion</h4>
+                    <p class="text-muted small mb-0">
+                        Calculate determinants along any chosen row or column with minor matrices $M_{ij}$, checkerboard
+                        signs $(-1)^{i+j}$, and cofactor terms $C_{ij}$.
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:cofactor' %}" class="btn btn-gradient w-100 mt-3">
+                    Expand Determinant <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Topic 2.3 -->
+        <div class="col-md-4">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge-topic">TOPIC 2.3</span>
+                        <i class="bi bi-gem text-warning fs-3"></i>
+                    </div>
+                    <h4>Diagonalization</h4>
+                    <p class="text-muted small mb-0">
+                        Characteristic polynomial $\det(A - \lambda I) = 0$, eigenvalues, eigenspace basis vectors,
+                        algebraic vs geometric multiplicity, and $A = P D P^{-1}$.
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:diagonalization' %}" class="btn btn-gradient w-100 mt-3">
+                    Diagonalize Matrix <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
     </div>
 </div>
-{% endif %}
+
+<!-- EDUCATIONAL LEARNING BANNER -->
+<!-- <div class="glass-card p-4 rounded-4" style="background: var(--surface-card);">
+    <div class="row align-items-center">
+        <div class="col-lg-9">
+            <h4 class="mb-2"><i class="bi bi-code-slash me-2" style="color: var(--accent-purple);"></i>Live
+                Educational Python Code Inspector</h4>
+            <p class="text-muted mb-0">
+                Every topic page includes an expandable tab containing the <strong>exact Python backend source
+                    code</strong> used to perform calculations. Open it to examine how Python's <code>SymPy</code> and
+                <code>NumPy</code> compute the mathematical steps!
+            </p>
+        </div>
+        <div class="col-lg-3 text-lg-end mt-3 mt-lg-0">
+            <span class="badge px-3 py-2 fs-6 font-monospace" style="background: var(--accent-purple); color: #ffffff;"><i
+                    class="bi bi-terminal-fill me-1"></i> Python 3.14 + Django</span>
+        </div>
+    </div>
+</div> -->
 {% endblock %}

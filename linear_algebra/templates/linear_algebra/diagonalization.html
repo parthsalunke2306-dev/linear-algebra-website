@@ -7,7 +7,7 @@
         <span class="badge-unit">UNIT 2</span>
         <span class="badge-topic">TOPIC 2.3</span>
     </div>
-    <h2 class="fw-bold mb-1">Eigenvalues, Eigenvectors & Diagonalization</h2>
+    <h2 class="text-white fw-bold mb-1">Eigenvalues, Eigenvectors & Diagonalization</h2>
     <p class="text-muted">Calculate characteristic polynomial $\det(A - \lambda I) = 0$, eigenvalues, eigenspace basis vectors, algebraic vs geometric multiplicity, and matrix decomposition $A = P D P^{-1}$.</p>
 </div>
 
@@ -20,7 +20,7 @@
 <!-- Stacked Card 1: Matrix Input & Dynamic Resizer -->
 <div class="glass-card p-4 mb-4">
     <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-        <h5 class="mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Square Matrix Input & Dynamic Controls</h5>
+        <h5 class="text-white mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Square Matrix Input & Dynamic Controls</h5>
         
         <!-- Presets -->
         <div class="d-flex align-items-center gap-1 flex-wrap">
@@ -51,13 +51,12 @@
 </div>
 
 <!-- Stacked Card 2: Derivation Sections Accordions -->
-{% if result %}
 <div class="glass-card p-4 mb-4">
-    <h4 class="mb-4"><i class="bi bi-diagram-3 me-2" style="color: var(--accent-purple);"></i>Eigenvalue & Diagonalization Derivation</h4>
+    <h4 class="text-white mb-4"><i class="bi bi-diagram-3 me-2" style="color: var(--accent-purple);"></i>Eigenvalue & Diagonalization Derivation</h4>
 
     <div class="accordion accordion-custom mb-4" id="diagAccordion">
         <!-- Section 1: Characteristic Polynomial -->
-        <div class="accordion-item animate-step">
+        <div class="accordion-item animate-step" style="animation-delay: 100ms;">
             <h2 class="accordion-header" id="headingChar">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseChar">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
@@ -72,7 +71,7 @@
                             <i class="bi bi-clipboard me-1"></i> Copy Poly LaTeX
                         </button>
                     </div>
-                    <div class="p-3 math-box">
+                    <div class="p-3 bg-dark rounded border border-secondary">
                         $$p(\lambda) = {{ result.char_poly_latex }} = 0$$
                     </div>
                 </div>
@@ -80,7 +79,7 @@
         </div>
 
         <!-- Section 2: Eigenvalues & Eigenspaces -->
-        <div class="accordion-item animate-step">
+        <div class="accordion-item animate-step" style="animation-delay: 200ms;">
             <h2 class="accordion-header" id="headingEigen">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEigen">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
@@ -93,7 +92,7 @@
                     <div class="row g-3">
                         {% for item in result.eigenvalues_summary %}
                         <div class="col-md-6">
-                            <div class="p-3 rounded-3 border border-secondary h-100" style="background: var(--surface-slate);">
+                            <div class="p-3 rounded-3 border border-secondary h-100" style="background: var(--bg-main);">
                                 <div class="d-flex align-items-center justify-content-between mb-2">
                                     <h5 class="text-warning mb-0">$\lambda_{{ forloop.counter }} = {{ item.eigenvalue_latex }}$</h5>
                                     <button onclick="copyToClipboard('\\lambda = {{ item.eigenvalue_latex|escapejs }}')" class="btn btn-copy no-print">
@@ -105,7 +104,7 @@
                                     <span>Geom Mult: <strong>{{ item.geom_mult }}</strong></span>
                                 </div>
                                 <span class="small fw-semibold d-block mb-1" style="color: var(--accent-purple);">Eigenspace Basis Vector(s):</span>
-                                <div class="d-flex flex-wrap justify-content-center gap-2 math-box p-2">
+                                <div class="d-flex flex-wrap justify-content-center gap-2 bg-dark p-2 rounded border border-secondary">
                                     {% for vec in item.eigenvectors_latex %}
                                     $${{ vec }}$$
                                     {% endfor %}
@@ -119,7 +118,7 @@
         </div>
 
         <!-- Section 3: Decomposition PDP^-1 -->
-        <div class="accordion-item animate-step">
+        <div class="accordion-item animate-step" style="animation-delay: 300ms;">
             <h2 class="accordion-header" id="headingPDP">
                 <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePDP">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
@@ -152,7 +151,7 @@
                         </div>
                     </div>
 
-                    <div class="p-3 math-box text-center border border-success">
+                    <div class="p-3 bg-dark rounded border border-success text-center">
                         <span class="text-muted small d-block mb-1">Verification Check ($P D P^{-1} \stackrel{?}{=} A$):</span>
                         $${{ result.verification_latex }} = {{ result.matrix_latex }}$$
                     </div>
@@ -166,7 +165,15 @@
         </div>
     </div>
 </div>
-{% endif %}
+
+<!-- CODE INSPECTOR TAB FOR LEARNING -->
+<div class="code-inspector mt-4 no-print">
+    <div class="code-inspector-header d-flex align-items-center justify-content-between">
+        <span><i class="bi bi-code-slash me-2" style="color: var(--accent-purple);"></i>Backend Python Source Code (math_engine.py)</span>
+        <span class="badge bg-secondary font-monospace">Python SymPy</span>
+    </div>
+    <pre><code class="language-python">{{ python_code }}</code></pre>
+</div>
 {% endblock %}
 
 {% block extra_js %}

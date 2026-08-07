@@ -11,9 +11,6 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
-import os
-import re
-import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,38 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-n-xkg+^wv9+#=nlhwxxp%n5ke&%n*v2&+oefqm3=ix&eh$7-7f')
+SECRET_KEY = 'django-insecure-n-xkg+^wv9+#=nlhwxxp%n5ke&%n*v2&+oefqm3=ix&eh$7-7f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False').lower() in ['true', '1', 'yes']
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-
-# Reverse proxy SSL header for Vercel Serverless HTTPS
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# CSRF Trusted Origins for Vercel Cloud & Mobile Browsers
-CSRF_TRUSTED_ORIGINS = [
-    'https://linear-algebra-website.vercel.app',
-    'https://*.vercel.app',
-    'https://*.now.sh',
-    'http://localhost:8000',
-    'http://127.0.0.1:8000',
-]
-
-# Dynamically add Vercel deployment URLs to trusted origins
-if os.environ.get('VERCEL_URL'):
-    v_url = os.environ.get('VERCEL_URL')
-    if not v_url.startswith('http'):
-        CSRF_TRUSTED_ORIGINS.append(f'https://{v_url}')
-
-if os.environ.get('VERCEL_PROJECT_PRODUCTION_URL'):
-    v_prod_url = os.environ.get('VERCEL_PROJECT_PRODUCTION_URL')
-    if not v_prod_url.startswith('http'):
-        CSRF_TRUSTED_ORIGINS.append(f'https://{v_prod_url}')
-
-CSRF_COOKIE_SECURE = not DEBUG
-CSRF_COOKIE_SAMESITE = 'Lax'
 
 
 # Application definition
@@ -100,31 +71,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'math_ds_project.wsgi.application'
 
 
-# Database Configuration
-# Primary: Supabase / PostgreSQL via DATABASE_URL or SQLite fallback
+import os
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
-if DATABASE_URL:
-    # Auto-convert direct Supabase port 5432 (IPv6 only) to IPv4 Pooler host (port 6543) for Vercel lambdas
-    if 'supabase.co' in DATABASE_URL and 'pooler.supabase.com' not in DATABASE_URL:
-        ref_match = re.search(r'db\.([a-z0-9]+)\.supabase\.co', DATABASE_URL)
-        if ref_match:
-            project_ref = ref_match.group(1)
-            # Rewrite host to IPv4 Transaction Pooler domain
-            DATABASE_URL = re.sub(
-                r'postgres(ql)?://([^:]+):([^@]+)@db\.[a-z0-9]+\.supabase\.co:?\d*/(.*)',
-                rf'postgresql://postgres.{project_ref}:\3@aws-0-ap-south-1.pooler.supabase.com:6543/\4',
-                DATABASE_URL
-            )
+# Database
+# https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
-    DATABASES = {
-        'default': dj_database_url.config(
-            default=DATABASE_URL,
-            conn_max_age=600,
-            conn_health_checks=True,
-        )
-    }
-elif os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV'):
+if os.environ.get('VERCEL') or os.environ.get('VERCEL_ENV'):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -138,29 +90,6 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-
-# Cryptographically Signed Cookie-Based Sessions for Serverless Resilience
-SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
-SESSION_COOKIE_NAME = 'la_session'
-SESSION_COOKIE_HTTPONLY = True
-SESSION_COOKIE_SAMESITE = 'Lax'
-SESSION_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_AGE = 1209600  # 2 weeks
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-
-# Authentication Protection Redirects
-LOGIN_URL = 'linear_algebra:login'
-LOGIN_REDIRECT_URL = 'linear_algebra:dashboard'
-LOGOUT_REDIRECT_URL = 'linear_algebra:login'
-
-# Email Configuration for Password Reset
-EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'noreply@linearalgebra.app')
 
 
 # Password validation
@@ -197,10 +126,5 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [
-    BASE_DIR / 'linear_algebra' / 'static',
-]
-WHITENOISE_USE_FINDERS = True
-WHITENOISE_MANIFEST_STRICT = False

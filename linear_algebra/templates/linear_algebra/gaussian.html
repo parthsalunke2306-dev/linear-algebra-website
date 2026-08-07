@@ -7,7 +7,7 @@
         <span class="badge-unit">UNIT 1</span>
         <span class="badge-topic">TOPIC 1.1</span>
     </div>
-    <h2 class="fw-bold mb-1">Systems of Linear Equations — Gaussian Elimination</h2>
+    <h2 class="text-white fw-bold mb-1">Systems of Linear Equations — Gaussian Elimination</h2>
     <p class="text-muted">Row-reduce an augmented matrix step-by-step into Row Echelon Form (REF) & Reduced Row Echelon Form (RREF).</p>
 </div>
 
@@ -20,7 +20,7 @@
 <!-- Full-Width Stacked Card 1: Matrix Input & Resizer Controls -->
 <div class="glass-card p-4 mb-4">
     <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-        <h5 class="mb-0"><i class="bi bi-sliders me-2 text-purple" style="color: var(--accent-purple);"></i>Matrix Input & Dynamic Controls</h5>
+        <h5 class="text-white mb-0"><i class="bi bi-sliders me-2 text-purple" style="color: var(--accent-purple);"></i>Matrix Input & Dynamic Controls</h5>
         
         <!-- Matrix Quick Presets -->
         <div class="d-flex align-items-center gap-1 flex-wrap">
@@ -54,17 +54,16 @@
 </div>
 
 <!-- Full-Width Stacked Card 2: Collapsible Derivation Accordions -->
-{% if result %}
 <div class="glass-card p-4 mb-4">
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
-        <h4 class="mb-0"><i class="bi bi-list-ol text-purple me-2" style="color: var(--accent-purple);"></i>Step-by-Step Matrix Derivation</h4>
+        <h4 class="text-white mb-0"><i class="bi bi-list-ol text-purple me-2" style="color: var(--accent-purple);"></i>Step-by-Step Matrix Derivation</h4>
         <span class="badge bg-primary px-3 py-2 fs-6" style="background: var(--accent-purple) !important;">{{ result.solution_type }}</span>
     </div>
 
     <!-- Collapsible Accordion Container for Steps -->
     <div class="accordion accordion-custom mb-4" id="gaussianStepsAccordion">
         {% for step in result.steps %}
-        <div class="accordion-item animate-step">
+        <div class="accordion-item animate-step" style="animation-delay: {{ forloop.counter0 }}00ms;">
             <h2 class="accordion-header" id="heading{{ forloop.counter }}">
                 <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
@@ -80,7 +79,7 @@
                             <i class="bi bi-clipboard me-1"></i> Copy Step LaTeX
                         </button>
                     </div>
-                    <div class="text-center py-3 math-box overflow-x-auto">
+                    <div class="text-center py-3 bg-dark rounded-3 border border-secondary overflow-x-auto">
                         $$\text{Snapshot: } {{ step.latex }}$$
                     </div>
                 </div>
@@ -98,12 +97,20 @@
             </button>
         </div>
         <p class="text-muted mb-3">{{ result.solution_summary }}</p>
-        <div class="fs-4 text-center py-2 math-box border border-purple">
+        <div class="fs-4 text-white text-center py-2 bg-dark rounded border border-purple">
             $${{ result.solution_latex }}$$
         </div>
     </div>
 </div>
-{% endif %}
+
+<!-- CODE INSPECTOR TAB FOR LEARNING -->
+<!-- <div class="code-inspector mt-4 no-print">
+    <div class="code-inspector-header d-flex align-items-center justify-content-between">
+        <span><i class="bi bi-code-slash me-2" style="color: var(--accent-purple);"></i>Backend Python Source Code (math_engine.py)</span>
+        <span class="badge bg-secondary font-monospace">Python SymPy</span>
+    </div>
+    <pre><code class="language-python">{{ python_code }}</code></pre>
+</div> -->
 {% endblock %}
 
 {% block extra_js %}

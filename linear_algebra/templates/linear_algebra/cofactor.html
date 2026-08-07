@@ -7,7 +7,7 @@
         <span class="badge-unit">UNIT 2</span>
         <span class="badge-topic">TOPIC 2.2</span>
     </div>
-    <h2 class="fw-bold mb-1">Cofactor Expansion for Determinants</h2>
+    <h2 class="text-white fw-bold mb-1">Cofactor Expansion for Determinants</h2>
     <p class="text-muted">Calculate matrix determinants along any user-selected row or column using sign checkerboards $(-1)^{i+j}$ and minor submatrices $M_{ij}$.</p>
 </div>
 
@@ -20,7 +20,7 @@
 <!-- Stacked Card 1: Matrix Input & Settings -->
 <div class="glass-card p-4 mb-4">
     <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-        <h5 class="mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Matrix Input & Expansion Settings</h5>
+        <h5 class="text-white mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Matrix Input & Expansion Settings</h5>
         
         <!-- Presets -->
         <div class="d-flex align-items-center gap-1 flex-wrap">
@@ -59,10 +59,9 @@
 </div>
 
 <!-- Stacked Card 2: Collapsible Term Accordions -->
-{% if result %}
 <div class="glass-card p-4 mb-4">
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
-        <h4 class="mb-0"><i class="bi bi-diagram-2 me-2" style="color: var(--accent-purple);"></i>Cofactor Expansion along {{ result.expand_by|capfirst }} {{ result.index }}</h4>
+        <h4 class="text-white mb-0"><i class="bi bi-diagram-2 me-2" style="color: var(--accent-purple);"></i>Cofactor Expansion along {{ result.expand_by|capfirst }} {{ result.index }}</h4>
         <div class="text-center">
             <span class="text-muted small d-block">Input Matrix $A$:</span>
             $${{ result.matrix_latex }}$$
@@ -70,7 +69,7 @@
     </div>
 
     <!-- Checkerboard Signs Info -->
-    <div class="p-3 math-box mb-4">
+    <div class="p-3 bg-dark rounded border border-secondary mb-4">
         <div class="d-flex align-items-center justify-content-between">
             <span class="fw-bold small" style="color: var(--accent-purple);"><i class="bi bi-grid-3x3 me-1"></i> Checkerboard Sign Matrix $(-1)^{i+j}$:</span>
             $${{ result.sign_matrix_latex }}$$
@@ -80,7 +79,7 @@
     <!-- Accordion for Expansion Terms -->
     <div class="accordion accordion-custom mb-4" id="cofactorAccordion">
         {% for term in result.terms %}
-        <div class="accordion-item animate-step">
+        <div class="accordion-item animate-step" style="animation-delay: {{ forloop.counter0 }}00ms;">
             <h2 class="accordion-header" id="headingCofactor{{ forloop.counter }}">
                 <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCofactor{{ forloop.counter }}">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
@@ -101,7 +100,7 @@
                             $${{ term.submatrix_latex }}$$
                         </div>
                         <div class="col-md-8">
-                            <ul class="small mb-0 ps-3">
+                            <ul class="text-light small mb-0 ps-3">
                                 <li>Sign Factor: ${{ term.sign }}$</li>
                                 <li>Minor Determinant: $\det(M_{{ term.row }}{{ term.col }}) = {{ term.minor_det_latex }}$</li>
                                 <li>Cofactor $C_{{ term.row }}{{ term.col }} = (-1)^{i+j} \det(M_{{ term.row }}{{ term.col }}) = {{ term.cofactor_latex }}$</li>
@@ -123,12 +122,20 @@
                 <i class="bi bi-clipboard me-1"></i> Copy Det LaTeX
             </button>
         </div>
-        <div class="fs-3 text-center py-2 math-box border border-purple">
+        <div class="fs-3 text-white text-center py-2 bg-dark rounded border border-purple">
             $$\det(A) = {{ result.total_det_latex }}$$
         </div>
     </div>
 </div>
-{% endif %}
+
+<!-- CODE INSPECTOR TAB FOR LEARNING -->
+<div class="code-inspector mt-4 no-print">
+    <div class="code-inspector-header d-flex align-items-center justify-content-between">
+        <span><i class="bi bi-code-slash me-2" style="color: var(--accent-purple);"></i>Backend Python Source Code (math_engine.py)</span>
+        <span class="badge bg-secondary font-monospace">Python SymPy</span>
+    </div>
+    <pre><code class="language-python">{{ python_code }}</code></pre>
+</div>
 {% endblock %}
 
 {% block extra_js %}
