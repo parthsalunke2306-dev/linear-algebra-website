@@ -1,0 +1,74 @@
+{% extends 'linear_algebra/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row g-4 mb-5">
+    <div class="col-lg-4">
+        <!-- User Identity Card -->
+        <div class="glass-card p-4 text-center h-100">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 p-3" style="background: rgba(192, 132, 252, 0.15); border: 2px solid var(--accent-purple-glow); width: 90px; height: 90px;">
+                <i class="bi bi-person-fill display-4" style="color: var(--accent-purple);"></i>
+            </div>
+            <h3 class="fw-bold mb-1">{{ user.full_name|default:"Data Science Scholar" }}</h3>
+            <p class="text-muted small mb-3"><i class="bi bi-envelope-fill me-1" style="color: var(--accent-cyan);"></i>{{ user.email }}</p>
+            <div class="p-2 rounded-3 bg-dark border font-monospace text-muted small text-break mb-3" style="border-color: var(--glass-border) !important; font-size: 0.75rem;">
+                <span class="text-purple fw-bold">UUID:</span> {{ user.id }}
+            </div>
+            <span class="badge px-3 py-2 rounded-pill font-monospace" style="background: rgba(52, 211, 153, 0.2); color: #34D399; border: 1px solid rgba(52, 211, 153, 0.4);">
+                <i class="bi bi-shield-check me-1"></i> Supabase Authenticated
+            </span>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <!-- Account Settings Card -->
+        <div class="glass-card p-4 p-md-5 h-100">
+            <h4 class="fw-bold mb-4 d-flex align-items-center gap-2">
+                <i class="bi bi-sliders" style="color: var(--accent-purple);"></i> Account Settings
+            </h4>
+
+            {% if error %}
+            <div class="alert alert-danger d-flex align-items-center gap-2 mb-4 rounded-3 border-0" role="alert" style="background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3) !important;">
+                <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                <div class="small">{{ error }}</div>
+            </div>
+            {% endif %}
+
+            {% if success %}
+            <div class="alert alert-success d-flex align-items-center gap-2 mb-4 rounded-3 border-0" role="alert" style="background: rgba(52, 211, 153, 0.15); color: #6EE7B7; border: 1px solid rgba(52, 211, 153, 0.3) !important;">
+                <i class="bi bi-check-circle-fill fs-5"></i>
+                <div class="small">{{ success }}</div>
+            </div>
+            {% endif %}
+
+            <form method="post" action="{% url 'linear_algebra:profile' %}">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-semibold">Display Full Name</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark text-muted border-end-0" style="border-color: var(--glass-border);"><i class="bi bi-person"></i></span>
+                        {{ form.full_name }}
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted small fw-semibold">Registered Email Address (Read-only)</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark text-muted border-end-0" style="border-color: var(--glass-border);"><i class="bi bi-envelope"></i></span>
+                        <input type="email" class="form-control" value="{{ user.email }}" readonly disabled style="opacity: 0.7;">
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-3 border-top" style="border-color: var(--glass-border) !important;">
+                    <button type="submit" class="btn btn-gradient px-4">
+                        Save Profile Changes <i class="bi bi-check-lg ms-1"></i>
+                    </button>
+                    <a href="{% url 'linear_algebra:forgot_password' %}" class="btn btn-preset">
+                        <i class="bi bi-key me-1"></i> Change Password
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

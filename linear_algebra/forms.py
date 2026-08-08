@@ -64,3 +64,108 @@ class DiagonalizationForm(forms.Form):
         initial='4 1\n2 3',
         help_text='Enter a square matrix row by row.'
     )
+
+
+# ------------------------------------------------------------------------------
+# AUTHENTICATION FORMS (Supabase Auth Integration)
+# ------------------------------------------------------------------------------
+
+class LoginForm(forms.Form):
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'name@example.com',
+            'required': True
+        })
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': '••••••••',
+            'required': True
+        })
+    )
+
+class SignUpForm(forms.Form):
+    full_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Alex Mercer',
+            'required': True
+        })
+    )
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'name@example.com',
+            'required': True
+        })
+    )
+    password = forms.CharField(
+        min_length=8,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'At least 8 characters',
+            'required': True
+        })
+    )
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm your password',
+            'required': True
+        })
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        password = cleaned_data.get("password")
+        confirm_password = cleaned_data.get("confirm_password")
+        if password and confirm_password and password != confirm_password:
+            raise forms.ValidationError("Passwords do not match. Please re-enter passwords.")
+        return cleaned_data
+
+class ForgotPasswordForm(forms.Form):
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'name@example.com',
+            'required': True
+        })
+    )
+
+class ResetPasswordForm(forms.Form):
+    new_password = forms.CharField(
+        min_length=8,
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Enter new password',
+            'required': True
+        })
+    )
+    confirm_password = forms.CharField(
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirm new password',
+            'required': True
+        })
+    )
+
+    def clean(self):
+        cleaned_data = super().clean()
+        pwd1 = cleaned_data.get("new_password")
+        pwd2 = cleaned_data.get("confirm_password")
+        if pwd1 and pwd2 and pwd1 != pwd2:
+            raise forms.ValidationError("Passwords do not match.")
+        return cleaned_data
+
+class ProfileUpdateForm(forms.Form):
+    full_name = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'required': True
+        })
+    )
+

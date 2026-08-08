@@ -49,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'linear_algebra.middleware.SupabaseAuthMiddleware',
 ]
 
 ROOT_URLCONF = 'math_ds_project.urls'

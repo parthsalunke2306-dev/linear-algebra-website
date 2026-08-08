@@ -1,7 +1,16 @@
 import inspect
-from django.shortcuts import render
-from .forms import GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm
+from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
+from .forms import (
+    GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm,
+    LoginForm, SignUpForm, ForgotPasswordForm, ResetPasswordForm, ProfileUpdateForm
+)
 from . import math_engine
+from .supabase_client import (
+    sign_in_user, sign_up_user, sign_out_user,
+    reset_password_request, update_user_password
+)
+from .decorators import supabase_login_required
 
 def parse_matrix_input(text):
     """Helper function to parse multiline string of numbers into a 2D list of floats."""
@@ -14,12 +23,172 @@ def parse_matrix_input(text):
     return rows
 
 def index_view(request):
-    """Renders main dashboard showing Unit 1 & Unit 2 topics."""
+    """Renders main public dashboard showing Unit 1 & Unit 2 topics."""
     context = {
         'title': 'Linear Algebra & Data Science Explorer',
+        'supabase_user': getattr(request, 'supabase_user', None)
     }
     return render(request, 'linear_algebra/index.html', context)
 
+
+# ------------------------------------------------------------------------------
+# SUPABASE AUTHENTICATION VIEWS
+# ------------------------------------------------------------------------------
+
+def login_view(request):
+    """User Login via Supabase Auth."""
+    if getattr(request, 'supabase_user', None):
+        return redirect('linear_algebra:index')
+
+    error = None
+    next_url = request.GET.get('next', '')
+    form = LoginForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        email = form.cleaned_data['email']
+        password = form.cleaned_data['password']
+        
+        res = sign_in_user(email, password)
+        if res['error']:
+            error = res['error']
+        else:
+            # Establish session
+            access_token = res['session'].get('access_token', 'demo_access_token_1234') if res['session'] else 'demo_access_token_1234'
+            request.session['sb_access_token'] = access_token
+            request.session['is_authenticated'] = True
+            request.session['user_email'] = email
+            request.session['user_id'] = res['user'].get('id', 'demo-user-uuid') if isinstance(res['user'], dict) else getattr(res['user'], 'id', 'demo-user-uuid')
+            
+            target = next_url if next_url and next_url.startswith('/') else 'linear_algebra:index'
+            response = redirect(target)
+            # Set HTTP-only secure cookie
+            response.set_cookie('sb_access_token', access_token, httponly=True, samesite='Lax', max_age=86400*7)
+            return response
+
+    context = {
+        'title': 'Sign In • Linear Algebra Explorer',
+        'form': form,
+        'error': error,
+        'next': next_url
+    }
+    return render(request, 'linear_algebra/login.html', context)
+
+def signup_view(request):
+    """User Registration via Supabase Auth."""
+    if getattr(request, 'supabase_user', None):
+        return redirect('linear_algebra:index')
+
+    error = None
+    success_msg = None
+    form = SignUpForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        full_name = form.cleaned_data['full_name']
+        email = form.cleaned_data['email']
+        password = form.cleaned_data['password']
+
+        res = sign_up_user(email, password, full_name)
+        if res['error']:
+            error = res['error']
+        else:
+            success_msg = "Account created successfully! Please check your email to verify your account or proceed to log in."
+            return redirect('linear_algebra:login')
+
+    context = {
+        'title': 'Create Account • Linear Algebra Explorer',
+        'form': form,
+        'error': error,
+        'success': success_msg
+    }
+    return render(request, 'linear_algebra/signup.html', context)
+
+def logout_view(request):
+    """Ends Supabase Session and clears cookies."""
+    token = request.COOKIES.get('sb_access_token') or request.session.get('sb_access_token')
+    sign_out_user(token)
+    
+    request.session.flush()
+    response = redirect('linear_algebra:login')
+    response.delete_cookie('sb_access_token')
+    return response
+
+def forgot_password_view(request):
+    """Requests Password Reset Link via Supabase Auth."""
+    error = None
+    success_msg = None
+    form = ForgotPasswordForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        email = form.cleaned_data['email']
+        res = reset_password_request(email)
+        if res['error']:
+            error = res['error']
+        else:
+            success_msg = "If an account exists for this email, password recovery instructions have been sent."
+
+    context = {
+        'title': 'Reset Password • Linear Algebra Explorer',
+        'form': form,
+        'error': error,
+        'success': success_msg
+    }
+    return render(request, 'linear_algebra/forgot_password.html', context)
+
+def reset_password_confirm_view(request):
+    """Sets new password after user clicks recovery email link."""
+    error = None
+    success_msg = None
+    form = ResetPasswordForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        new_password = form.cleaned_data['new_password']
+        res = update_user_password(new_password)
+        if res['error']:
+            error = res['error']
+        else:
+            success_msg = "Your password has been updated successfully. Please log in with your new password."
+            return redirect('linear_algebra:login')
+
+    context = {
+        'title': 'Set New Password • Linear Algebra Explorer',
+        'form': form,
+        'error': error,
+        'success': success_msg
+    }
+    return render(request, 'linear_algebra/reset_password_confirm.html', context)
+
+@supabase_login_required
+def profile_view(request):
+    """Authenticated User Profile & Account Management."""
+    user = getattr(request, 'supabase_user', None)
+    error = None
+    success_msg = None
+    
+    initial_data = {'full_name': user.get('full_name', '') if user else ''}
+    form = ProfileUpdateForm(request.POST or None, initial=initial_data)
+
+    if request.method == 'POST' and form.is_valid():
+        new_name = form.cleaned_data['full_name']
+        if user:
+            user['full_name'] = new_name
+            request.session['user_name'] = new_name
+            success_msg = "Profile information updated successfully!"
+
+    context = {
+        'title': 'User Profile • Account Settings',
+        'user': user,
+        'form': form,
+        'error': error,
+        'success': success_msg
+    }
+    return render(request, 'linear_algebra/profile.html', context)
+
+
+# ------------------------------------------------------------------------------
+# PROTECTED MATH SOLVER & VISUALIZER VIEWS (Requires Supabase Auth)
+# ------------------------------------------------------------------------------
+
+@supabase_login_required
 def gaussian_view(request):
     """Topic 1.1: Systems of Linear Equations & Gaussian Elimination."""
     result = None
@@ -34,7 +203,6 @@ def gaussian_view(request):
         except Exception as e:
             error = f"Error processing matrix input: {str(e)}"
     else:
-        # Default computation on initial page load
         matrix_data = parse_matrix_input(form.fields['matrix_text'].initial)
         result = math_engine.solve_gaussian_elimination(matrix_data)
 
@@ -50,6 +218,7 @@ def gaussian_view(request):
     }
     return render(request, 'linear_algebra/gaussian.html', context)
 
+@supabase_login_required
 def gf2_view(request):
     """Topic 1.2: Field Axioms via GF(2)."""
     result = math_engine.analyze_gf2_field()
@@ -63,6 +232,7 @@ def gf2_view(request):
     }
     return render(request, 'linear_algebra/gf2.html', context)
 
+@supabase_login_required
 def vectors_view(request):
     """Topic 1.3: 3D Vector Dot Product, Cross Product & Projections."""
     result = None
@@ -93,6 +263,7 @@ def vectors_view(request):
     }
     return render(request, 'linear_algebra/vectors.html', context)
 
+@supabase_login_required
 def gram_schmidt_view(request):
     """Topic 2.1: Gram-Schmidt Orthogonalization Process."""
     result = None
@@ -122,6 +293,7 @@ def gram_schmidt_view(request):
     }
     return render(request, 'linear_algebra/gram_schmidt.html', context)
 
+@supabase_login_required
 def cofactor_view(request):
     """Topic 2.2: Cofactor Expansion for Determinants."""
     result = None
@@ -155,6 +327,7 @@ def cofactor_view(request):
     }
     return render(request, 'linear_algebra/cofactor.html', context)
 
+@supabase_login_required
 def diagonalization_view(request):
     """Topic 2.3: Eigenvalues, Eigenvectors & Diagonalization."""
     result = None
