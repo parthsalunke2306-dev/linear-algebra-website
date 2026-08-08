@@ -20,14 +20,19 @@ function toggleTheme() {
 
 function updateThemeIcon(theme) {
     const themeBtnLabel = document.getElementById('themeToggleLabel');
+    const themeBtnLabelMobile = document.getElementById('themeToggleLabelMobile');
+    const content = theme === 'light' 
+        ? '<i class="bi bi-moon-stars-fill me-2 text-info"></i> Dark Mode' 
+        : '<i class="bi bi-sun-fill me-2 text-warning"></i> Light Mode';
+
     if (themeBtnLabel) {
-        if (theme === 'light') {
-            themeBtnLabel.innerHTML = '<i class="bi bi-moon-stars-fill me-2 text-info"></i> Dark Mode';
-        } else {
-            themeBtnLabel.innerHTML = '<i class="bi bi-sun-fill me-2 text-warning"></i> Light Mode';
-        }
+        themeBtnLabel.innerHTML = content;
+    }
+    if (themeBtnLabelMobile) {
+        themeBtnLabelMobile.innerHTML = content;
     }
 }
+
 
 // 2. Clipboard Copy with Toast Feedback
 function copyToClipboard(text) {
