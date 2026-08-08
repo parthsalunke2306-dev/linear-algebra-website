@@ -112,44 +112,36 @@
                 </div>
             </div>
 
-            <!-- BOTTOM SECTION: USER PROFILE BADGE & THEME CONTROLS -->
-            <div class="mt-auto pt-3 border-top border-secondary opacity-75">
+            <!-- UNIFIED USER PROFILE & THEME CONTROLS CARD -->
+            <div class="sidebar-accessibility-box mt-auto">
                 {% if request.supabase_user or request.session.is_authenticated %}
-                <div class="p-2 mb-3 rounded-3" style="background: rgba(192, 132, 252, 0.1); border: 1px solid var(--accent-purple-glow);">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <a href="{% url 'linear_algebra:profile' %}" class="d-flex align-items-center gap-2 overflow-hidden text-decoration-none" title="View Profile">
-                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white font-monospace fw-bold flex-shrink-0" style="background: var(--accent-purple); width: 32px; height: 32px; font-size: 0.85rem;">
-                                {{ request.supabase_user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
-                            </div>
-                            <div class="overflow-hidden" style="line-height: 1.2;">
-                                <div class="fw-semibold text-truncate small text-white">{{ request.supabase_user.full_name|default:session_user_name|default:"Authenticated User" }}</div>
-                                <small class="text-muted d-block text-truncate" style="font-size: 0.7rem;">{{ request.supabase_user.email|default:session_user_email }}</small>
-                            </div>
-                        </a>
-                        <a href="{% url 'linear_algebra:logout' %}" class="text-danger ms-1 p-1 flex-shrink-0" title="Sign Out">
-                            <i class="bi bi-power fs-6"></i>
-                        </a>
-                    </div>
+                <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom border-secondary opacity-75">
+                    <a href="{% url 'linear_algebra:profile' %}" class="d-flex align-items-center gap-2 overflow-hidden text-decoration-none" title="View Profile">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white font-monospace fw-bold flex-shrink-0" style="background: var(--accent-purple); width: 32px; height: 32px; font-size: 0.85rem;">
+                            {{ request.supabase_user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
+                        </div>
+                        <div class="overflow-hidden" style="line-height: 1.2;">
+                            <div class="fw-semibold text-truncate small text-white">{{ request.supabase_user.full_name|default:session_user_name|default:"Authenticated User" }}</div>
+                            <small class="text-muted d-block text-truncate" style="font-size: 0.7rem;">{{ request.supabase_user.email|default:session_user_email }}</small>
+                        </div>
+                    </a>
+                    <a href="{% url 'linear_algebra:logout' %}" class="text-danger ms-1 p-1 flex-shrink-0" title="Sign Out">
+                        <i class="bi bi-power fs-6"></i>
+                    </a>
                 </div>
                 {% else %}
-                <div class="d-grid gap-2 mb-3">
+                <div class="d-grid gap-2 mb-2 pb-2 border-bottom border-secondary opacity-75">
                     <a href="{% url 'linear_algebra:login' %}" class="btn btn-gradient btn-sm py-1 fw-bold text-center">
                         <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
                     </a>
                 </div>
                 {% endif %}
 
-                <!-- THEME CONTROLS -->
-                <div class="sidebar-accessibility-box">
-                    <div class="sidebar-accessibility-title">
-                        <i class="bi bi-palette-fill me-1"></i>
-                        <span>THEME CONTROLS</span>
-                    </div>
-                    <button id="themeToggleBtnMobile" onclick="toggleTheme()" class="btn btn-sidebar-control mb-0">
-                        <span id="themeToggleLabelMobile"><i class="bi bi-sun-fill me-2 text-warning"></i> Light Mode</span>
-                        <i class="bi bi-toggle-on text-purple" style="color: var(--accent-purple);"></i>
-                    </button>
-                </div>
+                <!-- THEME TOGGLE BUTTON -->
+                <button id="themeToggleBtnMobile" onclick="toggleTheme()" class="btn btn-sidebar-control mb-0 w-100">
+                    <span id="themeToggleLabelMobile"><i class="bi bi-sun-fill me-2 text-warning"></i> Light Mode</span>
+                    <i class="bi bi-toggle-on text-purple" style="color: var(--accent-purple);"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -204,46 +196,36 @@
             </div>
         </div>
 
-        <!-- BOTTOM SECTION: USER PROFILE BADGE & THEME CONTROLS -->
-        <div class="mt-auto pt-3 border-top border-secondary opacity-75">
+        <!-- UNIFIED USER PROFILE & THEME CONTROLS CARD (DESKTOP) -->
+        <div class="sidebar-accessibility-box">
             {% if request.supabase_user or request.session.is_authenticated %}
-            <div class="p-2 mb-3 rounded-3" style="background: rgba(192, 132, 252, 0.1); border: 1px solid var(--accent-purple-glow);">
-                <div class="d-flex align-items-center justify-content-between">
-                    <a href="{% url 'linear_algebra:profile' %}" class="d-flex align-items-center gap-2 overflow-hidden text-decoration-none" title="View Profile">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white font-monospace fw-bold flex-shrink-0" style="background: var(--accent-purple); width: 32px; height: 32px; font-size: 0.85rem;">
-                            {{ request.supabase_user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
-                        </div>
-                        <div class="overflow-hidden" style="line-height: 1.2;">
-                            <div class="fw-semibold text-truncate small text-white">{{ request.supabase_user.full_name|default:session_user_name|default:"Authenticated User" }}</div>
-                            <small class="text-muted d-block text-truncate" style="font-size: 0.7rem;">{{ request.supabase_user.email|default:session_user_email }}</small>
-                        </div>
-                    </a>
-                    <a href="{% url 'linear_algebra:logout' %}" class="text-danger ms-1 p-1 flex-shrink-0" title="Sign Out">
-                        <i class="bi bi-power fs-6"></i>
-                    </a>
-                </div>
+            <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom border-secondary opacity-75">
+                <a href="{% url 'linear_algebra:profile' %}" class="d-flex align-items-center gap-2 overflow-hidden text-decoration-none" title="View Profile">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white font-monospace fw-bold flex-shrink-0" style="background: var(--accent-purple); width: 32px; height: 32px; font-size: 0.85rem;">
+                        {{ request.supabase_user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
+                    </div>
+                    <div class="overflow-hidden" style="line-height: 1.2;">
+                        <div class="fw-semibold text-truncate small text-white">{{ request.supabase_user.full_name|default:session_user_name|default:"Authenticated User" }}</div>
+                        <small class="text-muted d-block text-truncate" style="font-size: 0.7rem;">{{ request.supabase_user.email|default:session_user_email }}</small>
+                    </div>
+                </a>
+                <a href="{% url 'linear_algebra:logout' %}" class="text-danger ms-1 p-1 flex-shrink-0" title="Sign Out">
+                    <i class="bi bi-power fs-6"></i>
+                </a>
             </div>
             {% else %}
-            <div class="d-grid gap-2 mb-3">
+            <div class="d-grid gap-2 mb-2 pb-2 border-bottom border-secondary opacity-75">
                 <a href="{% url 'linear_algebra:login' %}" class="btn btn-gradient btn-sm py-1 fw-bold text-center">
                     <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
                 </a>
             </div>
             {% endif %}
 
-            <!-- APPEARANCE & THEME CONTROL BOX -->
-            <div class="sidebar-accessibility-box">
-                <div class="sidebar-accessibility-title">
-                    <i class="bi bi-palette-fill me-1"></i>
-                    <span>THEME CONTROLS</span>
-                </div>
-
-                <!-- Light / Dark Mode Toggle Switch Only -->
-                <button id="themeToggleBtn" onclick="toggleTheme()" class="btn btn-sidebar-control mb-0">
-                    <span id="themeToggleLabel"><i class="bi bi-sun-fill me-2 text-warning"></i> Light Mode</span>
-                    <i class="bi bi-toggle-on text-purple" style="color: var(--accent-purple);"></i>
-                </button>
-            </div>
+            <!-- THEME TOGGLE BUTTON -->
+            <button id="themeToggleBtn" onclick="toggleTheme()" class="btn btn-sidebar-control mb-0 w-100">
+                <span id="themeToggleLabel"><i class="bi bi-sun-fill me-2 text-warning"></i> Light Mode</span>
+                <i class="bi bi-toggle-on text-purple" style="color: var(--accent-purple);"></i>
+            </button>
         </div>
     </aside>
 
