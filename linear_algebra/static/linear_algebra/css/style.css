@@ -61,6 +61,7 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     font-family: 'Outfit', sans-serif;
     font-weight: 700;
     color: var(--text-main);
+    letter-spacing: -0.015em;
 }
 
 p, span, label, div {
@@ -92,6 +93,7 @@ small,
 .form-label, label {
     color: var(--text-main);
     font-weight: 600;
+    margin-bottom: 0.4rem;
 }
 
 .form-control,
@@ -101,6 +103,8 @@ small,
     color: var(--text-main) !important;
     border-radius: 10px;
     padding: 0.75rem 1rem;
+    min-height: 44px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-control::placeholder {
@@ -112,6 +116,17 @@ small,
 .form-select:focus {
     border-color: var(--accent-purple) !important;
     box-shadow: 0 0 0 3px var(--accent-purple-glow) !important;
+    outline: none;
+}
+
+/* Accessibility Focus States */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--accent-purple) !important;
+    outline-offset: 2px;
 }
 
 /* Vertical Left Taskbar / Sidebar */
@@ -158,10 +173,11 @@ small,
     display: flex;
     align-items: center;
     gap: 0.65rem;
-    padding: 0.6rem 0.85rem;
+    padding: 0.65rem 0.85rem;
+    min-height: 44px;
     border-radius: 10px;
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .sidebar-nav-item:hover,
@@ -211,7 +227,11 @@ small,
 
     .main-content-wrapper {
         margin-left: 0;
-        padding: 1.5rem;
+        padding: 1.25rem 1rem;
+    }
+
+    .glass-card {
+        padding: 1.25rem !important;
     }
 }
 
@@ -223,7 +243,7 @@ small,
     border: 1px solid var(--glass-border);
     border-radius: 16px;
     box-shadow: var(--shadow-main);
-    transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .glass-card:hover {
@@ -247,6 +267,7 @@ small,
     padding: 1rem 1.25rem;
     border: none;
     box-shadow: none;
+    min-height: 48px;
 }
 
 .accordion-custom .accordion-button:not(.collapsed) {
@@ -257,12 +278,14 @@ small,
 
 .accordion-custom .accordion-button::after {
     filter: invert(0.5);
+    transition: transform 0.25s ease;
 }
 
 .accordion-custom .accordion-body {
     background: var(--surface-slate);
     color: var(--text-main);
     padding: 1.25rem;
+    overflow-x: auto;
 }
 
 /* Animated Step Entry Keyframes */
@@ -291,6 +314,8 @@ small,
     padding: 0.35rem 0.75rem;
     border-radius: 20px;
     letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
 }
 
 .badge-topic {
@@ -301,6 +326,8 @@ small,
     font-weight: 700;
     padding: 0.3rem 0.7rem;
     border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
 }
 
 /* Buttons */
@@ -311,8 +338,12 @@ small,
     border: none;
     border-radius: 10px;
     padding: 0.65rem 1.5rem;
+    min-height: 44px;
     box-shadow: 0 4px 15px var(--accent-purple-glow);
-    transition: all 0.2s ease;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-gradient:hover {
@@ -327,9 +358,13 @@ small,
     color: var(--text-main) !important;
     font-size: 0.8rem;
     font-weight: 600;
-    padding: 0.35rem 0.75rem;
+    padding: 0.4rem 0.8rem;
+    min-height: 36px;
     border-radius: 8px;
     transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-preset:hover {
@@ -345,8 +380,12 @@ small,
     font-size: 0.75rem;
     font-weight: 600;
     border-radius: 6px;
-    padding: 0.25rem 0.6rem;
+    padding: 0.3rem 0.65rem;
+    min-height: 32px;
     transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .btn-copy:hover {
@@ -361,7 +400,8 @@ small,
     color: var(--text-main) !important;
     font-weight: 600;
     border-radius: 10px;
-    padding: 0.5rem 0.85rem;
+    padding: 0.55rem 0.85rem;
+    min-height: 44px;
     font-size: 0.85rem;
     width: 100%;
     text-align: left;
