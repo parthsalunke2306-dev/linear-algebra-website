@@ -40,11 +40,16 @@
 
     <!-- Mobile Top Header Bar (< 992px) -->
     <header class="mobile-header d-lg-none no-print px-3 py-2 border-bottom border-secondary d-flex align-items-center justify-content-between" style="background: var(--sidebar-bg); sticky: top;">
-        <a href="{% url 'linear_algebra:index' %}" class="sidebar-brand d-flex align-items-center gap-2 text-decoration-none">
-            <i class="bi bi-cpu-fill fs-4" style="color: var(--accent-purple);"></i>
-            <span class="fs-5">Linear Algebra</span>
-        </a>
         <div class="d-flex align-items-center gap-2">
+            <button class="btn text-white p-0 fs-3 border-0 me-1" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebarOffcanvas" aria-label="Toggle Navigation Menu">
+                <i class="bi bi-list"></i>
+            </button>
+            <a href="{% url 'linear_algebra:index' %}" class="sidebar-brand d-flex align-items-center gap-2 text-decoration-none">
+                <i class="bi bi-cpu-fill fs-4" style="color: var(--accent-purple);"></i>
+                <span class="fs-5">Linear Algebra</span>
+            </a>
+        </div>
+        <div>
             {% if request.supabase_user or request.session.is_authenticated %}
             <a href="{% url 'linear_algebra:profile' %}" class="rounded-circle d-flex align-items-center justify-content-center text-white font-monospace fw-bold text-decoration-none" style="background: var(--accent-purple); width: 32px; height: 32px; font-size: 0.85rem;">
                 {{ request.supabase_user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
@@ -54,11 +59,9 @@
                 Sign In
             </a>
             {% endif %}
-            <button class="btn text-white p-1 fs-3 border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileSidebarOffcanvas" aria-label="Toggle Navigation Menu">
-                <i class="bi bi-list"></i>
-            </button>
         </div>
     </header>
+
 
     <!-- Offcanvas Navigation Drawer for Mobile (< 992px) -->
     <div class="offcanvas offcanvas-start bg-sidebar no-print d-lg-none" tabindex="-1" id="mobileSidebarOffcanvas" style="background: var(--sidebar-bg); border-right: 1px solid var(--glass-border); width: 280px;">
