@@ -217,23 +217,65 @@ textarea:focus-visible {
 }
 
 @media (max-width: 991.98px) {
-    .sidebar-custom {
-        position: relative;
-        width: 100%;
-        height: auto;
-        border-right: none;
-        border-bottom: 1px solid var(--glass-border);
+    .mobile-header {
+        position: sticky;
+        top: 0;
+        z-index: 1040;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
     }
 
     .main-content-wrapper {
-        margin-left: 0;
-        padding: 1.25rem 1rem;
+        margin-left: 0 !important;
+        padding: 1.25rem 0.75rem !important;
     }
 
     .glass-card {
         padding: 1.25rem !important;
+        border-radius: 12px;
+    }
+
+    /* Prevent mobile input auto-zoom on focus */
+    .form-control, textarea.form-control {
+        font-size: 16px !important;
+    }
+
+    /* Mobile Offcanvas Drawer Compact Fitting (Zero Scrollbar) */
+    .offcanvas-body {
+        padding: 0.65rem 0.75rem !important;
+        overflow-y: auto !important;
+    }
+
+    .offcanvas-header {
+        padding: 0.5rem 0.75rem !important;
+    }
+
+    .offcanvas .sidebar-section-label {
+        margin-top: 0.4rem !important;
+        margin-bottom: 0.2rem !important;
+        font-size: 0.65rem !important;
+    }
+
+    .offcanvas .sidebar-nav-item {
+        padding: 0.35rem 0.65rem !important;
+        min-height: 34px !important;
+        font-size: 0.82rem !important;
+        margin-bottom: 0.1rem !important;
+    }
+
+    .offcanvas .sidebar-accessibility-box {
+        padding: 0.5rem 0.65rem !important;
+        margin-top: 0.4rem !important;
+        border-radius: 10px !important;
+    }
+
+    .offcanvas .btn-sidebar-control {
+        padding: 0.35rem 0.65rem !important;
+        min-height: 34px !important;
+        font-size: 0.82rem !important;
     }
 }
+
 
 /* Glassmorphism Cards */
 .glass-card {
