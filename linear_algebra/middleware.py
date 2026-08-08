@@ -32,8 +32,24 @@ class SupabaseAuthMiddleware:
                     token = auth_header.split("Bearer ")[1].strip()
 
             if token:
-                user_data = get_user_from_token(token)
-                request.supabase_user = user_data
+                if token == "demo_access_token_1234" and hasattr(request, 'session'):
+                    # No Supabase credentials are configured, so sign_in_user()/
+                    # sign_up_user() fell back to local "demo auth" and issued this
+                    # fixed placeholder token for every user. Previously this branch
+                    # returned a single hardcoded identity (scholar@datascience.edu)
+                    # for EVERYONE regardless of what they actually typed at login.
+                    # Build the identity from what was actually captured in the
+                    # session at login/signup instead.
+                    session = request.session
+                    if session.get("is_authenticated"):
+                        request.supabase_user = {
+                            "id": session.get("user_id", "demo-user-uuid-1234"),
+                            "email": session.get("user_email", ""),
+                            "full_name": session.get("user_name", ""),
+                        }
+                else:
+                    user_data = get_user_from_token(token)
+                    request.supabase_user = user_data
         except Exception as e:
             print(f"[Supabase Middleware Warning]: {e}")
             request.supabase_user = None

@@ -82,7 +82,7 @@ def sign_in_user(email: str, password: str):
                 "user": {
                     "id": "demo-user-uuid-1234",
                     "email": email,
-                    "user_metadata": {"full_name": "Data Science Scholar"}
+                    "user_metadata": {"full_name": email.split("@")[0]}
                 },
                 "session": {"access_token": "demo_access_token_1234"},
                 "error": None
@@ -139,14 +139,10 @@ def update_user_password(new_password: str):
 def get_user_from_token(token: str):
     """
     Validates token and returns user identity.
+    Note: the "demo_access_token_1234" placeholder (used when no Supabase
+    credentials are configured) is handled directly in SupabaseAuthMiddleware
+    from session data, since a bare token string carries no per-user info.
     """
-    if token == "demo_access_token_1234":
-        return {
-            "id": "demo-user-uuid-1234",
-            "email": "scholar@datascience.edu",
-            "full_name": "Data Science Scholar"
-        }
-    
     client = get_supabase_client()
     if client and token:
         try:
