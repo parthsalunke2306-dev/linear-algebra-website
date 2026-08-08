@@ -22,6 +22,21 @@ def parse_matrix_input(text):
             rows.append(row)
     return rows
 
+def extract_full_name(user, fallback_email=""):
+    """Safely pull a display name out of a Supabase user, whether it comes
+    back as a dict or as a Supabase User object, falling back to the part
+    of the email before the @ if no name is available."""
+    full_name = ""
+    if isinstance(user, dict):
+        full_name = (user.get("user_metadata") or {}).get("full_name", "") or user.get("full_name", "")
+    elif user is not None:
+        metadata = getattr(user, "user_metadata", None) or {}
+        full_name = metadata.get("full_name", "") if isinstance(metadata, dict) else ""
+    if not full_name and fallback_email:
+        full_name = fallback_email.split("@")[0]
+    return full_name
+
+
 def index_view(request):
     """Renders main public dashboard showing Unit 1 & Unit 2 topics."""
     context = {
@@ -58,6 +73,7 @@ def login_view(request):
             request.session['is_authenticated'] = True
             request.session['user_email'] = email
             request.session['user_id'] = res['user'].get('id', 'demo-user-uuid') if isinstance(res['user'], dict) else getattr(res['user'], 'id', 'demo-user-uuid')
+            request.session['user_name'] = extract_full_name(res['user'], fallback_email=email)
             
             target = next_url if next_url and next_url.startswith('/') else 'linear_algebra:index'
             response = redirect(target)
