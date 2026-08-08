@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -23,9 +24,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-n-xkg+^wv9+#=nlhwxxp%n5ke&%n*v2&+oefqm3=ix&eh$7-7f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+
 
 ALLOWED_HOSTS = ['*']
+
+# Serverless Session Engine (Cookie-based for Vercel compatibility)
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
 
 
 # Application definition
