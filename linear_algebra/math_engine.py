@@ -2,28 +2,54 @@
 Linear Algebra & Data Science Math Engine
 Provides step-by-step algorithms, matrix computations, LaTeX renderings, 
 and proof verification for Python & Django.
+All decimal values across all solvers are cleanly formatted to at most 2 decimal places.
 """
 
 import numpy as np
 import sympy as sp
 
-def clean_val_str(x):
-    """Cleanly formats numbers into integers or clean short decimals."""
+def clean_val_2dp(x):
+    """
+    Cleanly formats numbers into integers or clean decimals with at most 2 decimal places.
+    Converts SymPy Floats 1.00000000000000 -> 1, 3.14159265 -> 3.14, -11.00000 -> -11.
+    """
     try:
         val = sp.sympify(x)
-        if val.is_integer:
-            return str(int(val))
-        elif isinstance(val, (sp.Float, float)):
+        if isinstance(val, (sp.Float, float)):
             fval = float(val)
             if fval.is_integer():
-                return str(int(fval))
-            return f"{fval:.4f}".rstrip('0').rstrip('.')
-        return str(val)
+                return sp.Integer(int(fval))
+            return sp.Float(round(fval, 2))
+        elif isinstance(val, sp.Basic):
+            floats = val.atoms(sp.Float)
+            replaces = {}
+            for fl in floats:
+                fval = float(fl)
+                if fval.is_integer():
+                    replaces[fl] = sp.Integer(int(fval))
+                else:
+                    replaces[fl] = sp.Float(round(fval, 2))
+            if replaces:
+                val = val.subs(replaces)
+            return val
+        return val
     except Exception:
-        return str(x)
+        return x
+
+def clean_val_str(x):
+    """Converts a value to clean string representation with max 2 decimal places."""
+    cleaned = clean_val_2dp(x)
+    if isinstance(cleaned, sp.Float):
+        fval = float(cleaned)
+        if fval.is_integer():
+            return str(int(fval))
+        return f"{fval:.2f}".rstrip('0').rstrip('.')
+    return str(sp.sympify(cleaned))
 
 def matrix_to_latex(matrix):
-    """Converts a 2D array or SymPy Matrix to a LaTeX bmatrix string."""
+    """Converts a 2D array or SymPy Matrix to a LaTeX bmatrix string with max 2 decimal places."""
+    if matrix is None:
+        return r"\text{N/A}"
     if isinstance(matrix, sp.Matrix):
         arr = matrix.tolist()
     else:
@@ -31,17 +57,19 @@ def matrix_to_latex(matrix):
     
     rows = []
     for row in arr:
-        row_str = " & ".join([clean_val_str(x) for x in row])
+        row_str = " & ".join([sp.latex(clean_val_2dp(x)) for x in row])
         rows.append(row_str)
     return r"\begin{bmatrix} " + r" \\ ".join(rows) + r" \end{bmatrix}"
 
 def augmented_matrix_to_latex(mat, num_cols_A):
-    """Formats an augmented matrix [A|b] into LaTeX pmatrix with vertical bar."""
+    """Formats an augmented matrix [A|b] into LaTeX pmatrix with vertical bar with max 2 decimal places."""
+    if mat is None:
+        return r"\text{N/A}"
     arr = mat.tolist() if isinstance(mat, sp.Matrix) else np.array(mat).tolist()
     col_format = "c" * num_cols_A + "|" + "c" * (len(arr[0]) - num_cols_A)
     rows = []
     for row in arr:
-        row_str = " & ".join([clean_val_str(x) for x in row])
+        row_str = " & ".join([sp.latex(clean_val_2dp(x)) for x in row])
         rows.append(row_str)
     return r"\left[\begin{array}{" + col_format + r"} " + r" \\ ".join(rows) + r" \end{array}\right]"
 
@@ -91,7 +119,7 @@ def solve_gaussian_elimination(matrix_data):
             steps.append({
                 'title': f'Row Swap: R_{{{current_row+1}}} \\leftrightarrow R_{{{pivot_row+1}}}',
                 'latex': augmented_matrix_to_latex(mat, num_vars),
-                'explanation': f'Swapped Row {current_row+1} with Row {pivot_row+1} to bring non-zero pivot {mat[current_row, c]} to position ({current_row+1}, {c+1}).'
+                'explanation': f'Swapped Row {current_row+1} with Row {pivot_row+1} to bring non-zero pivot {clean_val_str(mat[current_row, c])} to position ({current_row+1}, {c+1}).'
             })
 
         pivot_val = mat[current_row, c]
@@ -100,9 +128,9 @@ def solve_gaussian_elimination(matrix_data):
         if pivot_val != 1 and pivot_val != 0:
             mat.row_op(current_row, lambda val, j: val / pivot_val)
             steps.append({
-                'title': f'Scale Pivot Row: R_{{{current_row+1}}} \\leftarrow \\frac{{1}}{{{sp.latex(pivot_val)}}} R_{{{current_row+1}}}',
+                'title': f'Scale Pivot Row: R_{{{current_row+1}}} \\leftarrow \\frac{{1}}{{{sp.latex(clean_val_2dp(pivot_val))}}} R_{{{current_row+1}}}',
                 'latex': augmented_matrix_to_latex(mat, num_vars),
-                'explanation': f'Divided Row {current_row+1} by its pivot value {pivot_val} to make leading entry 1.'
+                'explanation': f'Divided Row {current_row+1} by its pivot value {clean_val_str(pivot_val)} to make leading entry 1.'
             })
 
         # Eliminate entries below and above (RREF)
@@ -111,7 +139,7 @@ def solve_gaussian_elimination(matrix_data):
                 factor = mat[r, c]
                 mat.row_op(r, lambda val, j: val - factor * mat[current_row, j])
                 steps.append({
-                    'title': f'Row Elimination: R_{{{r+1}}} \\leftarrow R_{{{r+1}}} - ({sp.latex(factor)}) R_{{{current_row+1}}}',
+                    'title': f'Row Elimination: R_{{{r+1}}} \\leftarrow R_{{{r+1}}} - ({sp.latex(clean_val_2dp(factor))}) R_{{{current_row+1}}}',
                     'latex': augmented_matrix_to_latex(mat, num_vars),
                     'explanation': f'Eliminated entry in Row {r+1}, Column {c+1} using Row {current_row+1}.'
                 })
@@ -137,14 +165,14 @@ def solve_gaussian_elimination(matrix_data):
         solution_type = "Unique Solution"
         solutions = []
         for i in range(num_vars):
-            solutions.append(rf"x_{{{i+1}}} = {sp.latex(mat[i, num_vars])}")
+            solutions.append(rf"x_{{{i+1}}} = {sp.latex(clean_val_2dp(mat[i, num_vars]))}")
         solution_latex = ", \\quad ".join(solutions)
         solution_summary = "The system has exactly one unique solution vector."
     else:
         solution_type = "Infinitely Many Solutions (Parametric)"
         solution_summary = f"Rank = {rank_A} < {num_vars} variables. The system has {num_vars - rank_A} free variable(s)."
         sol_dict = sp.solve_linear_system(mat, *[sp.Symbol(f'x_{i+1}') for i in range(num_vars)])
-        solution_latex = r"\begin{cases} " + r" \\ ".join([f"{sp.latex(k)} = {sp.latex(v)}" for k, v in sol_dict.items()]) + r" \end{cases}"
+        solution_latex = r"\begin{cases} " + r" \\ ".join([f"{sp.latex(k)} = {sp.latex(clean_val_2dp(v))}" for k, v in sol_dict.items()]) + r" \end{cases}"
 
     return {
         'steps': steps,
@@ -315,7 +343,7 @@ def solve_gf2_arithmetic(a_val, b_val, op='add'):
 def compute_vector_operations(v1_list, v2_list):
     """
     Computes 3D Vector operations: Dot product, Cross product, Angles, Projections.
-    Returns explicit step-by-step LaTeX derivations for display.
+    All outputs strictly formatted to max 2 decimal places.
     """
     v1 = np.array(v1_list, dtype=float)
     v2 = np.array(v2_list, dtype=float)
@@ -327,11 +355,11 @@ def compute_vector_operations(v1_list, v2_list):
     cross_prod = np.cross(v1, v2)
     cross_mag = np.linalg.norm(cross_prod)
 
-    # Step-by-step LaTeX strings
-    step_dot_latex = rf"\mathbf{{u}} \cdot \mathbf{{v}} = ({v1[0]} \cdot {v2[0]}) + ({v1[1]} \cdot {v2[1]}) + ({v1[2]} \cdot {v2[2]}) = {v1[0]*v2[0]} + {v1[1]*v2[1]} + {v1[2]*v2[2]} = {round(float(dot_prod), 4)}"
+    # Step-by-step LaTeX strings formatted to max 2 decimal places
+    step_dot_latex = rf"\mathbf{{u}} \cdot \mathbf{{v}} = ({clean_val_str(v1[0])} \cdot {clean_val_str(v2[0])}) + ({clean_val_str(v1[1])} \cdot {clean_val_str(v2[1])}) + ({clean_val_str(v1[2])} \cdot {clean_val_str(v2[2])}) = {clean_val_str(v1[0]*v2[0])} + {clean_val_str(v1[1]*v2[1])} + {clean_val_str(v1[2]*v2[2])} = {round(float(dot_prod), 2)}"
     
-    step_mag1_latex = rf"\|\mathbf{{u}}\| = \sqrt{{({v1[0]})^2 + ({v1[1]})^2 + ({v1[2]})^2}} = \sqrt{{{round(float(v1[0]**2 + v1[1]**2 + v1[2]**2), 4)}}} = {round(float(mag1), 4)}"
-    step_mag2_latex = rf"\|\mathbf{{v}}\| = \sqrt{{({v2[0]})^2 + ({v2[1]})^2 + ({v2[2]})^2}} = \sqrt{{{round(float(v2[0]**2 + v2[1]**2 + v2[2]**2), 4)}}} = {round(float(mag2), 4)}"
+    step_mag1_latex = rf"\|\mathbf{{u}}\| = \sqrt{{({clean_val_str(v1[0])})^2 + ({clean_val_str(v1[1])})^2 + ({clean_val_str(v1[2])})^2}} = \sqrt{{{round(float(v1[0]**2 + v1[1]**2 + v1[2]**2), 2)}}} = {round(float(mag1), 2)}"
+    step_mag2_latex = rf"\|\mathbf{{v}}\| = \sqrt{{({clean_val_str(v2[0])})^2 + ({clean_val_str(v2[1])})^2 + ({clean_val_str(v2[2])})^2}} = \sqrt{{{round(float(v2[0]**2 + v2[1]**2 + v2[2]**2), 2)}}} = {round(float(mag2), 2)}"
 
     # Cross product 3x3 expansion
     c_i = v1[1]*v2[2] - v1[2]*v2[1]
@@ -339,9 +367,9 @@ def compute_vector_operations(v1_list, v2_list):
     c_k = v1[0]*v2[1] - v1[1]*v2[0]
     step_cross_latex = (
         r"\mathbf{u} \times \mathbf{v} = \begin{vmatrix} \mathbf{i} & \mathbf{j} & \mathbf{k} \\ "
-        + f"{v1[0]} & {v1[1]} & {v1[2]} \\ {v2[0]} & {v2[1]} & {v2[2]}"
-        + r" \end{vmatrix} = \left( (" + f"{v1[1]}" + r")\cdot(" + f"{v2[2]}" + r") - (" + f"{v1[2]}" + r")\cdot(" + f"{v2[1]}" + r") \right)\mathbf{i} - \left( (" + f"{v1[0]}" + r")\cdot(" + f"{v2[2]}" + r") - (" + f"{v1[2]}" + r")\cdot(" + f"{v2[0]}" + r") \right)\mathbf{j} + \left( (" + f"{v1[0]}" + r")\cdot(" + f"{v2[1]}" + r") - (" + f"{v1[1]}" + r")\cdot(" + f"{v2[0]}" + r") \right)\mathbf{k} = "
-        + f"{round(c_i, 4)}" + r"\mathbf{i} + (" + f"{round(c_j, 4)}" + r")\mathbf{j} + (" + f"{round(c_k, 4)}" + r")\mathbf{k}"
+        + f"{clean_val_str(v1[0])} & {clean_val_str(v1[1])} & {clean_val_str(v1[2])} \\ {clean_val_str(v2[0])} & {clean_val_str(v2[1])} & {clean_val_str(v2[2])}"
+        + r" \end{vmatrix} = \left( (" + f"{clean_val_str(v1[1])}" + r")\cdot(" + f"{clean_val_str(v2[2])}" + r") - (" + f"{clean_val_str(v1[2])}" + r")\cdot(" + f"{clean_val_str(v2[1])}" + r") \right)\mathbf{i} - \left( (" + f"{clean_val_str(v1[0])}" + r")\cdot(" + f"{clean_val_str(v2[2])}" + r") - (" + f"{clean_val_str(v1[2])}" + r")\cdot(" + f"{clean_val_str(v2[0])}" + r") \right)\mathbf{j} + \left( (" + f"{clean_val_str(v1[0])}" + r")\cdot(" + f"{clean_val_str(v2[1])}" + r") - (" + f"{clean_val_str(v1[1])}" + r")\cdot(" + f"{clean_val_str(v2[0])}" + r") \right)\mathbf{k} = "
+        + f"{round(c_i, 2)}" + r"\mathbf{i} + (" + f"{round(c_j, 2)}" + r")\mathbf{j} + (" + f"{round(c_k, 2)}" + r")\mathbf{k}"
     )
 
     # Angle calculation
@@ -349,7 +377,7 @@ def compute_vector_operations(v1_list, v2_list):
         cos_theta = np.clip(dot_prod / (mag1 * mag2), -1.0, 1.0)
         angle_rad = np.arccos(cos_theta)
         angle_deg = np.degrees(angle_rad)
-        step_angle_latex = rf"\cos(\theta) = \frac{{\mathbf{{u}} \cdot \mathbf{{v}}}}{{\|\mathbf{{u}}\| \|\mathbf{{v}}\|}} = \frac{{{round(float(dot_prod), 4)}}}{{{round(float(mag1), 4)} \cdot {round(float(mag2), 4)}}} = {round(float(cos_theta), 4)} \implies \theta = {round(float(angle_deg), 2)}^\circ"
+        step_angle_latex = rf"\cos(\theta) = \frac{{\mathbf{{u}} \cdot \mathbf{{v}}}}{{\|\mathbf{{u}}\| \|\mathbf{{v}}\|}} = \frac{{{round(float(dot_prod), 2)}}}{{{round(float(mag1), 2)} \cdot {round(float(mag2), 2)}}} = {round(float(cos_theta), 2)} \implies \theta = {round(float(angle_deg), 2)}^\circ"
     else:
         cos_theta, angle_rad, angle_deg = 0.0, 0.0, 0.0
         step_angle_latex = r"\theta = \text{Undefined (zero vector)}"
@@ -363,9 +391,9 @@ def compute_vector_operations(v1_list, v2_list):
         proj_vector = proj_scalar * v2
         step_proj_latex = (
             r"\text{proj}_{\mathbf{v}}(\mathbf{u}) = \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{v}\|^2} \mathbf{v} = \frac{"
-            + f"{round(float(dot_prod), 4)}" + r"}{" + f"{round(float(mag2**2), 4)}" + r"} \begin{bmatrix} "
-            + f"{v2[0]} \\ {v2[1]} \\ {v2[2]}" + r" \end{bmatrix} = \begin{bmatrix} "
-            + f"{round(float(proj_vector[0]), 4)} \\ {round(float(proj_vector[1]), 4)} \\ {round(float(proj_vector[2]), 4)}" + r" \end{bmatrix}"
+            + f"{round(float(dot_prod), 2)}" + r"}{" + f"{round(float(mag2**2), 2)}" + r"} \begin{bmatrix} "
+            + f"{clean_val_str(v2[0])} \\ {clean_val_str(v2[1])} \\ {clean_val_str(v2[2])}" + r" \end{bmatrix} = \begin{bmatrix} "
+            + f"{round(float(proj_vector[0]), 2)} \\ {round(float(proj_vector[1]), 2)} \\ {round(float(proj_vector[2]), 2)}" + r" \end{bmatrix}"
         )
     else:
         proj_scalar = 0.0
@@ -378,21 +406,21 @@ def compute_vector_operations(v1_list, v2_list):
     return {
         'v1': v1.tolist(),
         'v2': v2.tolist(),
-        'mag1': round(float(mag1), 4),
-        'mag2': round(float(mag2), 4),
-        'unit_v1': np.round(unit_v1, 4).tolist(),
-        'unit_v2': np.round(unit_v2, 4).tolist(),
-        'dot_prod': round(float(dot_prod), 4),
-        'cross_prod': np.round(cross_prod, 4).tolist(),
-        'cross_mag': round(float(cross_mag), 4),
-        'angle_rad': round(float(angle_rad), 4),
+        'mag1': round(float(mag1), 2),
+        'mag2': round(float(mag2), 2),
+        'unit_v1': np.round(unit_v1, 2).tolist(),
+        'unit_v2': np.round(unit_v2, 2).tolist(),
+        'dot_prod': round(float(dot_prod), 2),
+        'cross_prod': np.round(cross_prod, 2).tolist(),
+        'cross_mag': round(float(cross_mag), 2),
+        'angle_rad': round(float(angle_rad), 2),
         'angle_deg': round(float(angle_deg), 2),
-        'proj_vector': np.round(proj_vector, 4).tolist(),
-        'proj_scalar': round(float(proj_scalar), 4),
+        'proj_vector': np.round(proj_vector, 2).tolist(),
+        'proj_scalar': round(float(proj_scalar), 2),
         'is_orthogonal': bool(is_orthogonal),
         'is_parallel': bool(is_parallel),
-        'triangle_area': round(float(cross_mag / 2.0), 4),
-        'parallelepiped_area': round(float(cross_mag), 4),
+        'triangle_area': round(float(cross_mag / 2.0), 2),
+        'parallelepiped_area': round(float(cross_mag), 2),
         'step_dot_latex': step_dot_latex,
         'step_mag1_latex': step_mag1_latex,
         'step_mag2_latex': step_mag2_latex,
@@ -407,6 +435,7 @@ def compute_vector_operations(v1_list, v2_list):
 def solve_gram_schmidt(vectors_data):
     """
     Applies the Gram-Schmidt orthogonalization process to a set of input vectors.
+    All decimal outputs formatted strictly to max 2 decimal places.
     """
     orig_vectors = [sp.Matrix(v) for v in vectors_data]
     k = len(orig_vectors)
@@ -430,7 +459,7 @@ def solve_gram_schmidt(vectors_data):
             u_i = u_i - proj_vec
             
             proj_latex_list.append(
-                rf"\text{{proj}}_{{\mathbf{{u}}_{{{j+1}}}}}(\mathbf{{v}}_{{{i+1}}}) = \frac{{\mathbf{{v}}_{{{i+1}}} \cdot \mathbf{{u}}_{{{j+1}}}}}{{\|\mathbf{{u}}_{{{j+1}}}\|^2}} \mathbf{{u}}_{{{j+1}}} = \frac{{{sp.latex(dot_v_u)}}}{{{sp.latex(dot_u_u)}}} {matrix_to_latex(u_j)} = {matrix_to_latex(proj_vec)}"
+                rf"\text{{proj}}_{{\mathbf{{u}}_{{{j+1}}}}}(\mathbf{{v}}_{{{i+1}}}) = \frac{{\mathbf{{v}}_{{{i+1}}} \cdot \mathbf{{u}}_{{{j+1}}}}}{{\|\mathbf{{u}}_{{{j+1}}}\|^2}} \mathbf{{u}}_{{{j+1}}} = \frac{{{sp.latex(clean_val_2dp(dot_v_u))}}}{{{sp.latex(clean_val_2dp(dot_u_u))}}} {matrix_to_latex(u_j)} = {matrix_to_latex(proj_vec)}"
             )
 
         u_vectors.append(u_i)
@@ -443,7 +472,7 @@ def solve_gram_schmidt(vectors_data):
             'v_latex': matrix_to_latex(v_i),
             'proj_explanations': proj_latex_list,
             'u_latex': matrix_to_latex(u_i),
-            'u_norm_latex': sp.latex(u_norm),
+            'u_norm_latex': sp.latex(clean_val_2dp(u_norm)),
             'e_latex': matrix_to_latex(e_i)
         })
 
@@ -493,12 +522,12 @@ def solve_cofactor_expansion(matrix_data, expand_by='row', idx=0):
             terms.append({
                 'row': r + 1,
                 'col': c + 1,
-                'entry': sp.latex(val),
+                'entry': sp.latex(clean_val_2dp(val)),
                 'sign': f"(-1)^{{{r+1}+{c+1}}} = {sign}",
                 'submatrix_latex': matrix_to_latex(sub_mat),
-                'minor_det_latex': sp.latex(minor_det),
-                'cofactor_latex': sp.latex(cofactor),
-                'term_latex': rf"({sp.latex(val)}) \cdot ({sp.latex(cofactor)}) = {sp.latex(term_val)}"
+                'minor_det_latex': sp.latex(clean_val_2dp(minor_det)),
+                'cofactor_latex': sp.latex(clean_val_2dp(cofactor)),
+                'term_latex': rf"({sp.latex(clean_val_2dp(val))}) \cdot ({sp.latex(clean_val_2dp(cofactor))}) = {sp.latex(clean_val_2dp(term_val))}"
             })
     else:
         c = idx
@@ -514,12 +543,12 @@ def solve_cofactor_expansion(matrix_data, expand_by='row', idx=0):
             terms.append({
                 'row': r + 1,
                 'col': c + 1,
-                'entry': sp.latex(val),
+                'entry': sp.latex(clean_val_2dp(val)),
                 'sign': f"(-1)^{{{r+1}+{c+1}}} = {sign}",
                 'submatrix_latex': matrix_to_latex(sub_mat),
-                'minor_det_latex': sp.latex(minor_det),
-                'cofactor_latex': sp.latex(cofactor),
-                'term_latex': rf"({sp.latex(val)}) \cdot ({sp.latex(cofactor)}) = {sp.latex(term_val)}"
+                'minor_det_latex': sp.latex(clean_val_2dp(minor_det)),
+                'cofactor_latex': sp.latex(clean_val_2dp(cofactor)),
+                'term_latex': rf"({sp.latex(clean_val_2dp(val))}) \cdot ({sp.latex(clean_val_2dp(cofactor))}) = {sp.latex(clean_val_2dp(term_val))}"
             })
 
     # Checkerboard sign matrix
@@ -530,7 +559,7 @@ def solve_cofactor_expansion(matrix_data, expand_by='row', idx=0):
         'expand_by': expand_by,
         'index': idx + 1,
         'terms': terms,
-        'total_det_latex': sp.latex(total_det),
+        'total_det_latex': sp.latex(clean_val_2dp(total_det)),
         'sign_matrix_latex': matrix_to_latex(sp.Matrix(sign_matrix))
     }
 
@@ -540,7 +569,7 @@ def solve_cofactor_expansion(matrix_data, expand_by='row', idx=0):
 def solve_diagonalization(matrix_data):
     """
     Calculates Characteristic Polynomial, Eigenvalues, Eigenvectors, 
-    and checks Diagonalization A = P D P^-1.
+    and checks Diagonalization A = P D P^-1 with max 2 decimal places.
     """
     mat = sp.Matrix(matrix_data)
     n, m = mat.shape
@@ -573,7 +602,7 @@ def solve_diagonalization(matrix_data):
             D_diag.append(val)
 
         eigenvalues_summary.append({
-            'eigenvalue_latex': sp.latex(val),
+            'eigenvalue_latex': sp.latex(clean_val_2dp(val)),
             'alg_mult': alg_mult,
             'geom_mult': geom_mult,
             'eigenvectors_latex': vects_latex
@@ -595,7 +624,7 @@ def solve_diagonalization(matrix_data):
 
     return {
         'matrix_latex': matrix_to_latex(mat),
-        'char_poly_latex': sp.latex(sp.expand(char_poly)),
+        'char_poly_latex': sp.latex(clean_val_2dp(sp.expand(char_poly))),
         'eigenvalues_summary': eigenvalues_summary,
         'is_diagonalizable': is_diagonalizable,
         'P_latex': matrix_to_latex(P_mat) if P_mat else r"\text{N/A}",
