@@ -86,13 +86,14 @@
         {% for term in result.terms %}
         <div class="accordion-item animate-step" style="animation-delay: {{ forloop.counter0 }}00ms;">
             <h2 class="accordion-header" id="headingCofactor{{ forloop.counter }}">
-                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCofactor{{ forloop.counter }}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCofactor{{ forloop.counter }}">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
                         <span><span class="badge badge-topic me-2">Term {{ forloop.counter }}</span> Entry $a_{{ term.row }}{{ term.col }} = {{ term.entry }}$</span>
                     </div>
                 </button>
             </h2>
-            <div id="collapseCofactor{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#cofactorAccordion">
+            <div id="collapseCofactor{{ forloop.counter }}" class="accordion-collapse collapse show">
+
                 <div class="accordion-body">
                     <div class="d-flex align-items-center justify-content-end mb-2">
                         <button onclick="copyToClipboard('C_{{ term.row }}{{ term.col }} = {{ term.cofactor_latex|escapejs }}')" class="btn btn-copy no-print">

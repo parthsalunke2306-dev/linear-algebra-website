@@ -62,13 +62,14 @@
         {% for step in result.steps %}
         <div class="accordion-item animate-step" style="animation-delay: {{ forloop.counter0 }}00ms;">
             <h2 class="accordion-header" id="headingGS{{ forloop.counter }}">
-                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGS{{ forloop.counter }}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGS{{ forloop.counter }}">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
                         <span><span class="badge badge-topic me-2">Vector Step {{ step.step_num }}</span> Orthogonalizing $\mathbf{v}_{{ step.step_num }}$</span>
                     </div>
                 </button>
             </h2>
-            <div id="collapseGS{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#gsAccordion">
+            <div id="collapseGS{{ forloop.counter }}" class="accordion-collapse collapse show">
+
                 <div class="accordion-body">
                     <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
                         <span class="text-muted small">Subtracted projection terms:</span>

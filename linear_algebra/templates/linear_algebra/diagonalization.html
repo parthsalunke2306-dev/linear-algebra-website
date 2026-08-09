@@ -69,7 +69,7 @@
                     </div>
                 </button>
             </h2>
-            <div id="collapseChar" class="accordion-collapse collapse show" data-bs-parent="#diagAccordion">
+            <div id="collapseChar" class="accordion-collapse collapse show">
                 <div class="accordion-body text-center">
                     <div class="d-flex align-items-center justify-content-end mb-2">
                         <button onclick="copyToClipboard('p(\\lambda) = {{ result.char_poly_latex|escapejs }} = 0')" class="btn btn-copy no-print">
@@ -92,7 +92,7 @@
                     </div>
                 </button>
             </h2>
-            <div id="collapseEigen" class="accordion-collapse collapse show" data-bs-parent="#diagAccordion">
+            <div id="collapseEigen" class="accordion-collapse collapse show">
                 <div class="accordion-body">
                     <div class="row g-3">
                         {% for item in result.eigenvalues_summary %}
@@ -131,7 +131,8 @@
                     </div>
                 </button>
             </h2>
-            <div id="collapsePDP" class="accordion-collapse collapse show" data-bs-parent="#diagAccordion">
+            <div id="collapsePDP" class="accordion-collapse collapse show">
+
                 <div class="accordion-body">
                     {% if result.is_diagonalizable %}
                     <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">

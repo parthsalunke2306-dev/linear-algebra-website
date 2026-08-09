@@ -61,7 +61,12 @@
 <div class="glass-card p-4 mb-4">
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <h4 class="text-white mb-0"><i class="bi bi-list-ol text-purple me-2" style="color: var(--accent-purple);"></i>Step-by-Step Matrix Derivation</h4>
-        <span class="badge bg-primary px-3 py-2 fs-6" style="background: var(--accent-purple) !important;">{{ result.solution_type }}</span>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button type="button" onclick="toggleAllSteps('gaussianStepsAccordion')" class="btn btn-preset no-print">
+                <i class="bi bi-arrows-expand me-1"></i> Toggle All Steps
+            </button>
+            <span class="badge bg-primary px-3 py-2 fs-6" style="background: var(--accent-purple) !important;">{{ result.solution_type }}</span>
+        </div>
     </div>
 
     <!-- Collapsible Accordion Container for Steps -->
@@ -69,13 +74,14 @@
         {% for step in result.steps %}
         <div class="accordion-item animate-step" style="animation-delay: {{ forloop.counter0 }}00ms;">
             <h2 class="accordion-header" id="heading{{ forloop.counter }}">
-                <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
                         <span><span class="badge badge-topic me-2">Step {{ forloop.counter }}</span> {{ step.title }}</span>
                     </div>
                 </button>
             </h2>
-            <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#gaussianStepsAccordion">
+            <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse show">
+
                 <div class="accordion-body">
                     <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                         <p class="text-muted small mb-0 flex-grow-1 me-2">{{ step.explanation }}</p>

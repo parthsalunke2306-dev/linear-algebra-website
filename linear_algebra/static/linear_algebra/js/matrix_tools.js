@@ -159,3 +159,31 @@ function modifyMatrixSize(textareaId, action, gridContainerId = null) {
         renderMatrixTable(textareaId, gridContainerId, isAug);
     }
 }
+
+// 5. Toggle All Steps Open / Closed
+function toggleAllSteps(accordionId) {
+    const accordion = document.getElementById(accordionId);
+    if (!accordion) return;
+
+    const collapseElements = accordion.querySelectorAll('.accordion-collapse');
+    const buttons = accordion.querySelectorAll('.accordion-button');
+    
+    let anyExpanded = Array.from(collapseElements).some(el => el.classList.contains('show'));
+
+    collapseElements.forEach(el => {
+        if (anyExpanded) {
+            el.classList.remove('show');
+        } else {
+            el.classList.add('show');
+        }
+    });
+
+    buttons.forEach(btn => {
+        if (anyExpanded) {
+            btn.classList.add('collapsed');
+        } else {
+            btn.classList.remove('collapsed');
+        }
+    });
+}
+
