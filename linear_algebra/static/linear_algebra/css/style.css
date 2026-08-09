@@ -313,6 +313,83 @@ textarea:focus-visible {
     border-radius: 6px;
 }
 
+/* Representation of Matrix Grid Table Component */
+.matrix-grid-wrapper {
+    background: var(--surface-slate);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    padding: 1.25rem 1rem;
+    overflow-x: auto;
+    margin-bottom: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.matrix-grid-header-label {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--accent-cyan);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.matrix-grid-table {
+    border-collapse: separate;
+    border-spacing: 8px 6px;
+    margin: 0 auto;
+}
+
+.matrix-grid-table th {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--accent-purple);
+    text-align: center;
+    padding: 4px 6px;
+    user-select: none;
+}
+
+.matrix-grid-table th.col-index-th {
+    color: var(--accent-cyan);
+    font-size: 0.85rem;
+    border-bottom: 2px solid rgba(56, 189, 248, 0.35);
+    padding-bottom: 6px;
+}
+
+.matrix-grid-table th.row-index-th {
+    color: var(--accent-purple);
+    font-size: 0.85rem;
+    border-right: 2px solid rgba(192, 132, 252, 0.35);
+    padding-right: 10px;
+    text-align: right;
+    vertical-align: middle;
+}
+
+.matrix-grid-cell-input {
+    width: 68px;
+    height: 42px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    color: var(--text-main);
+    font-family: var(--font-mono, monospace);
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.matrix-grid-cell-input:focus {
+    outline: none;
+    border-color: var(--accent-purple);
+    box-shadow: 0 0 12px var(--accent-purple-glow);
+    background: rgba(192, 132, 252, 0.15);
+}
+
+
 
 
 /* Glassmorphism Cards */
