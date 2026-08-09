@@ -54,7 +54,23 @@ class CofactorForm(forms.Form):
         help_text='1-indexed Row or Column to expand along.'
     )
 
+class GF2Form(forms.Form):
+    element_a = forms.IntegerField(
+        initial=1,
+        widget=forms.Select(attrs={'class': 'form-select'}, choices=[(0, '0'), (1, '1')])
+    )
+    element_b = forms.IntegerField(
+        initial=1,
+        widget=forms.Select(attrs={'class': 'form-select'}, choices=[(0, '0'), (1, '1')])
+    )
+    operation = forms.ChoiceField(
+        choices=[('add', 'Addition (+ mod 2 / XOR)'), ('mul', 'Multiplication (· mod 2 / AND)')],
+        initial='add',
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
 class DiagonalizationForm(forms.Form):
+
     matrix_text = forms.CharField(
         widget=forms.Textarea(attrs={
             'class': 'form-control font-monospace',

@@ -2,9 +2,10 @@ import inspect
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from .forms import (
-    GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm,
+    GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm, GF2Form,
     LoginForm, SignUpForm, ForgotPasswordForm, ResetPasswordForm, ProfileUpdateForm
 )
+
 from . import math_engine
 from .supabase_client import (
     sign_in_user, sign_up_user, sign_out_user,
@@ -238,15 +239,26 @@ def gaussian_view(request):
 def gf2_view(request):
     """Topic 1.2: Field Axioms via GF(2)."""
     result = math_engine.analyze_gf2_field()
-    code_snippet = inspect.getsource(math_engine.analyze_gf2_field)
+    form = GF2Form(request.POST or None)
+    calc_res = None
+
+    if request.method == 'POST' and form.is_valid():
+        a = form.cleaned_data['element_a']
+        b = form.cleaned_data['element_b']
+        op = form.cleaned_data['operation']
+        calc_res = math_engine.compute_gf2_calc(a, b, op)
+    else:
+        calc_res = math_engine.compute_gf2_calc(1, 1, 'add')
 
     context = {
         'title': 'Field Axioms via GF(2)',
         'unit': 'Unit 1 • Topic 2',
         'result': result,
-        'python_code': code_snippet
+        'form': form,
+        'calc_res': calc_res
     }
     return render(request, 'linear_algebra/gf2.html', context)
+
 
 @supabase_login_required
 def vectors_view(request):

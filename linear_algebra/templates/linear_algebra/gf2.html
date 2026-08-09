@@ -80,7 +80,57 @@
     </div>
 </div>
 
+<!-- Interactive Custom GF(2) Input Calculator -->
 <div class="glass-card p-4 mb-4">
+    <h4 class="text-white mb-3"><i class="bi bi-calculator-fill text-warning me-2"></i>Custom GF(2) Binary Calculator</h4>
+    <p class="text-muted small mb-4">Select your input binary elements ($a, b \in \{0, 1\}$) and operation to evaluate custom GF(2) arithmetic step-by-step:</p>
+    
+    <form method="post" action="{% url 'linear_algebra:gf2' %}" class="row g-3 align-items-end mb-3">
+        {% csrf_token %}
+        <div class="col-md-3 col-6">
+            <label class="form-label text-muted small fw-semibold">Element $a$</label>
+            {{ form.element_a }}
+        </div>
+        <div class="col-md-3 col-6">
+            <label class="form-label text-muted small fw-semibold">Operation</label>
+            {{ form.operation }}
+        </div>
+        <div class="col-md-3 col-6">
+            <label class="form-label text-muted small fw-semibold">Element $b$</label>
+            {{ form.element_b }}
+        </div>
+        <div class="col-md-3 col-6">
+            <button type="submit" class="btn btn-gradient w-100">
+                <i class="bi bi-cpu me-1"></i> Compute GF(2)
+            </button>
+        </div>
+    </form>
+
+    {% if calc_res %}
+    <div class="p-3 rounded-3 border border-purple" style="background: var(--surface-slate);">
+        <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+            <span class="badge bg-primary px-3 py-2 font-monospace" style="background: var(--accent-purple) !important;">GF(2) Calculation Result</span>
+            <span class="text-muted small">{{ calc_res.explanation }}</span>
+        </div>
+        <div class="latex-scroll-wrapper text-center my-2">
+            $${{ calc_res.latex }}$$
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Input Guide Card -->
+<div class="glass-card p-4 mb-4 border border-info" style="background: rgba(15, 23, 42, 0.7);">
+    <h5 class="text-info mb-2"><i class="bi bi-info-circle-fill me-2"></i>How to Enter Inputs for Your Matrix & Vector Questions:</h5>
+    <ul class="text-light mb-0 small ps-3">
+        <li class="mb-1"><strong>Interactive 2D Tabular Grid:</strong> On <a href="{% url 'linear_algebra:gaussian' %}" class="text-purple">Gaussian Elimination</a>, <a href="{% url 'linear_algebra:cofactor' %}" class="text-purple">Cofactor Expansion</a>, <a href="{% url 'linear_algebra:gram_schmidt' %}" class="text-purple">Gram–Schmidt</a>, and <a href="{% url 'linear_algebra:diagonalization' %}" class="text-purple">Diagonalization</a>, simply click into any cell of the visual matrix grid to type your numbers!</li>
+        <li class="mb-1"><strong>Dynamic Dimension Resizers:</strong> Change the <em>Rows</em> and <em>Columns</em> dropdowns to expand or contract matrix dimensions (e.g. $2\times2$, $3\times3$, $4\times4$).</li>
+        <li><strong>Preset Example Solvers:</strong> Click any preset button (e.g. <em>3x3 System</em>, <em>No Solution</em>, <em>Orthogonal Basis</em>) to automatically populate test matrices into your input table!</li>
+    </ul>
+</div>
+
+<div class="glass-card p-4 mb-4">
+
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <h4 class="text-white mb-0"><i class="bi bi-check2-all me-2 text-success"></i>Explicit 11 Field Axiom Verification</h4>
         <div class="d-flex align-items-center gap-2 flex-wrap">

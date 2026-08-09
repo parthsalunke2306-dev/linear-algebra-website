@@ -198,6 +198,28 @@ def analyze_gf2_field():
     # Multiplication table (AND / mod 2)
     mul_table = [[(a * b) % 2 for b in elements] for a in elements]
 
+def compute_gf2_calc(a, b, op):
+    """Calculates custom binary addition/multiplication in GF(2)."""
+    a = int(a) % 2
+    b = int(b) % 2
+    if op == 'add':
+        res = (a + b) % 2
+        latex = f"{a} + {b} = {res} \\pmod{{2}}"
+        explanation = f"Binary Addition (XOR) in GF(2): {a} + {b} = {res} (mod 2)"
+    else:
+        res = (a * b) % 2
+        latex = f"{a} \\cdot {b} = {res} \\pmod{{2}}"
+        explanation = f"Binary Multiplication (AND) in GF(2): {a} · {b} = {res} (mod 2)"
+    return {
+        'a': a,
+        'b': b,
+        'op': op,
+        'result': res,
+        'latex': latex,
+        'explanation': explanation
+    }
+
+
     axioms = []
 
     # 1. Addition Closure
