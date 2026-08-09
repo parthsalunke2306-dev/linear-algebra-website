@@ -124,18 +124,19 @@
     </div>
 
     <!-- Total Determinant Result Box -->
-    <div class="p-4 rounded-3 border border-purple" style="background: var(--surface-slate); border-color: var(--accent-purple) !important;">
-        <div class="d-flex align-items-center justify-content-between mb-2">
+    <div class="p-3 p-md-4 rounded-3 border border-purple" style="background: var(--surface-slate); border-color: var(--accent-purple) !important;">
+        <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
             <h5 class="mb-0" style="color: var(--accent-purple);"><i class="bi bi-check-circle-fill me-2"></i>Total Determinant $\det(A)$</h5>
             <button onclick="copyToClipboard('\\det(A) = {{ result.total_det_latex|escapejs }}')" class="btn btn-copy no-print">
                 <i class="bi bi-clipboard me-1"></i> Copy Det LaTeX
             </button>
         </div>
-        <div class="fs-3 text-white text-center py-2 bg-dark rounded border border-purple">
+        <div class="latex-scroll-wrapper text-center my-2">
             $$\det(A) = {{ result.total_det_latex }}$$
         </div>
     </div>
 </div>
+
 {% endif %}
 
 

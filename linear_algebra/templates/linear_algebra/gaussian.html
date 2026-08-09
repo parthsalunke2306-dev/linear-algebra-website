@@ -100,19 +100,20 @@
     </div>
 
     <!-- Final Solution Summary Box -->
-    <div class="p-4 rounded-3 border border-purple" style="background: var(--glass-bg); border-color: var(--accent-purple) !important;">
-        <div class="d-flex align-items-center justify-content-between mb-2">
+    <div class="p-3 p-md-4 rounded-3 border border-purple" style="background: var(--glass-bg); border-color: var(--accent-purple) !important;">
+        <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
             <h5 class="mb-0" style="color: var(--accent-purple);"><i class="bi bi-check-circle-fill me-2"></i>Final Solution Vector</h5>
             <button onclick="copyToClipboard('{{ result.solution_latex|escapejs }}')" class="btn btn-copy no-print">
                 <i class="bi bi-clipboard me-1"></i> Copy Solution LaTeX
             </button>
         </div>
-        <p class="text-muted mb-3">{{ result.solution_summary }}</p>
-        <div class="fs-4 text-white text-center py-2 bg-dark rounded border border-purple">
+        <p class="text-muted small mb-3">{{ result.solution_summary }}</p>
+        <div class="latex-scroll-wrapper text-center my-2">
             $${{ result.solution_latex }}$$
         </div>
     </div>
 </div>
+
 
 <!-- CODE INSPECTOR TAB FOR LEARNING -->
 <!-- <div class="code-inspector mt-4 no-print">
