@@ -297,11 +297,30 @@ textarea:focus-visible {
     }
 }
 
-/* Tabular Matrix Input Grid Styling */
+/* 1. Global Viewport & Touch Safety */
+html, body {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+body {
+    min-height: 100dvh;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 2. Responsive Typography Scaling */
+h1, .h1 { font-size: clamp(1.45rem, 5vw, 2.5rem); }
+h2, .h2 { font-size: clamp(1.3rem, 4vw, 2rem); }
+h3, .h3 { font-size: clamp(1.15rem, 3.5vw, 1.75rem); }
+h4, .h4 { font-size: clamp(1.05rem, 3vw, 1.5rem); }
+h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
+
+/* 3. Tabular Matrix Input Grid Styling across Device Sizes & Ratios */
 .matrix-input-table {
     border-collapse: separate;
     border-spacing: 6px;
     margin: 0.5rem auto;
+    max-width: 100%;
 }
 
 .matrix-input-table td {
@@ -315,16 +334,17 @@ textarea:focus-visible {
 }
 
 .matrix-cell-input {
-    width: 60px !important;
-    height: 44px !important;
+    width: clamp(40px, 11vw, 60px) !important;
+    height: clamp(38px, 10vw, 46px) !important;
     background: var(--surface-slate) !important;
     border: 1px solid var(--glass-border) !important;
     color: var(--text-main) !important;
-    font-size: 1rem !important;
+    font-size: clamp(0.82rem, 2.5vw, 1rem) !important;
     font-weight: 700 !important;
     border-radius: 8px !important;
     transition: all 0.2s ease !important;
     text-align: center;
+    padding: 0.2rem !important;
 }
 
 .matrix-cell-input:focus {
@@ -334,16 +354,50 @@ textarea:focus-visible {
     outline: none !important;
 }
 
+/* 4. Medium & Small Mobile Breakpoints (< 576px) */
 @media (max-width: 576px) {
+    .main-content-wrapper {
+        padding: 0.85rem 0.6rem 1.75rem 0.6rem !important;
+    }
+    .glass-card {
+        padding: 1rem !important;
+        border-radius: 12px !important;
+    }
     .matrix-cell-input {
-        width: 48px !important;
-        height: 40px !important;
-        font-size: 0.9rem !important;
+        width: clamp(36px, 12vw, 48px) !important;
+        height: 38px !important;
+        font-size: 0.88rem !important;
     }
     .matrix-input-table {
         border-spacing: 4px;
     }
 }
+
+/* 5. Compact & Narrow Mobile Breakpoints (< 380px e.g. iPhone SE, Fold) */
+@media (max-width: 380px) {
+    .main-content-wrapper {
+        padding: 0.5rem 0.35rem 1.25rem 0.35rem !important;
+    }
+    .glass-card {
+        padding: 0.75rem !important;
+        border-radius: 10px !important;
+    }
+    .matrix-input-table {
+        border-spacing: 3px;
+    }
+    .matrix-cell-input {
+        width: 34px !important;
+        height: 34px !important;
+        font-size: 0.78rem !important;
+        padding: 0.1rem !important;
+    }
+    .matrix-resizer-controls .btn-preset {
+        flex: 1 1 45% !important;
+        font-size: 0.72rem !important;
+        padding: 0.25rem 0.2rem !important;
+    }
+}
+
 
 
 
