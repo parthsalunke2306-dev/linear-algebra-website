@@ -80,13 +80,17 @@
     </div>
 </div>
 
-<!-- Stacked Card 2: 11 Field Axioms Collapsible Accordions -->
 <div class="glass-card p-4 mb-4">
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <h4 class="text-white mb-0"><i class="bi bi-check2-all me-2 text-success"></i>Explicit 11 Field Axiom Verification</h4>
-        {% if result.is_field %}
-        <span class="badge bg-success px-3 py-2 fs-6"><i class="bi bi-shield-check me-1"></i> GF(2) IS A VALID FIELD</span>
-        {% endif %}
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button type="button" onclick="toggleAllSteps('gf2AxiomsAccordion')" class="btn btn-preset no-print">
+                <i class="bi bi-arrows-expand me-1"></i> Toggle All Axioms
+            </button>
+            {% if result.is_field %}
+            <span class="badge bg-success px-3 py-2 fs-6"><i class="bi bi-shield-check me-1"></i> GF(2) IS A VALID FIELD</span>
+            {% endif %}
+        </div>
     </div>
 
     <!-- Accordion for Axioms -->
@@ -94,20 +98,21 @@
         {% for axiom in result.axioms %}
         <div class="accordion-item animate-step" style="animation-delay: {{ forloop.counter0 }}00ms;">
             <h2 class="accordion-header" id="headingAxiom{{ forloop.counter }}">
-                <button class="accordion-button {% if forloop.counter > 3 %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAxiom{{ forloop.counter }}">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAxiom{{ forloop.counter }}">
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
                         <span><span class="badge badge-topic me-2">Axiom {{ forloop.counter }}</span> {{ axiom.name }}</span>
                         {% if axiom.passed %}
-                        <span class="badge bg-success font-monospace ms-auto">VERIFIED PASSED</span>
+                        <span class="badge bg-success font-monospace ms-auto me-2">VERIFIED PASSED</span>
                         {% endif %}
                     </div>
                 </button>
             </h2>
-            <div id="collapseAxiom{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.counter <= 3 %}show{% endif %}" data-bs-parent="#gf2AxiomsAccordion">
+            <div id="collapseAxiom{{ forloop.counter }}" class="accordion-collapse collapse show">
                 <div class="accordion-body">
-                    <div class="text-light mb-2 fs-5 text-center py-2 bg-dark rounded border border-secondary">
+                    <div class="latex-scroll-wrapper text-center my-2">
                         $${{ axiom.symbol }}$$
                     </div>
+
                     <p class="text-muted small mb-0"><strong class="text-white">Proof / Verification:</strong> {{ axiom.proof }}</p>
                 </div>
             </div>
