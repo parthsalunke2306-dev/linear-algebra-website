@@ -23,7 +23,7 @@
         <h5 class="text-white mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Vector Set Input & Resizer</h5>
         
         <!-- Presets -->
-        <div class="d-flex align-items-center gap-1 flex-wrap">
+        <div class="preset-container d-flex align-items-center gap-1 flex-wrap">
             <span class="text-muted small font-monospace me-1"><i class="bi bi-lightning-charge-fill text-warning"></i>PRESETS:</span>
             <button type="button" onclick="loadGSPreset('3d')" class="btn btn-preset">3 Vectors in R³</button>
             <button type="button" onclick="loadGSPreset('4d')" class="btn btn-preset">3 Vectors in R⁴</button>
@@ -33,13 +33,14 @@
     <form method="post" id="gsForm">
         {% csrf_token %}
         <div class="mb-3">
-            <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                 <label class="form-label text-muted small fw-semibold mb-0">Input Vectors $\{\mathbf{v}_1, \mathbf{v}_2, \dots\}$</label>
-                <div class="btn-group btn-group-sm">
+                <div class="matrix-resizer-controls">
                     <button type="button" onclick="modifyMatrixSize('id_vectors_text', 'add_row')" class="btn btn-preset">+ Vector</button>
                     <button type="button" onclick="modifyMatrixSize('id_vectors_text', 'remove_row')" class="btn btn-preset">- Vector</button>
                 </div>
             </div>
+
             {{ form.vectors_text }}
             <div class="form-text text-muted">{{ form.vectors_text.help_text }}</div>
         </div>

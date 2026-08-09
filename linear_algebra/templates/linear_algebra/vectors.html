@@ -20,13 +20,14 @@
                 <h5 class="text-white mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Vector Inputs</h5>
                 
                 <!-- Quick Presets -->
-                <div class="d-flex align-items-center gap-1 flex-wrap">
+                <div class="preset-container d-flex align-items-center gap-1 flex-wrap">
                     <span class="text-muted small font-monospace me-1"><i class="bi bi-lightning-charge-fill text-warning"></i>PRESETS:</span>
                     <button type="button" onclick="loadVectorPreset('standard')" class="btn btn-preset">Standard 3D</button>
                     <button type="button" onclick="loadVectorPreset('orthogonal')" class="btn btn-preset">Orthogonal</button>
                     <button type="button" onclick="loadVectorPreset('parallel')" class="btn btn-preset">Parallel</button>
                 </div>
             </div>
+
 
             <form method="post" id="vectorForm">
                 {% csrf_token %}
