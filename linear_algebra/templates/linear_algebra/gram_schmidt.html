@@ -70,7 +70,7 @@
             </h2>
             <div id="collapseGS{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#gsAccordion">
                 <div class="accordion-body">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
+                    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
                         <span class="text-muted small">Subtracted projection terms:</span>
                         <button onclick="copyToClipboard('\\mathbf{u}_{{ step.step_num }} = {{ step.u_latex|escapejs }}, \\mathbf{e}_{{ step.step_num }} = {{ step.e_latex|escapejs }}')" class="btn btn-copy no-print">
                             <i class="bi bi-clipboard me-1"></i> Copy Step LaTeX
@@ -80,11 +80,13 @@
                     <div class="row align-items-center mb-3">
                         <div class="col-md-4 text-center">
                             <span class="text-muted small d-block mb-1">Input Vector $\mathbf{v}_{{ step.step_num }}$:</span>
-                            $${{ step.v_latex }}$$
+                            <div class="latex-scroll-wrapper text-center">
+                                $${{ step.v_latex }}$$
+                            </div>
                         </div>
                         <div class="col-md-8">
                             {% for proj in step.proj_explanations %}
-                            <div class="p-2 bg-dark rounded border border-secondary mb-2 overflow-x-auto text-center small">
+                            <div class="latex-scroll-wrapper text-center my-1 small">
                                 $${{ proj }}$$
                             </div>
                             {% empty %}
@@ -96,13 +98,18 @@
                     <div class="row align-items-center pt-2 border-top border-secondary">
                         <div class="col-md-6 text-center">
                             <span class="fw-bold d-block mb-1" style="color: var(--accent-purple);">Orthogonal Vector $\mathbf{u}_{{ step.step_num }}$:</span>
-                            $${{ step.u_latex }}$$
+                            <div class="latex-scroll-wrapper text-center">
+                                $${{ step.u_latex }}$$
+                            </div>
                         </div>
                         <div class="col-md-6 text-center">
                             <span class="text-success fw-bold d-block mb-1">Normalized Unit Vector $\mathbf{e}_{{ step.step_num }}$:</span>
-                            $${{ step.e_latex }}$$
+                            <div class="latex-scroll-wrapper text-center">
+                                $${{ step.e_latex }}$$
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>

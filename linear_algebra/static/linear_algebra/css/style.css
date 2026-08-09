@@ -401,6 +401,39 @@ textarea:focus-visible {
     overflow-x: auto;
 }
 
+/* LaTeX Step Matrix Scroll Wrapper */
+.latex-scroll-wrapper {
+    background: #0B0F19;
+    border: 1px solid var(--glass-border);
+    border-radius: 10px;
+    padding: 0.85rem 1rem;
+    margin-top: 0.75rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    max-width: 100%;
+}
+
+.latex-scroll-wrapper MathJax, 
+.latex-scroll-wrapper .MathJax_Display,
+.latex-scroll-wrapper mjx-container {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    margin: 0 !important;
+}
+
+@media (max-width: 576px) {
+    .accordion-custom .accordion-button {
+        padding: 0.75rem 0.85rem;
+    }
+    .accordion-custom .accordion-body {
+        padding: 0.85rem;
+    }
+    .latex-scroll-wrapper {
+        padding: 0.65rem 0.75rem;
+    }
+}
+
+
 /* Animated Step Entry Keyframes */
 .animate-step {
     animation: fadeInStep 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;

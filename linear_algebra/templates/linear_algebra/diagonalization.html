@@ -144,22 +144,29 @@
                     <div class="row g-3 text-center mb-3">
                         <div class="col-md-4">
                             <span class="fw-bold d-block mb-1" style="color: var(--accent-purple);">Modal Matrix $P$:</span>
-                            $${{ result.P_latex }}$$
+                            <div class="latex-scroll-wrapper text-center">
+                                $${{ result.P_latex }}$$
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <span class="text-warning fw-bold d-block mb-1">Diagonal Matrix $D$:</span>
-                            $${{ result.D_latex }}$$
+                            <div class="latex-scroll-wrapper text-center">
+                                $${{ result.D_latex }}$$
+                            </div>
                         </div>
                         <div class="col-md-4">
                             <span class="text-success fw-bold d-block mb-1">Inverse Matrix $P^{-1}$:</span>
-                            $${{ result.P_inv_latex }}$$
+                            <div class="latex-scroll-wrapper text-center">
+                                $${{ result.P_inv_latex }}$$
+                            </div>
                         </div>
                     </div>
 
-                    <div class="p-3 bg-dark rounded border border-success text-center">
+                    <div class="latex-scroll-wrapper text-center">
                         <span class="text-muted small d-block mb-1">Verification Check ($P D P^{-1} \stackrel{?}{=} A$):</span>
                         $${{ result.verification_latex }} = {{ result.matrix_latex }}$$
                     </div>
+
                     {% else %}
                     <div class="alert alert-warning mb-0">
                         <i class="bi bi-exclamation-triangle-fill me-2"></i> This matrix cannot be diagonalized because its geometric multiplicity sum is strictly less than its dimension $n$.

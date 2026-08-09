@@ -102,8 +102,11 @@
                     <div class="row align-items-center">
                         <div class="col-md-4 text-center">
                             <span class="text-muted small d-block mb-1">Submatrix Minor $M_{{ term.row }}{{ term.col }}$:</span>
-                            $${{ term.submatrix_latex }}$$
+                            <div class="latex-scroll-wrapper text-center">
+                                $${{ term.submatrix_latex }}$$
+                            </div>
                         </div>
+
                         <div class="col-md-8">
                             <ul class="text-light small mb-0 ps-3">
                                 <li>Sign Factor: ${{ term.sign }}$</li>

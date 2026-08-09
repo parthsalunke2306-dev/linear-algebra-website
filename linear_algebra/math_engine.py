@@ -7,6 +7,21 @@ and proof verification for Python & Django.
 import numpy as np
 import sympy as sp
 
+def clean_val_str(x):
+    """Cleanly formats numbers into integers or clean short decimals."""
+    try:
+        val = sp.sympify(x)
+        if val.is_integer:
+            return str(int(val))
+        elif isinstance(val, (sp.Float, float)):
+            fval = float(val)
+            if fval.is_integer():
+                return str(int(fval))
+            return f"{fval:.4f}".rstrip('0').rstrip('.')
+        return str(val)
+    except Exception:
+        return str(x)
+
 def matrix_to_latex(matrix):
     """Converts a 2D array or SymPy Matrix to a LaTeX bmatrix string."""
     if isinstance(matrix, sp.Matrix):
@@ -16,7 +31,7 @@ def matrix_to_latex(matrix):
     
     rows = []
     for row in arr:
-        row_str = " & ".join([str(sp.sympify(x)) for x in row])
+        row_str = " & ".join([clean_val_str(x) for x in row])
         rows.append(row_str)
     return r"\begin{bmatrix} " + r" \\ ".join(rows) + r" \end{bmatrix}"
 
@@ -26,9 +41,10 @@ def augmented_matrix_to_latex(mat, num_cols_A):
     col_format = "c" * num_cols_A + "|" + "c" * (len(arr[0]) - num_cols_A)
     rows = []
     for row in arr:
-        row_str = " & ".join([str(sp.sympify(x)) for x in row])
+        row_str = " & ".join([clean_val_str(x) for x in row])
         rows.append(row_str)
     return r"\left[\begin{array}{" + col_format + r"} " + r" \\ ".join(rows) + r" \end{array}\right]"
+
 
 # ==========================================
 # UNIT 1 - TOPIC 1: Gaussian Elimination

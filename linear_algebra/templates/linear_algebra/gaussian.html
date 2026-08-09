@@ -77,15 +77,16 @@
             </h2>
             <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#gaussianStepsAccordion">
                 <div class="accordion-body">
-                    <div class="d-flex align-items-center justify-content-between mb-2">
-                        <p class="text-muted small mb-0">{{ step.explanation }}</p>
+                    <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                        <p class="text-muted small mb-0 flex-grow-1 me-2">{{ step.explanation }}</p>
                         <button onclick="copyToClipboard('{{ step.latex|escapejs }}')" class="btn btn-copy no-print">
                             <i class="bi bi-clipboard me-1"></i> Copy Step LaTeX
                         </button>
                     </div>
-                    <div class="text-center py-3 bg-dark rounded-3 border border-secondary overflow-x-auto">
+                    <div class="latex-scroll-wrapper text-center">
                         $$\text{Snapshot: } {{ step.latex }}$$
                     </div>
+
                 </div>
             </div>
         </div>
