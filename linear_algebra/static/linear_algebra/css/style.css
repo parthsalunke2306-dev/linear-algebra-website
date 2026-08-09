@@ -460,19 +460,24 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
     background: #0B0F19;
     border: 1px solid var(--glass-border);
     border-radius: 10px;
-    padding: 0.85rem 1rem;
+    padding: 0.65rem 0.75rem;
     margin-top: 0.75rem;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     max-width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .latex-scroll-wrapper MathJax, 
 .latex-scroll-wrapper .MathJax_Display,
+.latex-scroll-wrapper .MathJax,
 .latex-scroll-wrapper mjx-container {
     max-width: 100% !important;
-    overflow-x: auto !important;
+    font-size: clamp(0.7rem, 3.5vw, 1.05rem) !important;
     margin: 0 !important;
+    padding: 0 !important;
 }
 
 @media (max-width: 576px) {
@@ -483,9 +488,28 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
         padding: 0.85rem;
     }
     .latex-scroll-wrapper {
-        padding: 0.65rem 0.75rem;
+        padding: 0.5rem 0.45rem !important;
+    }
+    .latex-scroll-wrapper MathJax, 
+    .latex-scroll-wrapper .MathJax_Display,
+    .latex-scroll-wrapper .MathJax,
+    .latex-scroll-wrapper mjx-container {
+        font-size: clamp(0.62rem, 3.6vw, 0.9rem) !important;
     }
 }
+
+@media (max-width: 380px) {
+    .latex-scroll-wrapper {
+        padding: 0.4rem 0.35rem !important;
+    }
+    .latex-scroll-wrapper MathJax, 
+    .latex-scroll-wrapper .MathJax_Display,
+    .latex-scroll-wrapper .MathJax,
+    .latex-scroll-wrapper mjx-container {
+        font-size: clamp(0.58rem, 3.8vw, 0.82rem) !important;
+    }
+}
+
 
 
 /* Animated Step Entry Keyframes */

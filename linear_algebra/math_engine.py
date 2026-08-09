@@ -241,10 +241,11 @@ def analyze_gf2_field():
     add_inv = {a: [b for b in elements if (a + b) % 2 == 0][0] for a in elements}
     axioms.append({
         'name': 'Additive Inverse',
-        'symbol': r'\forall a \in \mathbb{F}_2, \; \exists (-a) \text{ s.t. } a + (-a) = 0',
+        'symbol': r'\forall a \in \mathbb{F}_2, \exists (-a) \text{ s.t. } a + (-a) = 0',
         'passed': True,
         'proof': 'In GF(2), every element is its own additive inverse: -0 = 0 (0+0=0) and -1 = 1 (1+1=0).'
     })
+
 
     # 6. Multiplication Closure
     mul_closed = all((a * b) % 2 in elements for a in elements for b in elements)
