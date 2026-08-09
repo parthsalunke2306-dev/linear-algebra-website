@@ -36,14 +36,17 @@
             <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                 <label class="form-label text-muted small fw-semibold mb-0">Input Vectors $\{\mathbf{v}_1, \mathbf{v}_2, \dots\}$</label>
                 <div class="matrix-resizer-controls">
-                    <button type="button" onclick="modifyMatrixSize('id_vectors_text', 'add_row')" class="btn btn-preset">+ Vector</button>
-                    <button type="button" onclick="modifyMatrixSize('id_vectors_text', 'remove_row')" class="btn btn-preset">- Vector</button>
+                    <button type="button" onclick="modifyMatrixSize('id_vectors_text', 'add_row', 'gsGrid')" class="btn btn-preset">+ Vector</button>
+                    <button type="button" onclick="modifyMatrixSize('id_vectors_text', 'remove_row', 'gsGrid')" class="btn btn-preset">- Vector</button>
                 </div>
             </div>
 
+            <!-- Tabular Matrix Grid Display -->
+            <div id="gsGrid" class="mb-2"></div>
             {{ form.vectors_text }}
-            <div class="form-text text-muted">{{ form.vectors_text.help_text }}</div>
+            <div class="form-text text-muted text-center">{{ form.vectors_text.help_text }}</div>
         </div>
+
         <button type="submit" class="btn btn-gradient w-100">
             <i class="bi bi-play-fill me-1"></i> Run Gram-Schmidt Process
         </button>
@@ -135,6 +138,10 @@
 
 {% block extra_js %}
 <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        initMatrixGrid('id_vectors_text', 'gsGrid', false);
+    });
+
     function loadGSPreset(type) {
         const textarea = document.getElementById('id_vectors_text');
         if (type === '3d') {
@@ -142,7 +149,9 @@
         } else if (type === '4d') {
             textarea.value = '1 1 0 1\n1 0 1 0\n0 1 1 1';
         }
+        renderMatrixTable('id_vectors_text', 'gsGrid', false);
         document.getElementById('gsForm').submit();
     }
 </script>
 {% endblock %}
+

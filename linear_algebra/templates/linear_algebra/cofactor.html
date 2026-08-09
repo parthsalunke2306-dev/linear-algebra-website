@@ -36,13 +36,16 @@
             <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                 <label class="form-label text-muted small fw-semibold mb-0">Square Matrix $A$</label>
                 <div class="matrix-resizer-controls">
-                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'add_row'); modifyMatrixSize('id_matrix_text', 'add_col');" class="btn btn-preset">+ Size</button>
-                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'remove_row'); modifyMatrixSize('id_matrix_text', 'remove_col');" class="btn btn-preset">- Size</button>
+                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'add_row', 'cofactorGrid'); modifyMatrixSize('id_matrix_text', 'add_col', 'cofactorGrid');" class="btn btn-preset">+ Size</button>
+                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'remove_row', 'cofactorGrid'); modifyMatrixSize('id_matrix_text', 'remove_col', 'cofactorGrid');" class="btn btn-preset">- Size</button>
                 </div>
             </div>
 
+            <!-- Tabular Matrix Grid Display -->
+            <div id="cofactorGrid" class="mb-2"></div>
             {{ form.matrix_text }}
         </div>
+
         <div class="row g-2 mb-4">
             <div class="col-6">
                 <label class="form-label text-muted small fw-semibold">Expand Along</label>
@@ -144,6 +147,10 @@
 
 {% block extra_js %}
 <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        initMatrixGrid('id_matrix_text', 'cofactorGrid', false);
+    });
+
     function loadCofactorPreset(type) {
         const textarea = document.getElementById('id_matrix_text');
         if (type === '3x3') {
@@ -151,7 +158,9 @@
         } else if (type === '4x4') {
             textarea.value = '1 2 0 1\n3 0 -1 2\n2 1 0 4\n0 1 2 3';
         }
+        renderMatrixTable('id_matrix_text', 'cofactorGrid', false);
         document.getElementById('cofactorForm').submit();
     }
 </script>
 {% endblock %}
+

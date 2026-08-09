@@ -38,21 +38,24 @@
                 <label class="form-label text-muted small fw-semibold mb-0">Augmented Matrix $[A \mid \mathbf{b}]$</label>
                 <!-- Dynamic Matrix Resizer Controls -->
                 <div class="matrix-resizer-controls">
-                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'add_row')" class="btn btn-preset">+ Row</button>
-                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'remove_row')" class="btn btn-preset">- Row</button>
-                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'add_col')" class="btn btn-preset">+ Col</button>
-                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'remove_col')" class="btn btn-preset">- Col</button>
+                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'add_row', 'gaussianGrid')" class="btn btn-preset">+ Row</button>
+                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'remove_row', 'gaussianGrid')" class="btn btn-preset">- Row</button>
+                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'add_col', 'gaussianGrid')" class="btn btn-preset">+ Col</button>
+                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'remove_col', 'gaussianGrid')" class="btn btn-preset">- Col</button>
                 </div>
             </div>
 
+            <!-- Tabular Matrix Grid Display -->
+            <div id="gaussianGrid" class="mb-2"></div>
             {{ form.matrix_text }}
-            <div class="form-text text-muted">{{ form.matrix_text.help_text }}</div>
+            <div class="form-text text-muted text-center">{{ form.matrix_text.help_text }}</div>
         </div>
         <button type="submit" class="btn btn-gradient w-100">
             <i class="bi bi-play-fill me-1"></i> Compute Gaussian Elimination
         </button>
     </form>
 </div>
+
 
 <!-- Full-Width Stacked Card 2: Collapsible Derivation Accordions -->
 <div class="glass-card p-4 mb-4">
@@ -116,6 +119,10 @@
 
 {% block extra_js %}
 <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        initMatrixGrid('id_matrix_text', 'gaussianGrid', true);
+    });
+
     function loadGaussianPreset(type) {
         const textarea = document.getElementById('id_matrix_text');
         if (type === '3x3') {
@@ -125,7 +132,9 @@
         } else if (type === 'parametric') {
             textarea.value = '1 2 -1 3\n2 4 -2 6\n1 0 1 5';
         }
+        renderMatrixTable('id_matrix_text', 'gaussianGrid', true);
         document.getElementById('gaussianForm').submit();
     }
 </script>
 {% endblock %}
+

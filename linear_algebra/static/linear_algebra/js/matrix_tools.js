@@ -1,16 +1,13 @@
 /**
- * Matrix Tools & Interactive UI Scripts
- * Handles Light/Dark Theme Switching, Representation of Matrix Grid, Presets & LaTeX Copying
+ * Dynamic Matrix Grid & Interactive UI Engine
+ * Renders raw textareas into interactive visual 2D HTML matrix input tables
  */
 
-// 1. Light/Dark Theme Switcher & Matrix Grid Initialization
+// 1. Light/Dark Theme Switcher
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
     updateThemeIcon(savedTheme);
-
-    // Initialize Representation of Matrix Grid for all matrix input textareas
-    initMatrixGrids();
 });
 
 function toggleTheme() {
@@ -51,127 +48,96 @@ function copyToClipboard(text) {
     });
 }
 
-// 3. REPRESENTATION OF MATRIX GRID & DYNAMIC RESIZER
-function initMatrixGrids() {
-    const textareas = document.querySelectorAll('textarea#id_matrix_text, textarea#id_vectors_text');
-    textareas.forEach(textarea => {
-        if (!textarea.id) return;
-        
-        // Hide original raw textarea (keep synced for form post)
-        textarea.style.display = 'none';
-        
-        let wrapper = document.getElementById(`grid_wrapper_${textarea.id}`);
-        if (!wrapper) {
-            wrapper = document.createElement('div');
-            wrapper.id = `grid_wrapper_${textarea.id}`;
-            wrapper.className = 'matrix-grid-wrapper';
-            textarea.parentNode.insertBefore(wrapper, textarea);
-        }
-        
-        renderMatrixGrid(textarea.id);
-    });
+// 3. Tabular Matrix Grid Renderer
+function initMatrixGrid(textareaId, gridContainerId, isAugmented = false) {
+    const textarea = document.getElementById(textareaId);
+    const container = document.getElementById(gridContainerId);
+    if (!textarea || !container) return;
+
+    // Hide raw textarea (keep form submission synced)
+    textarea.style.display = 'none';
+
+    // Store settings on container dataset
+    container.dataset.textareaId = textareaId;
+    container.dataset.isAugmented = isAugmented ? 'true' : 'false';
+
+    // Initial render from textarea value
+    renderMatrixTable(textareaId, gridContainerId, isAugmented);
 }
 
-function renderMatrixGrid(textareaId) {
+function renderMatrixTable(textareaId, gridContainerId, isAugmented = false) {
     const textarea = document.getElementById(textareaId);
-    const wrapper = document.getElementById(`grid_wrapper_${textareaId}`);
-    if (!textarea || !wrapper) return;
+    const container = document.getElementById(gridContainerId);
+    if (!textarea || !container) return;
 
-    let val = textarea.value.trim();
-    if (!val) {
-        val = "1 2 -1 8\n-3 -1 2 -11\n2 1 2 -3";
-        textarea.value = val;
+    let textVal = textarea.value.trim();
+    let lines = textVal.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+    if (lines.length === 0) {
+        lines = ["1 0 0", "0 1 0", "0 0 1"];
+        textarea.value = lines.join('\n');
     }
 
-    let lines = val.split('\n').map(l => l.trim()).filter(l => l.length > 0);
     let matrix = lines.map(line => line.split(/\s+/));
-    let numRows = matrix.length;
-    let numCols = matrix[0] ? matrix[0].length : 1;
+    let rows = matrix.length;
+    let cols = matrix[0].length;
 
-    let html = `
-        <div class="matrix-grid-header-label">
-            <span><i class="bi bi-grid-3x3-gap-fill text-purple me-2"></i>Representation of Matrix Grid</span>
-            <span class="text-muted font-monospace" style="font-size: 0.75rem;">
-                <i class="bi bi-arrow-right text-cyan me-1"></i>Columns: ${numCols} | <i class="bi bi-arrow-down text-purple me-1"></i>Rows: ${numRows}
-            </span>
-        </div>
-        <table class="matrix-grid-table">
-            <thead>
-                <tr>
-                    <th class="row-header-arrow"><span class="text-muted" style="font-size: 0.7rem;">Rows ↓ \\ Cols →</span></th>
-    `;
-
-    // Render Column Headers (0, 1, 2, 3...)
-    for (let j = 0; j < numCols; j++) {
-        html += `<th class="col-index-th">Col ${j}</th>`;
-    }
-    html += `</tr></thead><tbody>`;
-
-    // Render Data Rows with Row Headers (Row 0, Row 1, Row 2...)
-    for (let i = 0; i < numRows; i++) {
-        html += `<tr><th class="row-index-th">Row ${i}</th>`;
-        for (let j = 0; j < numCols; j++) {
-            let cellValue = (matrix[i] && matrix[i][j] !== undefined) ? matrix[i][j] : '0';
-            html += `
-                <td>
-                    <input type="text" class="matrix-grid-cell-input" 
-                           data-target="${textareaId}" data-row="${i}" data-col="${j}" 
-                           value="${cellValue}" 
-                           oninput="onMatrixGridCellInput('${textareaId}')"
-                           autocomplete="off">
-                </td>
-            `;
+    let html = `<div class="table-responsive text-center mb-2">
+        <table class="matrix-input-table mx-auto">
+            <tbody>`;
+    for (let r = 0; r < rows; r++) {
+        html += `<tr>`;
+        for (let c = 0; c < cols; c++) {
+            let isAugCol = isAugmented && (c === cols - 1);
+            let cellVal = (matrix[r] && matrix[r][c] !== undefined) ? matrix[r][c] : '0';
+            html += `<td class="${isAugCol ? 'augmented-col-cell' : ''}">
+                <input type="text" 
+                       class="matrix-cell-input form-control font-monospace text-center" 
+                       data-row="${r}" 
+                       data-col="${c}" 
+                       value="${cellVal}" 
+                       oninput="syncGridToTextarea('${textareaId}', '${gridContainerId}')">
+            </td>`;
         }
         html += `</tr>`;
     }
+    html += `</tbody>
+        </table>
+    </div>`;
 
-    html += `</tbody></table>`;
-    wrapper.innerHTML = html;
+    container.innerHTML = html;
 }
 
-function onMatrixGridCellInput(textareaId) {
+function syncGridToTextarea(textareaId, gridContainerId) {
+    const container = document.getElementById(gridContainerId);
     const textarea = document.getElementById(textareaId);
-    const wrapper = document.getElementById(`grid_wrapper_${textareaId}`);
-    if (!textarea || !wrapper) return;
+    if (!container || !textarea) return;
 
-    const inputs = wrapper.querySelectorAll('.matrix-grid-cell-input');
-    let matrixDict = {};
-    let maxRow = 0;
-    let maxCol = 0;
-
-    inputs.forEach(input => {
-        let r = parseInt(input.getAttribute('data-row'), 10);
-        let c = parseInt(input.getAttribute('data-col'), 10);
-        if (!matrixDict[r]) matrixDict[r] = {};
-        matrixDict[r][c] = input.value.trim() === '' ? '0' : input.value.trim();
-        if (r > maxRow) maxRow = r;
-        if (c > maxCol) maxCol = c;
+    const rows = container.querySelectorAll('tbody tr');
+    let matrixLines = [];
+    rows.forEach(tr => {
+        let rowVals = [];
+        const inputs = tr.querySelectorAll('input.matrix-cell-input');
+        inputs.forEach(inp => {
+            let val = inp.value.trim();
+            rowVals.push(val === '' ? '0' : val);
+        });
+        matrixLines.push(rowVals.join(' '));
     });
 
-    let lines = [];
-    for (let i = 0; i <= maxRow; i++) {
-        let rowVals = [];
-        for (let j = 0; j <= maxCol; j++) {
-            rowVals.push((matrixDict[i] && matrixDict[i][j] !== undefined) ? matrixDict[i][j] : '0');
-        }
-        lines.push(rowVals.join(' '));
-    }
-
-    textarea.value = lines.join('\n');
+    textarea.value = matrixLines.join('\n');
 }
 
-function modifyMatrixSize(textareaId, action) {
+// 4. Dynamic Matrix Resizer with Grid Auto-Sync
+function modifyMatrixSize(textareaId, action, gridContainerId = null) {
     const textarea = document.getElementById(textareaId);
     if (!textarea) return;
 
     let lines = textarea.value.trim().split('\n').filter(l => l.trim().length > 0);
-    if (lines.length === 0) {
-        lines = ["0 0 0", "0 0 0", "0 0 0"];
-    }
+    if (lines.length === 0) return;
 
     let matrix = lines.map(line => line.trim().split(/\s+/));
     let rows = matrix.length;
-    let cols = matrix[0] ? matrix[0].length : 1;
+    let cols = matrix[0].length;
 
     if (action === 'add_row') {
         let newRow = new Array(cols).fill('0');
@@ -185,13 +151,11 @@ function modifyMatrixSize(textareaId, action) {
     }
 
     textarea.value = matrix.map(row => row.join(' ')).join('\n');
-    renderMatrixGrid(textareaId);
-}
 
-// Hook preset loaders to update the matrix grid representation
-const originalLoadGaussianPreset = window.loadGaussianPreset;
-window.updateGridAfterPreset = function(textareaId) {
-    setTimeout(() => {
-        renderMatrixGrid(textareaId);
-    }, 50);
-};
+    // Auto-re-render grid if container provided
+    if (gridContainerId) {
+        const container = document.getElementById(gridContainerId);
+        let isAug = container && container.dataset.isAugmented === 'true';
+        renderMatrixTable(textareaId, gridContainerId, isAug);
+    }
+}

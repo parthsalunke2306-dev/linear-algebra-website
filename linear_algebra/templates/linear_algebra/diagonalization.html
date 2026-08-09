@@ -37,14 +37,17 @@
             <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                 <label class="form-label text-muted small fw-semibold mb-0">Square Matrix $A$</label>
                 <div class="matrix-resizer-controls">
-                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'add_row'); modifyMatrixSize('id_matrix_text', 'add_col');" class="btn btn-preset">+ Size</button>
-                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'remove_row'); modifyMatrixSize('id_matrix_text', 'remove_col');" class="btn btn-preset">- Size</button>
+                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'add_row', 'diagGrid'); modifyMatrixSize('id_matrix_text', 'add_col', 'diagGrid');" class="btn btn-preset">+ Size</button>
+                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'remove_row', 'diagGrid'); modifyMatrixSize('id_matrix_text', 'remove_col', 'diagGrid');" class="btn btn-preset">- Size</button>
                 </div>
             </div>
 
+            <!-- Tabular Matrix Grid Display -->
+            <div id="diagGrid" class="mb-2"></div>
             {{ form.matrix_text }}
-            <div class="form-text text-muted">{{ form.matrix_text.help_text }}</div>
+            <div class="form-text text-muted text-center">{{ form.matrix_text.help_text }}</div>
         </div>
+
         <button type="submit" class="btn btn-gradient w-100">
             <i class="bi bi-gem me-1"></i> Diagonalize Matrix
         </button>
@@ -182,6 +185,10 @@
 
 {% block extra_js %}
 <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        initMatrixGrid('id_matrix_text', 'diagGrid', false);
+    });
+
     function loadDiagPreset(type) {
         const textarea = document.getElementById('id_matrix_text');
         if (type === '2x2') {
@@ -191,7 +198,9 @@
         } else if (type === 'defective') {
             textarea.value = '3 1\n0 3';
         }
+        renderMatrixTable('id_matrix_text', 'diagGrid', false);
         document.getElementById('diagForm').submit();
     }
 </script>
 {% endblock %}
+
