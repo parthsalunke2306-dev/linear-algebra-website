@@ -54,22 +54,62 @@ class CofactorForm(forms.Form):
         help_text='1-indexed Row or Column to expand along.'
     )
 
-class GF2Form(forms.Form):
+class GaloisFieldForm(forms.Form):
+    question_text = forms.CharField(
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control font-monospace',
+            'rows': 3,
+            'placeholder': 'Type or paste your math question here (e.g., "Verify that F_3 = {0,1,2} forms a field under addition and multiplication modulo 3.")'
+        }),
+        initial='Verify that F₂ = {0,1} forms a field under addition and multiplication modulo 2.',
+        help_text='Type your question, select a preset, or upload an image.'
+    )
+    image_file = forms.FileField(
+        required=False,
+        widget=forms.FileInput(attrs={
+            'class': 'form-control',
+            'accept': 'image/*,.pdf'
+        })
+    )
+    modulus = forms.IntegerField(
+        initial=2,
+        min_value=2,
+        max_value=29,
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
+    )
+    task = forms.ChoiceField(
+        choices=[
+            ('verify_field_axioms', 'Verify All 11 Field Axioms'),
+            ('find_inverses', 'Determine Additive & Multiplicative Inverses'),
+            ('construct_tables', 'Construct Addition & Multiplication Tables'),
+            ('check_field', 'Determine Whether Set Forms a Field')
+        ],
+        initial='verify_field_axioms',
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+    confirm_action = forms.CharField(required=False, widget=forms.HiddenInput(), initial='detect')
+
     element_a = forms.IntegerField(
         initial=1,
-        widget=forms.Select(attrs={'class': 'form-select'}, choices=[(0, '0'), (1, '1')])
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
     )
     element_b = forms.IntegerField(
         initial=1,
-        widget=forms.Select(attrs={'class': 'form-select'}, choices=[(0, '0'), (1, '1')])
+        widget=forms.NumberInput(attrs={'class': 'form-control'})
     )
     operation = forms.ChoiceField(
-        choices=[('add', 'Addition (+ mod 2 / XOR)'), ('mul', 'Multiplication (· mod 2 / AND)')],
+        choices=[('add', 'Addition (+ mod p)'), ('mul', 'Multiplication (· mod p)')],
         initial='add',
         widget=forms.Select(attrs={'class': 'form-select'})
     )
 
+class GF2Form(GaloisFieldForm):
+    """Alias for backwards compatibility."""
+    pass
+
 class DiagonalizationForm(forms.Form):
+
 
     matrix_text = forms.CharField(
         widget=forms.Textarea(attrs={

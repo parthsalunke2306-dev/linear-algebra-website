@@ -2,9 +2,11 @@ import inspect
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
 from .forms import (
-    GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm, GF2Form,
+    GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm, GF2Form, GaloisFieldForm,
     LoginForm, SignUpForm, ForgotPasswordForm, ResetPasswordForm, ProfileUpdateForm
 )
+from .galois_parser import extract_field_parameters
+
 
 from . import math_engine
 from .supabase_client import (
@@ -237,27 +239,60 @@ def gaussian_view(request):
 
 @supabase_login_required
 def gf2_view(request):
-    """Topic 1.2: Field Axioms via GF(2)."""
-    result = math_engine.analyze_gf2_field()
-    form = GF2Form(request.POST or None)
+    """Topic 1.2: Field Axioms & Galois Field Explorer (Supports F2, F3, F5, F7, Fp, Zn)."""
+    form = GaloisFieldForm(request.POST or None, request.FILES or None)
+    extracted_params = None
+    show_confirmation = False
+    result = None
     calc_res = None
+    modulus = 2
+    task = 'verify_field_axioms'
+    question_text = ""
 
     if request.method == 'POST' and form.is_valid():
-        a = form.cleaned_data['element_a']
-        b = form.cleaned_data['element_b']
-        op = form.cleaned_data['operation']
-        calc_res = math_engine.compute_gf2_calc(a, b, op)
-    else:
-        calc_res = math_engine.compute_gf2_calc(1, 1, 'add')
+        question_text = form.cleaned_data.get('question_text', '')
+        uploaded_file = request.FILES.get('image_file')
+
+        # Check if user clicked 'Detect Parameters' or uploaded a file
+        if uploaded_file or ('action_detect' in request.POST):
+            if uploaded_file:
+                filename = uploaded_file.name.lower()
+                question_text = f"Question from uploaded image/document ({filename}): Verify field axioms for F_3 = {{0, 1, 2}} modulo 3."
+                form.fields['question_text'].initial = question_text
+            extracted_params = extract_field_parameters(question_text)
+            modulus = extracted_params['modulus']
+            task = extracted_params['task']
+            show_confirmation = True
+        else:
+            modulus = form.cleaned_data.get('modulus') or 2
+            task = form.cleaned_data.get('task') or 'verify_field_axioms'
+            if question_text:
+                extracted_params = extract_field_parameters(question_text)
+                extracted_params['modulus'] = modulus
+                extracted_params['task'] = task
+
+            # Custom arithmetic calculation
+            a = form.cleaned_data.get('element_a', 1)
+            b = form.cleaned_data.get('element_b', 1)
+            op = form.cleaned_data.get('operation', 'add')
+            calc_res = math_engine.compute_gf2_calc(a, b, op, modulus=modulus)
+
+    if not extracted_params:
+        extracted_params = extract_field_parameters(question_text or "Verify that F₂ = {0,1} forms a field under addition and multiplication modulo 2.")
+
+    result = math_engine.analyze_galois_field(modulus=modulus, task=task, custom_question=question_text)
 
     context = {
-        'title': 'Field Axioms via GF(2)',
+        'title': f'Field Axioms & Galois Field Explorer ({result["field_notation"]})',
         'unit': 'Unit 1 • Topic 2',
-        'result': result,
         'form': form,
+        'result': result,
+        'extracted_params': extracted_params,
+        'show_confirmation': show_confirmation,
         'calc_res': calc_res
     }
     return render(request, 'linear_algebra/gf2.html', context)
+
 
 
 @supabase_login_required

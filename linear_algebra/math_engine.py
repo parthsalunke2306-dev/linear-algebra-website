@@ -183,155 +183,245 @@ def solve_gaussian_elimination(matrix_data):
     }
 
 # ==========================================
-# UNIT 1 - TOPIC 2: Field Axioms via GF(2)
+# UNIT 1 - TOPIC 2: Galois / Finite Field Engine
 # ==========================================
-def analyze_gf2_field():
-    """
-    Generates GF(2) Galois Field addition/multiplication tables 
-    and checks all 11 field axioms explicitly.
-    """
-    elements = [0, 1]
-    
-    # Addition table (XOR / mod 2)
-    add_table = [[(a + b) % 2 for b in elements] for a in elements]
-    
-    # Multiplication table (AND / mod 2)
-    mul_table = [[(a * b) % 2 for b in elements] for a in elements]
 
-def compute_gf2_calc(a, b, op):
-    """Calculates custom binary addition/multiplication in GF(2)."""
-    a = int(a) % 2
-    b = int(b) % 2
+def is_prime_number(n):
+
+    """Returns True if n is a prime number, False otherwise."""
+    if n < 2:
+        return False
+    for i in range(2, int(n**0.5) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+def compute_gf2_calc(a, b, op, modulus=2):
+    """Calculates custom binary/modular addition or multiplication in F_p."""
+    mod = max(2, int(modulus))
+    a_val = int(a) % mod
+    b_val = int(b) % mod
     if op == 'add':
-        res = (a + b) % 2
-        latex = f"{a} + {b} = {res} \\pmod{{2}}"
-        explanation = f"Binary Addition (XOR) in GF(2): {a} + {b} = {res} (mod 2)"
+        res = (a_val + b_val) % mod
+        latex = f"{a_val} + {b_val} = {res} \\pmod{{{mod}}}"
+        explanation = f"Modular Addition in F_{mod}: ({a_val} + {b_val}) mod {mod} = {res}"
     else:
-        res = (a * b) % 2
-        latex = f"{a} \\cdot {b} = {res} \\pmod{{2}}"
-        explanation = f"Binary Multiplication (AND) in GF(2): {a} · {b} = {res} (mod 2)"
+        res = (a_val * b_val) % mod
+        latex = f"{a_val} \\cdot {b_val} = {res} \\pmod{{{mod}}}"
+        explanation = f"Modular Multiplication in F_{mod}: ({a_val} · {b_val}) mod {mod} = {res}"
     return {
-        'a': a,
-        'b': b,
+        'a': a_val,
+        'b': b_val,
         'op': op,
+        'modulus': mod,
         'result': res,
         'latex': latex,
         'explanation': explanation
     }
 
+def analyze_galois_field(modulus=2, task='verify_field_axioms', custom_question=None):
+    """
+    Generates Galois / Finite Field F_p addition and multiplication tables dynamically,
+    evaluates all 11 field axioms, calculates additive/multiplicative inverses,
+    and returns comprehensive proof & step-by-step verification.
+    """
+    p = max(2, int(modulus))
+    elements = list(range(p))
+    elems_str = ", ".join(map(str, elements))
+    is_field = is_prime_number(p)
+    
+    subscript_map = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+    field_subscript = str(p).translate(subscript_map)
+    field_notation = f"F{field_subscript}"
+    latex_field = f"\\mathbb{{F}}_{{{p}}}"
 
+    # Generate Addition & Multiplication Tables dynamically
+    add_table = [[(a + b) % p for b in elements] for a in elements]
+    mul_table = [[(a * b) % p for b in elements] for a in elements]
+
+    # Generate Additive Inverses
+    add_inverses = {}
+    add_inverses_latex = []
+    for a in elements:
+        inv = (p - a) % p
+        add_inverses[a] = inv
+        add_inverses_latex.append(f"-{a} \\equiv {inv} \\pmod{{{p}}}")
+
+    # Generate Multiplicative Inverses
+    mul_inverses = {}
+    mul_inverses_latex = []
+    zero_divisors = []
+    
+    for a in elements:
+        if a == 0:
+            mul_inverses[0] = None
+            continue
+        inv = None
+        for b in range(1, p):
+            if (a * b) % p == 1:
+                inv = b
+                break
+        mul_inverses[a] = inv
+        if inv is not None:
+            mul_inverses_latex.append(f"{a}^{{-1}} \\equiv {inv} \\pmod{{{p}}}")
+        else:
+            zero_divisors.append(a)
+            mul_inverses_latex.append(f"{a}^{{-1}} \\text{{ does not exist in }} \\mathbb{{Z}}_{{{p}}}")
+
+    # Explicit 11 Field Axiom Evaluation
     axioms = []
 
     # 1. Addition Closure
-    add_closed = all((a + b) % 2 in elements for a in elements for b in elements)
+    add_closed = all((a + b) % p in elements for a in elements for b in elements)
     axioms.append({
         'name': 'Additive Closure',
-        'symbol': r'\forall a, b \in \mathbb{F}_2, \; a + b \in \mathbb{F}_2',
+        'symbol': f'\\forall a, b \\in {latex_field}, \\; a + b \\in {latex_field}',
         'passed': add_closed,
-        'proof': '0+0=0, 0+1=1, 1+0=1, 1+1=0. All results belong to {0, 1}.'
+        'check_needed': f'Verify that for all $a, b \\in \\{{' + elems_str + f'\\}}$, $(a + b) \\bmod {p} \\in {latex_field}$.',
+        'proof': f'Sum of any two elements modulo {p} always stays in the set $\\{{' + elems_str + f'\\}}.$'
     })
 
     # 2. Addition Associativity
-    add_assoc = all(((a + b) + c) % 2 == (a + (b + c)) % 2 for a in elements for b in elements for c in elements)
+    add_assoc = all(((a + b) + c) % p == (a + (b + c)) % p for a in elements for b in elements for c in elements)
     axioms.append({
         'name': 'Additive Associativity',
         'symbol': r'(a + b) + c = a + (b + c)',
         'passed': add_assoc,
-        'proof': 'Verified for all 2³ = 8 combinations of (a, b, c) in GF(2).'
+        'check_needed': f'Verify $(a + b) + c \\equiv a + (b + c) \\pmod{{{p}}}$ for all $p^3 = {p**3}$ triplets.',
+        'proof': f'Modular addition is associative across all {p**3} element combinations in {field_notation}.'
     })
 
     # 3. Addition Commutativity
-    add_comm = all((a + b) % 2 == (b + a) % 2 for a in elements for b in elements)
+    add_comm = all((a + b) % p == (b + a) % p for a in elements for b in elements)
     axioms.append({
         'name': 'Additive Commutativity',
         'symbol': r'a + b = b + a',
         'passed': add_comm,
-        'proof': 'Addition table is symmetric across its main diagonal.'
+        'check_needed': f'Verify $a + b \\equiv b + a \\pmod{{{p}}}$ for all elements.',
+        'proof': f'The addition table for {field_notation} is completely symmetric across its main diagonal.'
     })
 
     # 4. Additive Identity (0)
-    add_id = 0
-    has_add_id = all((a + add_id) % 2 == a for a in elements)
+    has_add_id = all((a + 0) % p == a for a in elements)
     axioms.append({
         'name': 'Additive Identity',
-        'symbol': r'\exists 0 \in \mathbb{F}_2 \; \text{s.t.} \; a + 0 = a',
+        'symbol': f'\\exists 0 \\in {latex_field} \\; \\text{{s.t.}} \\; a + 0 = a',
         'passed': has_add_id,
-        'proof': '0 acts as identity element: 0+0=0, 1+0=1.'
+        'check_needed': f'Check if element $0$ satisfies $a + 0 \\equiv a \\pmod{{{p}}}$ for all $a$.',
+        'proof': f'0 acts as the unique additive identity element in {field_notation}.'
     })
 
     # 5. Additive Inverses
-    add_inv = {a: [b for b in elements if (a + b) % 2 == 0][0] for a in elements}
+    has_add_inv = all(add_inverses[a] is not None for a in elements)
+    inv_examples = ", ".join([f"-{a} = {add_inverses[a]}" for a in elements[:4]])
     axioms.append({
         'name': 'Additive Inverse',
-        'symbol': r'\forall a \in \mathbb{F}_2, \exists (-a) \text{ s.t. } a + (-a) = 0',
-        'passed': True,
-        'proof': 'In GF(2), every element is its own additive inverse: -0 = 0 (0+0=0) and -1 = 1 (1+1=0).'
+        'symbol': f'\\forall a \\in {latex_field}, \\exists (-a) \\text{{ s.t. }} a + (-a) = 0',
+        'passed': has_add_inv,
+        'check_needed': f'Check if every $a \\in {field_notation}$ has $-a \\equiv (({p}-a) \\bmod {p})$.',
+        'proof': f'Every element has a unique additive inverse: {inv_examples}.'
     })
 
-
     # 6. Multiplication Closure
-    mul_closed = all((a * b) % 2 in elements for a in elements for b in elements)
+    mul_closed = all((a * b) % p in elements for a in elements for b in elements)
     axioms.append({
         'name': 'Multiplicative Closure',
-        'symbol': r'\forall a, b \in \mathbb{F}_2, \; a \cdot b \in \mathbb{F}_2',
+        'symbol': f'\\forall a, b \\in {latex_field}, \\; a \\cdot b \\in {latex_field}',
         'passed': mul_closed,
-        'proof': '0·0=0, 0·1=0, 1·0=0, 1·1=1. All results belong to {0, 1}.'
+        'check_needed': f'Verify that $(a \\cdot b) \\bmod {p} \\in {latex_field}$ for all $a, b$.',
+        'proof': f'Product of any two elements modulo {p} belongs to $\\{{' + elems_str + f'\\}}.$'
     })
 
     # 7. Multiplication Associativity
-    mul_assoc = all(((a * b) * c) % 2 == (a * (b * c)) % 2 for a in elements for b in elements for c in elements)
+    mul_assoc = all(((a * b) * c) % p == (a * (b * c)) % p for a in elements for b in elements for c in elements)
     axioms.append({
         'name': 'Multiplicative Associativity',
         'symbol': r'(a \cdot b) \cdot c = a \cdot (b \cdot c)',
         'passed': mul_assoc,
-        'proof': 'Verified for all 8 combinations of (a, b, c).'
+        'check_needed': f'Verify $(a \\cdot b) \\cdot c \\equiv a \\cdot (b \\cdot c) \\pmod{{{p}}}$ for all triplets.',
+        'proof': f'Modular multiplication is associative across all {p**3} element combinations.'
     })
 
     # 8. Multiplication Commutativity
-    mul_comm = all((a * b) % 2 == (b * a) % 2 for a in elements for b in elements)
+    mul_comm = all((a * b) % p == (b * a) % p for a in elements for b in elements)
     axioms.append({
         'name': 'Multiplicative Commutativity',
         'symbol': r'a \cdot b = b \cdot a',
         'passed': mul_comm,
-        'proof': 'Multiplication table is symmetric.'
+        'check_needed': f'Verify $a \\cdot b \\equiv b \\cdot a \\pmod{{{p}}}$ for all elements.',
+        'proof': f'The multiplication table for {field_notation} is completely symmetric across its main diagonal.'
     })
 
     # 9. Multiplicative Identity (1)
-    mul_id = 1
-    has_mul_id = all((a * mul_id) % 2 == a for a in elements)
+    has_mul_id = all((a * 1) % p == a for a in elements)
     axioms.append({
         'name': 'Multiplicative Identity',
-        'symbol': r'\exists 1 \in \mathbb{F}_2 \; \text{s.t.} \; a \cdot 1 = a',
+        'symbol': f'\\exists 1 \\in {latex_field} \\; \\text{{s.t.}} \\; a \\cdot 1 = a',
         'passed': has_mul_id,
-        'proof': '1 acts as multiplicative identity element: 0·1=0, 1·1=1.'
+        'check_needed': f'Check if element $1$ satisfies $a \\cdot 1 \\equiv a \\pmod{{{p}}}$ for all $a$.',
+        'proof': f'1 acts as the unique multiplicative identity element in {field_notation}.'
     })
 
     # 10. Multiplicative Inverse for non-zero elements
+    has_all_mul_inv = len(zero_divisors) == 0
+    if is_field:
+        mul_inv_proof = f"Every non-zero element $a \\in \\{{1, \\dots, {p-1}\\}}$ has a unique multiplicative inverse $a^{{-1}} \\pmod{{{p}}}$ since $\\gcd(a, {p}) = 1$."
+    else:
+        mul_inv_proof = f"FAILED: Modulus {p} is composite. Non-zero elements {zero_divisors} share common factors with {p} and lack multiplicative inverses (zero-divisors)."
+
     axioms.append({
         'name': 'Multiplicative Inverse (Non-Zero)',
         'symbol': r'\forall a \neq 0, \; \exists a^{-1} \text{ s.t. } a \cdot a^{-1} = 1',
-        'passed': True,
-        'proof': 'The non-zero element 1 has inverse 1⁻¹ = 1 because 1 · 1 = 1 (mod 2).'
+        'passed': has_all_mul_inv,
+        'check_needed': f'Verify that every non-zero element $a \\in {field_notation} \\setminus \\{{0\\}}$ has a multiplicative inverse $a^{{-1}}$.',
+        'proof': mul_inv_proof
     })
 
+
+
     # 11. Distributivity
-    distrib = all((a * ((b + c) % 2)) % 2 == ((a * b) + (a * c)) % 2 for a in elements for b in elements for c in elements)
+    distrib = all((a * ((b + c) % p)) % p == ((a * b) + (a * c)) % p for a in elements for b in elements for c in elements)
     axioms.append({
         'name': 'Distributive Law',
         'symbol': r'a \cdot (b + c) = (a \cdot b) + (a \cdot c)',
         'passed': distrib,
-        'proof': 'Multiplication distributes over addition for all 8 combinations in GF(2).'
+        'check_needed': f'Verify $a \\cdot (b + c) \\equiv (a \\cdot b) + (a \\cdot c) \\pmod{{{p}}}$ for all triplets.',
+        'proof': f'Multiplication distributes over addition for all {p**3} element combinations in {field_notation}.'
     })
 
+    # Final Conclusion Text
+    if is_field:
+        conclusion_title = f"{field_notation} IS A VALID FINITE FIELD"
+        conclusion_text = f"All 11 required field axioms are satisfied. Hence {field_notation} = \\{{{', '.join(map(str, elements))}\\}} forms a valid Galois Field \\mathbb{{F}}_{{{p}}} under addition and multiplication modulo {p}."
+    else:
+        conclusion_title = f"Z_{{{p}}} IS NOT A FIELD (COMMUTATIVE RING WITH ZERO DIVISORS)"
+        conclusion_text = f"Modulus {p} is composite (not prime). Non-zero elements {zero_divisors} lack multiplicative inverses because \\gcd(a, {p}) > 1. Thus, \\mathbb{{Z}}_{{{p}}} is a Commutative Ring with Unity, not a Field."
+
     return {
+        'modulus': p,
+        'field_notation': field_notation,
+        'latex_field': latex_field,
+        'is_field': is_field,
         'elements': elements,
         'add_table': add_table,
         'mul_table': mul_table,
+        'add_inverses': add_inverses,
+        'add_inverses_latex': add_inverses_latex,
+        'mul_inverses': mul_inverses,
+        'mul_inverses_latex': mul_inverses_latex,
+        'zero_divisors': zero_divisors,
         'axioms': axioms,
-        'is_field': all(ax['passed'] for ax in axioms)
+        'conclusion_title': conclusion_title,
+        'conclusion_text': conclusion_text,
+        'task': task
     }
 
+def analyze_gf2_field():
+    """Backward compatibility wrapper for F_2."""
+    return analyze_galois_field(2)
+
 def solve_gf2_arithmetic(a_val, b_val, op='add'):
+
     """
     Computes step-by-step modular binary arithmetic in GF(2) = {0, 1}.
     """

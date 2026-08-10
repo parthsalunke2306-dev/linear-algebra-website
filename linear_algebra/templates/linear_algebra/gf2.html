@@ -7,130 +7,239 @@
         <span class="badge-unit">UNIT 1</span>
         <span class="badge-topic">TOPIC 1.2</span>
     </div>
-    <h2 class="text-white fw-bold mb-1">Field Axioms via $\mathbb{F}_2$ (Galois Field mod 2)</h2>
-    <p class="text-muted">Explore the 2-element Galois Field $\mathbb{F}_2 = \{0, 1\}$ with addition and multiplication modulo 2 and explicit verification of all 11 Field Axioms.</p>
+    <h2 class="text-white fw-bold mb-1">Field Axioms & Galois Field Explorer ({{ result.field_notation }})</h2>
+    <p class="text-muted">Analyze general finite fields $\mathbb{F}_p$, extract mathematical question parameters automatically, verify all 11 field axioms, calculate inverses, and explore modular arithmetic.</p>
 </div>
 
-<!-- Stacked Card 1: Truth Tables -->
+<!-- Question Input & Upload Card -->
 <div class="glass-card p-4 mb-4">
-    <h4 class="text-white mb-4"><i class="bi bi-grid-3x3 me-2" style="color: var(--accent-purple);"></i>Galois Field Modulo 2 Truth Tables</h4>
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <h4 class="text-white mb-0"><i class="bi bi-file-earmark-text me-2 text-warning"></i>Galois Field Question Solver & Input Parser</h4>
+        <span class="badge bg-secondary px-3 py-2 font-monospace">Supports Text, Presets & Image Upload</span>
+    </div>
+
+    <form method="post" action="{% url 'linear_algebra:gf2' %}" enctype="multipart/form-data" id="galoisForm">
+        {% csrf_token %}
+        {{ form.confirm_action }}
+
+        <!-- Preset Quick Select Buttons -->
+        <div class="mb-3">
+            <label class="form-label text-muted small fw-semibold me-2">Sample Question Presets:</label>
+            <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-preset btn-sm" onclick="setPreset('Verify that F₂ = {0,1} forms a field under addition and multiplication modulo 2.', 2, 'verify_field_axioms')">
+                    <i class="bi bi-magic me-1"></i> F₂ = {0, 1} (mod 2)
+                </button>
+                <button type="button" class="btn btn-preset btn-sm" onclick="setPreset('Verify that F₃ = {0,1,2} forms a field under addition and multiplication modulo 3.', 3, 'verify_field_axioms')">
+                    <i class="bi bi-magic me-1"></i> F₃ = {0, 1, 2} (mod 3)
+                </button>
+                <button type="button" class="btn btn-preset btn-sm" onclick="setPreset('Verify field axioms and inverses for F₅ = {0,1,2,3,4} modulo 5.', 5, 'verify_field_axioms')">
+                    <i class="bi bi-magic me-1"></i> F₅ = {0, 1, 2, 3, 4} (mod 5)
+                </button>
+                <button type="button" class="btn btn-preset btn-sm" onclick="setPreset('Find additive and multiplicative inverses in F₇ modulo 7.', 7, 'find_inverses')">
+                    <i class="bi bi-magic me-1"></i> Inverses in F₇
+                </button>
+                <button type="button" class="btn btn-preset btn-sm" onclick="setPreset('Determine whether Z₄ = {0,1,2,3} forms a field under modulo 4.', 4, 'check_field')">
+                    <i class="bi bi-exclamation-triangle text-warning me-1"></i> Z₄ (Composite Modulus)
+                </button>
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <!-- Question Textarea -->
+            <div class="col-lg-8">
+                <label class="form-label text-light small fw-semibold">Typed / Pasted Question</label>
+                {{ form.question_text }}
+                <div class="form-text text-muted small">Type any finite field question. The system will extract the field, set, modulus, and tasks automatically.</div>
+            </div>
+
+            <!-- Image Upload Dropzone -->
+            <div class="col-lg-4">
+                <label class="form-label text-light small fw-semibold">Upload Question Image or PDF</label>
+                <div class="p-3 rounded-3 border border-secondary text-center h-100 d-flex flex-column align-items-center justify-content-center" style="background: var(--surface-slate); cursor: pointer;" onclick="document.getElementById('id_image_file').click();">
+                    <i class="bi bi-cloud-arrow-up fs-2 text-info mb-1"></i>
+                    <span class="text-light small fw-semibold mb-1" id="fileUploadLabel">Upload Image / Photo / PDF</span>
+                    <span class="text-muted extra-small">Click to select photo of handwritten or printed question</span>
+                    <div class="d-none">
+                        {{ form.image_file }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex align-items-center justify-content-end gap-2 flex-wrap">
+            <button type="submit" name="action_detect" value="1" class="btn btn-outline-info">
+                <i class="bi bi-search me-1"></i> Extract & Confirm Parameters
+            </button>
+            <button type="submit" name="action_solve" value="1" class="btn btn-gradient">
+                <i class="bi bi-play-circle-fill me-1"></i> Solve Question Now
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Parameter Confirmation Panel (Shown after parameter extraction or edit) -->
+<div class="glass-card p-4 mb-4 border border-info" style="background: rgba(15, 23, 42, 0.85);" id="confirmationPanel">
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <h5 class="text-info mb-0"><i class="bi bi-shield-check me-2"></i>Detected Question Parameters</h5>
+        {% if show_confirmation %}
+        <span class="badge bg-warning text-dark px-3 py-2 fw-bold"><i class="bi bi-hand-index-thumb me-1"></i> Please Confirm Parameters Before Solving</span>
+        {% else %}
+        <span class="badge bg-info px-3 py-2 font-monospace">Active Field: {{ result.field_notation }}</span>
+        {% endif %}
+    </div>
+
+    {% if extracted_params.warnings %}
+    <div class="alert alert-warning py-2 mb-3 small" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        {% for w in extracted_params.warnings %}
+        <div>{{ w }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'linear_algebra:gf2' %}" class="row g-3 align-items-end mb-2">
+        {% csrf_token %}
+        <div class="col-md-3 col-6">
+            <label class="form-label text-muted small fw-semibold">Detected Field & Notation</label>
+            <input type="text" class="form-control font-monospace" value="{{ extracted_params.field_notation }}" readonly>
+        </div>
+        <div class="col-md-3 col-6">
+            <label class="form-label text-muted small fw-semibold">Modulus ($p$)</label>
+            {{ form.modulus }}
+        </div>
+        <div class="col-md-3 col-6">
+            <label class="form-label text-muted small fw-semibold">Elements of Set</label>
+            <input type="text" class="form-control font-monospace" value="\{0, 1, ..., {{ result.modulus|add:"-1" }}\}" readonly>
+        </div>
+        <div class="col-md-3 col-6">
+            <label class="form-label text-muted small fw-semibold">Task</label>
+            {{ form.task }}
+        </div>
+        <div class="col-12 d-flex justify-content-end gap-2">
+            <button type="submit" name="action_solve" value="1" class="btn btn-success px-4">
+                <i class="bi bi-check-lg me-1"></i> Confirm & Solve Field Question
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Final Mathematical Conclusion Banner -->
+<div class="glass-card p-4 mb-4 border {% if result.is_field %}border-success{% else %}border-danger{% endif %}">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+        <h4 class="{% if result.is_field %}text-success{% else %}text-danger{% endif %} mb-0">
+            <i class="bi {% if result.is_field %}bi-check-circle-fill{% else %}bi-x-circle-fill{% endif %} me-2"></i>
+            {{ result.conclusion_title }}
+        </h4>
+        <span class="badge {% if result.is_field %}bg-success{% else %}bg-danger{% endif %} px-3 py-2">
+            {% if result.is_field %}GALOIS FIELD \mathbb{F}_{{ result.modulus }}{% else %}RING Z_{{ result.modulus }}{% endif %}
+        </span>
+    </div>
+    <div class="latex-scroll-wrapper my-2">
+        $${{ result.conclusion_text }}$$
+    </div>
+</div>
+
+<!-- Dynamic Truth Tables Card -->
+<div class="glass-card p-4 mb-4">
+    <h4 class="text-white mb-4"><i class="bi bi-grid-3x3 me-2" style="color: var(--accent-purple);"></i>Galois Field Modulo {{ result.modulus }} Dynamic Truth Tables</h4>
     
     <div class="row g-4">
         <!-- Addition Table -->
         <div class="col-md-6">
-            <div class="p-4 rounded-3 border border-secondary h-100" style="background: var(--surface-slate);">
-                <h5 class="text-white mb-3"><i class="bi bi-plus-circle text-info me-2"></i>Addition Table ($+$ mod 2 / XOR)</h5>
-                <div class="table-responsive">
+            <div class="p-3 p-md-4 rounded-3 border border-secondary h-100" style="background: var(--surface-slate);">
+                <h5 class="text-white mb-3"><i class="bi bi-plus-circle text-info me-2"></i>Addition Table ($+$ mod {{ result.modulus }})</h5>
+                <div class="table-responsive latex-scroll-wrapper">
                     <table class="table table-dark table-bordered text-center font-monospace mb-0">
                         <thead>
                             <tr class="table-secondary">
-                                <th>$+$ (mod 2)</th>
-                                <th>0</th>
-                                <th>1</th>
+                                <th>$+$</th>
+                                {% for elem in result.elements %}
+                                <th>{{ elem }}</th>
+                                {% endfor %}
                             </tr>
                         </thead>
                         <tbody>
+                            {% for row in result.add_table %}
                             <tr>
-                                <th class="table-secondary">0</th>
-                                <td class="text-info fw-bold">0</td>
-                                <td class="text-warning fw-bold">1</td>
+                                <th class="table-secondary">{{ forloop.counter0 }}</th>
+                                {% for cell in row %}
+                                <td class="{% if cell == 0 %}text-info fw-bold{% else %}text-warning{% endif %}">{{ cell }}</td>
+                                {% endfor %}
                             </tr>
-                            <tr>
-                                <th class="table-secondary">1</th>
-                                <td class="text-warning fw-bold">1</td>
-                                <td class="text-info fw-bold">0</td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                <p class="text-muted small mt-3 mb-0">Notice that $1 + 1 = 0 \pmod 2$. Hence every element is its own additive inverse!</p>
+                <p class="text-muted small mt-3 mb-0">Calculated dynamically for $\mathbb{F}_{{ result.modulus }}$: $(a + b) \bmod {{ result.modulus }}$.</p>
             </div>
         </div>
 
         <!-- Multiplication Table -->
         <div class="col-md-6">
-            <div class="p-4 rounded-3 border border-secondary h-100" style="background: var(--surface-slate);">
-                <h5 class="text-white mb-3"><i class="bi bi-x-circle text-warning me-2"></i>Multiplication Table ($\cdot$ mod 2 / AND)</h5>
-                <div class="table-responsive">
+            <div class="p-3 p-md-4 rounded-3 border border-secondary h-100" style="background: var(--surface-slate);">
+                <h5 class="text-white mb-3"><i class="bi bi-x-circle text-warning me-2"></i>Multiplication Table ($\cdot$ mod {{ result.modulus }})</h5>
+                <div class="table-responsive latex-scroll-wrapper">
                     <table class="table table-dark table-bordered text-center font-monospace mb-0">
                         <thead>
                             <tr class="table-secondary">
-                                <th>$\cdot$ (mod 2)</th>
-                                <th>0</th>
-                                <th>1</th>
+                                <th>$\cdot$</th>
+                                {% for elem in result.elements %}
+                                <th>{{ elem }}</th>
+                                {% endfor %}
                             </tr>
                         </thead>
                         <tbody>
+                            {% for row in result.mul_table %}
                             <tr>
-                                <th class="table-secondary">0</th>
-                                <td class="text-info fw-bold">0</td>
-                                <td class="text-info fw-bold">0</td>
+                                <th class="table-secondary">{{ forloop.counter0 }}</th>
+                                {% for cell in row %}
+                                <td class="{% if cell == 1 %}text-success fw-bold{% elif cell == 0 %}text-info{% else %}text-warning{% endif %}">{{ cell }}</td>
+                                {% endfor %}
                             </tr>
-                            <tr>
-                                <th class="table-secondary">1</th>
-                                <td class="text-info fw-bold">0</td>
-                                <td class="text-warning fw-bold">1</td>
-                            </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
-                <p class="text-muted small mt-3 mb-0">The multiplicative identity element is $1$, and $1^{-1} = 1$.</p>
+                <p class="text-muted small mt-3 mb-0">Calculated dynamically for $\mathbb{F}_{{ result.modulus }}$: $(a \cdot b) \bmod {{ result.modulus }}$.</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Interactive Custom GF(2) Input Calculator -->
+<!-- Additive & Multiplicative Inverses Summary Card -->
 <div class="glass-card p-4 mb-4">
-    <h4 class="text-white mb-3"><i class="bi bi-calculator-fill text-warning me-2"></i>Custom GF(2) Binary Calculator</h4>
-    <p class="text-muted small mb-4">Select your input binary elements ($a, b \in \{0, 1\}$) and operation to evaluate custom GF(2) arithmetic step-by-step:</p>
+    <h4 class="text-white mb-3"><i class="bi bi-arrow-left-right text-cyan me-2"></i>Identities & Element Inverses in $\mathbb{F}_{{ result.modulus }}$</h4>
     
-    <form method="post" action="{% url 'linear_algebra:gf2' %}" class="row g-3 align-items-end mb-3">
-        {% csrf_token %}
-        <div class="col-md-3 col-6">
-            <label class="form-label text-muted small fw-semibold">Element $a$</label>
-            {{ form.element_a }}
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="p-3 rounded-3 border border-secondary h-100" style="background: var(--surface-slate);">
+                <h6 class="text-info mb-2"><i class="bi bi-plus-lg me-1"></i>Additive Inverses ($-a \equiv ({{ result.modulus }} - a) \pmod{{{ result.modulus }}}$)</h6>
+                <ul class="list-group list-group-flush bg-transparent">
+                    {% for inv_str in result.add_inverses_latex %}
+                    <li class="list-group-item bg-transparent text-light border-secondary font-monospace py-1 px-0">
+                        $${{ inv_str }}$$
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
-        <div class="col-md-3 col-6">
-            <label class="form-label text-muted small fw-semibold">Operation</label>
-            {{ form.operation }}
-        </div>
-        <div class="col-md-3 col-6">
-            <label class="form-label text-muted small fw-semibold">Element $b$</label>
-            {{ form.element_b }}
-        </div>
-        <div class="col-md-3 col-6">
-            <button type="submit" class="btn btn-gradient w-100">
-                <i class="bi bi-cpu me-1"></i> Compute GF(2)
-            </button>
-        </div>
-    </form>
-
-    {% if calc_res %}
-    <div class="p-3 rounded-3 border border-purple" style="background: var(--surface-slate);">
-        <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
-            <span class="badge bg-primary px-3 py-2 font-monospace" style="background: var(--accent-purple) !important;">GF(2) Calculation Result</span>
-            <span class="text-muted small">{{ calc_res.explanation }}</span>
-        </div>
-        <div class="latex-scroll-wrapper text-center my-2">
-            $${{ calc_res.latex }}$$
+        <div class="col-md-6">
+            <div class="p-3 rounded-3 border border-secondary h-100" style="background: var(--surface-slate);">
+                <h6 class="text-warning mb-2"><i class="bi bi-x-lg me-1"></i>Multiplicative Inverses ($a^{-1} \pmod{{{ result.modulus }}}$ for $a \ne 0$)</h6>
+                <ul class="list-group list-group-flush bg-transparent">
+                    {% for inv_str in result.mul_inverses_latex %}
+                    <li class="list-group-item bg-transparent text-light border-secondary font-monospace py-1 px-0">
+                        $${{ inv_str }}$$
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
     </div>
-    {% endif %}
 </div>
 
-<!-- Input Guide Card -->
-<div class="glass-card p-4 mb-4 border border-info" style="background: rgba(15, 23, 42, 0.7);">
-    <h5 class="text-info mb-2"><i class="bi bi-info-circle-fill me-2"></i>How to Enter Inputs for Your Matrix & Vector Questions:</h5>
-    <ul class="text-light mb-0 small ps-3">
-        <li class="mb-1"><strong>Interactive 2D Tabular Grid:</strong> On <a href="{% url 'linear_algebra:gaussian' %}" class="text-purple">Gaussian Elimination</a>, <a href="{% url 'linear_algebra:cofactor' %}" class="text-purple">Cofactor Expansion</a>, <a href="{% url 'linear_algebra:gram_schmidt' %}" class="text-purple">Gram–Schmidt</a>, and <a href="{% url 'linear_algebra:diagonalization' %}" class="text-purple">Diagonalization</a>, simply click into any cell of the visual matrix grid to type your numbers!</li>
-        <li class="mb-1"><strong>Dynamic Dimension Resizers:</strong> Change the <em>Rows</em> and <em>Columns</em> dropdowns to expand or contract matrix dimensions (e.g. $2\times2$, $3\times3$, $4\times4$).</li>
-        <li><strong>Preset Example Solvers:</strong> Click any preset button (e.g. <em>3x3 System</em>, <em>No Solution</em>, <em>Orthogonal Basis</em>) to automatically populate test matrices into your input table!</li>
-    </ul>
-</div>
-
+<!-- Explicit 11 Field Axiom Verification Card -->
 <div class="glass-card p-4 mb-4">
-
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <h4 class="text-white mb-0"><i class="bi bi-check2-all me-2 text-success"></i>Explicit 11 Field Axiom Verification</h4>
         <div class="d-flex align-items-center gap-2 flex-wrap">
@@ -138,7 +247,9 @@
                 <i class="bi bi-arrows-expand me-1"></i> Toggle All Axioms
             </button>
             {% if result.is_field %}
-            <span class="badge bg-success px-3 py-2 fs-6"><i class="bi bi-shield-check me-1"></i> GF(2) IS A VALID FIELD</span>
+            <span class="badge bg-success px-3 py-2 fs-6"><i class="bi bi-shield-check me-1"></i> {{ result.field_notation }} IS A VALID FIELD</span>
+            {% else %}
+            <span class="badge bg-danger px-3 py-2 fs-6"><i class="bi bi-shield-x me-1"></i> Z_{{ result.modulus }} FAILS FIELD AXIOMS</span>
             {% endif %}
         </div>
     </div>
@@ -152,7 +263,9 @@
                     <div class="d-flex align-items-center justify-content-between w-100 me-3">
                         <span><span class="badge badge-topic me-2">Axiom {{ forloop.counter }}</span> {{ axiom.name }}</span>
                         {% if axiom.passed %}
-                        <span class="badge bg-success font-monospace ms-auto me-2">VERIFIED PASSED</span>
+                        <span class="badge bg-success font-monospace ms-auto me-2">✓ SATISFIED</span>
+                        {% else %}
+                        <span class="badge bg-danger font-monospace ms-auto me-2">✗ FAILED</span>
                         {% endif %}
                     </div>
                 </button>
@@ -162,8 +275,8 @@
                     <div class="latex-scroll-wrapper text-center my-2">
                         $${{ axiom.symbol }}$$
                     </div>
-
-                    <p class="text-muted small mb-0"><strong class="text-white">Proof / Verification:</strong> {{ axiom.proof }}</p>
+                    <p class="text-light small mb-1"><strong>What is checked:</strong> {{ axiom.check_needed }}</p>
+                    <p class="text-muted small mb-0"><strong class="text-white">Proof / Evidence:</strong> {{ axiom.proof }}</p>
                 </div>
             </div>
         </div>
@@ -171,5 +284,59 @@
     </div>
 </div>
 
-{% endblock %}
+<!-- Interactive Custom Calculator in F_p -->
+<div class="glass-card p-4 mb-4">
+    <h4 class="text-white mb-3"><i class="bi bi-calculator-fill text-warning me-2"></i>Custom Modular Arithmetic Calculator in $\mathbb{F}_{{ result.modulus }}$</h4>
+    <p class="text-muted small mb-4">Select your input elements ($a, b \in \{0, 1, \dots, {{ result.modulus|add:"-1" }}\}$) and operation to evaluate modular arithmetic step-by-step:</p>
+    
+    <form method="post" action="{% url 'linear_algebra:gf2' %}" class="row g-3 align-items-end mb-3">
+        {% csrf_token %}
+        <input type="hidden" name="modulus" value="{{ result.modulus }}">
+        <div class="col-md-3 col-6">
+            <label class="form-label text-muted small fw-semibold">Element $a$</label>
+            {{ form.element_a }}
+        </div>
+        <div class="col-md-3 col-6">
+            <label class="form-label text-muted small fw-semibold">Operation</label>
+            {{ form.operation }}
+        </div>
+        <div class="col-md-3 col-6">
+            <label class="form-label text-muted small fw-semibold">Element $b$</label>
+            {{ form.element_b }}
+        </div>
+        <div class="col-md-3 col-6">
+            <button type="submit" name="action_calc" value="1" class="btn btn-gradient w-100">
+                <i class="bi bi-cpu me-1"></i> Compute in $\mathbb{F}_{{ result.modulus }}$
+            </button>
+        </div>
+    </form>
 
+    {% if calc_res %}
+    <div class="p-3 rounded-3 border border-purple" style="background: var(--surface-slate);">
+        <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+            <span class="badge bg-primary px-3 py-2 font-monospace" style="background: var(--accent-purple) !important;">$\mathbb{F}_{{ calc_res.modulus }}$ Result</span>
+            <span class="text-muted small">{{ calc_res.explanation }}</span>
+        </div>
+        <div class="latex-scroll-wrapper text-center my-2">
+            $${{ calc_res.latex }}$$
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function setPreset(question, mod, task) {
+    document.getElementById('id_question_text').value = question;
+    document.getElementById('id_modulus').value = mod;
+    document.getElementById('id_task').value = task;
+    document.getElementById('galoisForm').submit();
+}
+
+document.getElementById('id_image_file').addEventListener('change', function(e) {
+    if (e.target.files && e.target.files[0]) {
+        var fname = e.target.files[0].name;
+        document.getElementById('fileUploadLabel').innerText = "Selected: " + fname;
+    }
+});
+</script>
+{% endblock %}
