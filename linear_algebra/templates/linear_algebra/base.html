@@ -251,9 +251,28 @@
     <!-- Highlight.js JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/python.min.js"></script>
-    <script src="{% static 'linear_algebra/js/matrix_tools.js' %}"></script>
-    <script>hljs.highlightAll();</script>
+    <!-- Auto Logout System: Beacon on Browser/Tab Closing -->
+    <script>
+    (function() {
+        var isAuthenticated = {% if request.supabase_user or request.session.is_authenticated %}true{% else %}false{% endif %};
+        var logoutUrl = "{% url 'linear_algebra:logout' %}";
+
+        if (isAuthenticated) {
+            sessionStorage.setItem('tab_active_session', 'true');
+
+            // Send beacon to auto logout if tab or browser window is closed
+            window.addEventListener('pagehide', function(e) {
+                if (!e.persisted && navigator.sendBeacon) {
+                    navigator.sendBeacon(logoutUrl);
+                }
+            });
+        } else {
+            sessionStorage.removeItem('tab_active_session');
+        }
+    })();
+    </script>
 
     {% block extra_js %}{% endblock %}
 </body>
 </html>
+
