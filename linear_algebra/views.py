@@ -70,9 +70,8 @@ def login_view(request):
         if res['error']:
             error = res['error']
         else:
-            # Establish browser session (Expires automatically on browser/tab close)
+            # Establish session
             access_token = res['session'].get('access_token', 'demo_access_token_1234') if res['session'] else 'demo_access_token_1234'
-            request.session.set_expiry(0)  # 0 means expire when browser window/tab closes
             request.session['sb_access_token'] = access_token
             request.session['is_authenticated'] = True
             request.session['user_email'] = email
@@ -81,8 +80,8 @@ def login_view(request):
             
             target = next_url if next_url and next_url.startswith('/') else 'linear_algebra:index'
             response = redirect(target)
-            # Set session cookie (no max_age so browser deletes it when tab/browser is closed)
-            response.set_cookie('sb_access_token', access_token, httponly=True, samesite='Lax', max_age=None)
+            # Set HTTP-only secure cookie
+            response.set_cookie('sb_access_token', access_token, httponly=True, samesite='Lax', max_age=86400*7)
             return response
 
     context = {
@@ -123,16 +122,14 @@ def signup_view(request):
     return render(request, 'linear_algebra/signup.html', context)
 
 def logout_view(request):
-    """Ends Supabase Session, flushes Django session, and deletes all auth cookies."""
+    """Ends Supabase Session and clears cookies."""
     token = request.COOKIES.get('sb_access_token') or request.session.get('sb_access_token')
     sign_out_user(token)
     
     request.session.flush()
     response = redirect('linear_algebra:login')
     response.delete_cookie('sb_access_token')
-    response.delete_cookie('sessionid')
     return response
-
 
 def forgot_password_view(request):
     """Requests Password Reset Link via Supabase Auth."""

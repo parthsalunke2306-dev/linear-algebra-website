@@ -56,32 +56,8 @@
 
 {% if result %}
 <!-- Stacked Card 2: Derivation Sections Accordions -->
-<div class="glass-card p-4 mb-4" id="solutionExportContainer">
-    <div class="pdf-only-header d-none">
-        <div class="d-flex align-items-center justify-content-between pb-3 mb-3 border-bottom border-secondary">
-            <div>
-                <h3 class="fw-bold text-white mb-0">Linear Algebra Explorer</h3>
-                <span class="text-muted small">Topic 2.3: Eigenvalues, Eigenvectors & Diagonalization $A = PDP^{-1}$</span>
-            </div>
-            <div class="text-end text-muted small font-monospace">
-                <div>Academic Solution Sheet</div>
-                <div>Generated PDF Document</div>
-            </div>
-        </div>
-    </div>
-
-    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
-        <h4 class="text-white mb-0"><i class="bi bi-diagram-3 me-2" style="color: var(--accent-purple);"></i>Eigenvalue & Diagonalization Derivation</h4>
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-            <button type="button" onclick="downloadSolutionPDF('Matrix Diagonalization', 'Matrix_Diagonalization_Solution')" class="btn btn-outline-info no-print">
-                <i class="bi bi-file-earmark-pdf-fill me-1 text-danger"></i> Export PDF
-            </button>
-            <button type="button" onclick="toggleAllSteps('diagAccordion')" class="btn btn-preset no-print">
-                <i class="bi bi-arrows-expand me-1"></i> Toggle All Steps
-            </button>
-        </div>
-    </div>
-
+<div class="glass-card p-4 mb-4">
+    <h4 class="text-white mb-4"><i class="bi bi-diagram-3 me-2" style="color: var(--accent-purple);"></i>Eigenvalue & Diagonalization Derivation</h4>
 
     <div class="accordion accordion-custom mb-4" id="diagAccordion">
         <!-- Section 1: Characteristic Polynomial -->
