@@ -187,14 +187,14 @@ function toggleAllSteps(accordionId) {
     });
 }
 
-// 6. Professional PDF Export Engine for Mathematical Solutions
+// 6. Professional White-Paper Academic PDF Export Engine
 function downloadSolutionPDF(topicTitle, filenamePrefix) {
-    const solutionContainer = document.getElementById('solutionExportContainer') || 
-                              document.querySelector('.glass-card:has(.accordion)') ||
-                              document.querySelector('.glass-card:has(.latex-scroll-wrapper)');
+    const solutionElement = document.getElementById('solutionExportContainer') || 
+                            document.querySelector('.glass-card:has(.accordion)') ||
+                            document.querySelector('.glass-card:has(.latex-scroll-wrapper)');
     
-    if (!solutionContainer) {
-        alert("No solution content available to export. Please compute a solution first.");
+    if (!solutionElement) {
+        alert("No solution content available to export. Please compute a question first.");
         return;
     }
 
@@ -206,30 +206,110 @@ function downloadSolutionPDF(topicTitle, filenamePrefix) {
         btn.innerHTML = '<i class="bi bi-arrow-repeat spin me-1"></i> Generating PDF...';
     }
 
-    const runExport = () => {
-        const dateStr = new Date().toISOString().slice(0, 10);
-        const prefix = filenamePrefix || topicTitle || 'Solution';
-        const cleanName = prefix.replace(/[^a-zA-Z0-9_-]/g, '_');
-        const filename = `Solution_${cleanName}_${dateStr}.pdf`;
+    // Extract Question / Input Problem Statement
+    let questionHTML = "";
+    const questionTextarea = document.querySelector('textarea[name*="matrix"], textarea[name*="question"], textarea[name*="vectors"]');
+    if (questionTextarea && questionTextarea.value.trim()) {
+        const valEscaped = questionTextarea.value.trim().replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        questionHTML = `
+            <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 12px 16px; border-radius: 6px; margin-bottom: 15px;">
+                <strong style="color: #0f172a; display: block; margin-bottom: 6px; font-size: 13px;">Input Problem / Given Matrix:</strong>
+                <pre style="margin: 0; font-family: monospace; font-size: 14px; color: #1e293b; white-space: pre-wrap;">${valEscaped}</pre>
+            </div>`;
+    }
 
-        // Temporarily expand all collapsible steps for complete solution export
-        const accordions = solutionContainer.querySelectorAll('.accordion-collapse');
-        accordions.forEach(acc => acc.classList.add('show'));
+    // Create Clean Off-Screen White Academic Document Container
+    const pdfDoc = document.createElement('div');
+    pdfDoc.id = 'academicPDFDocument';
+    pdfDoc.style.cssText = 'position: absolute; left: -9999px; top: 0; width: 750px; background: #ffffff; color: #0f172a; padding: 35px 30px; font-family: "Inter", -apple-system, sans-serif; line-height: 1.5;';
 
-        const opt = {
-            margin:       [10, 10, 10, 10],
-            filename:     filename,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-        };
+    const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    const cleanTopic = topicTitle || 'Linear Algebra Solution';
+    
+    pdfDoc.innerHTML = `
+        <div style="border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+                <h2 style="margin: 0; color: #0f172a; font-weight: 800; font-size: 20px; letter-spacing: -0.5px;">LINEAR ALGEBRA EXPLORER</h2>
+                <h4 style="margin: 4px 0 0 0; color: #475569; font-size: 13px; font-weight: 600;">${cleanTopic} — Official Solution Sheet</h4>
+            </div>
+            <div style="text-align: right; font-size: 11px; color: #64748b; font-family: monospace;">
+                <div><strong>Date:</strong> ${dateStr}</div>
+                <div>Academic Solution Document</div>
+            </div>
+        </div>
 
-        solutionContainer.classList.add('pdf-export-mode');
+        <div style="margin-bottom: 20px;">
+            <h3 style="font-size: 14px; color: #0f172a; font-weight: 700; border-left: 4px solid #4f46e5; padding-left: 8px; margin-bottom: 10px; text-transform: uppercase;">1. QUESTION / PROBLEM STATEMENT</h3>
+            ${questionHTML || '<p style="color: #64748b; font-style: italic; font-size: 12px;">Problem statement as rendered on solver dashboard.</p>'}
+        </div>
 
+        <div>
+            <h3 style="font-size: 14px; color: #0f172a; font-weight: 700; border-left: 4px solid #4f46e5; padding-left: 8px; margin-bottom: 15px; text-transform: uppercase;">2. COMPLETE STEP-BY-STEP SOLUTION</h3>
+            <div id="pdfSolutionContent"></div>
+        </div>
+
+        <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 10px; font-size: 10px; color: #94a3b8; text-align: center; font-family: monospace;">
+            Linear Algebra & Data Science Explorer • Generated Academic Document
+        </div>
+    `;
+
+    // Clone solution content and clean up UI clutter
+    const contentClone = solutionElement.cloneNode(true);
+    
+    // Remove buttons and UI headers from PDF clone
+    contentClone.querySelectorAll('.no-print, button, .pdf-only-header, .matrix-resizer-controls').forEach(el => el.remove());
+    
+    // Expand all accordion steps
+    contentClone.querySelectorAll('.accordion-collapse').forEach(el => {
+        el.classList.add('show');
+        el.style.display = 'block';
+        el.style.visibility = 'visible';
+    });
+
+    // Apply crisp white-paper styles to all cloned elements
+    contentClone.querySelectorAll('*').forEach(el => {
+        el.style.backgroundColor = 'transparent';
+        el.style.color = '#0f172a';
+        el.style.boxShadow = 'none';
+
+        if (el.classList.contains('glass-card') || el.classList.contains('accordion-item')) {
+            el.style.border = '1px solid #cbd5e1';
+            el.style.marginBottom = '12px';
+            el.style.borderRadius = '6px';
+            el.style.padding = '12px 16px';
+            el.style.background = '#ffffff';
+        }
+        if (el.classList.contains('bg-dark') || el.classList.contains('table-dark') || el.classList.contains('accordion-body')) {
+            el.style.background = '#f8fafc';
+            el.style.border = '1px solid #e2e8f0';
+            el.style.borderRadius = '4px';
+        }
+        if (el.classList.contains('latex-scroll-wrapper')) {
+            el.style.overflow = 'visible';
+            el.style.whiteSpace = 'normal';
+            el.style.fontSize = '14px';
+        }
+    });
+
+    pdfDoc.querySelector('#pdfSolutionContent').appendChild(contentClone);
+    document.body.appendChild(pdfDoc);
+
+    const cleanName = (filenamePrefix || topicTitle || 'Solution').replace(/[^a-zA-Z0-9_-]/g, '_');
+    const filename = `Solution_${cleanName}_${new Date().toISOString().slice(0,10)}.pdf`;
+
+    const opt = {
+        margin:       [10, 10, 10, 10],
+        filename:     filename,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    const runPDFExport = () => {
         if (typeof html2pdf !== 'undefined') {
-            html2pdf().set(opt).from(solutionContainer).save().then(() => {
-                solutionContainer.classList.remove('pdf-export-mode');
+            html2pdf().set(opt).from(pdfDoc).save().then(() => {
+                if (pdfDoc.parentNode) pdfDoc.parentNode.removeChild(pdfDoc);
                 if (btn) {
                     btn.disabled = false;
                     btn.innerHTML = '<i class="bi bi-check-lg me-1 text-success"></i> PDF Downloaded';
@@ -237,30 +317,32 @@ function downloadSolutionPDF(topicTitle, filenamePrefix) {
                 }
             }).catch(err => {
                 console.error("PDF generation failed:", err);
-                solutionContainer.classList.remove('pdf-export-mode');
+                if (pdfDoc.parentNode) pdfDoc.parentNode.removeChild(pdfDoc);
                 if (btn) {
                     btn.disabled = false;
                     btn.innerHTML = originalBtnText;
                 }
-                alert("Opening print view for PDF export...");
+                alert("Opening print dialog for PDF export...");
                 window.print();
             });
         } else {
-            solutionContainer.classList.remove('pdf-export-mode');
+            if (pdfDoc.parentNode) pdfDoc.parentNode.removeChild(pdfDoc);
             if (btn) {
                 btn.disabled = false;
                 btn.innerHTML = originalBtnText;
             }
-            alert("Opening print view for PDF export...");
+            alert("Opening print dialog for PDF export...");
             window.print();
         }
     };
 
+    // Ensure MathJax renders formulas cleanly in temporary document before taking vector snapshot
     if (window.MathJax && window.MathJax.typesetPromise) {
-        window.MathJax.typesetPromise().then(runExport).catch(runExport);
+        window.MathJax.typesetPromise([pdfDoc]).then(runPDFExport).catch(runPDFExport);
     } else {
-        runExport();
+        runPDFExport();
     }
 }
+
 
 
