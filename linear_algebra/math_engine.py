@@ -88,7 +88,7 @@ def solve_gaussian_elimination(matrix_data):
     steps = []
 
     steps.append({
-        'title': 'Initial Augmented Matrix [A | b]',
+        'title': r'Initial Augmented Matrix $[A \mid b]$',
         'latex': augmented_matrix_to_latex(mat, num_vars),
         'explanation': 'The system of linear equations represented in augmented matrix form.'
     })
@@ -107,7 +107,7 @@ def solve_gaussian_elimination(matrix_data):
             
         if pivot_row == rows:
             steps.append({
-                'title': f'Column {c+1} has no non-zero pivot',
+                'title': f'Column {c+1} Has No Non-Zero Pivot',
                 'latex': augmented_matrix_to_latex(mat, num_vars),
                 'explanation': f'No non-zero pivot found in column {c+1}. Moving to next column.'
             })
@@ -117,7 +117,7 @@ def solve_gaussian_elimination(matrix_data):
         if pivot_row != current_row:
             mat.row_swap(current_row, pivot_row)
             steps.append({
-                'title': f'Row Swap: R_{{{current_row+1}}} \\leftrightarrow R_{{{pivot_row+1}}}',
+                'title': f'Row Swap: $R_{{{current_row+1}}} \\leftrightarrow R_{{{pivot_row+1}}}$',
                 'latex': augmented_matrix_to_latex(mat, num_vars),
                 'explanation': f'Swapped Row {current_row+1} with Row {pivot_row+1} to bring non-zero pivot {clean_val_str(mat[current_row, c])} to position ({current_row+1}, {c+1}).'
             })
@@ -128,7 +128,7 @@ def solve_gaussian_elimination(matrix_data):
         if pivot_val != 1 and pivot_val != 0:
             mat.row_op(current_row, lambda val, j: val / pivot_val)
             steps.append({
-                'title': f'Scale Pivot Row: R_{{{current_row+1}}} \\leftarrow \\frac{{1}}{{{sp.latex(clean_val_2dp(pivot_val))}}} R_{{{current_row+1}}}',
+                'title': f'Scale Pivot Row: $R_{{{current_row+1}}} \\leftarrow \\frac{{1}}{{{sp.latex(clean_val_2dp(pivot_val))}}} R_{{{current_row+1}}}$',
                 'latex': augmented_matrix_to_latex(mat, num_vars),
                 'explanation': f'Divided Row {current_row+1} by its pivot value {clean_val_str(pivot_val)} to make leading entry 1.'
             })
@@ -139,12 +139,13 @@ def solve_gaussian_elimination(matrix_data):
                 factor = mat[r, c]
                 mat.row_op(r, lambda val, j: val - factor * mat[current_row, j])
                 steps.append({
-                    'title': f'Row Elimination: R_{{{r+1}}} \\leftarrow R_{{{r+1}}} - ({sp.latex(clean_val_2dp(factor))}) R_{{{current_row+1}}}',
+                    'title': f'Row Elimination: $R_{{{r+1}}} \\leftarrow R_{{{r+1}}} - ({sp.latex(clean_val_2dp(factor))}) R_{{{current_row+1}}}$',
                     'latex': augmented_matrix_to_latex(mat, num_vars),
                     'explanation': f'Eliminated entry in Row {r+1}, Column {c+1} using Row {current_row+1}.'
                 })
 
         current_row += 1
+
 
     # Classify solution type
     rref_mat, pivot_cols = mat.rref()
