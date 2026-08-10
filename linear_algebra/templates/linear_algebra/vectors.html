@@ -123,19 +123,20 @@
 
         <!-- Projection Box -->
         <div class="col-12">
-            <div class="p-4 rounded-3 border border-warning" style="background: var(--surface-slate);">
-                <div class="d-flex align-items-center justify-content-between mb-2">
+            <div class="p-3 p-md-4 rounded-3 border border-warning" style="background: var(--surface-slate);">
+                <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                     <h5 class="text-warning mb-0"><i class="bi bi-arrow-down-right-square me-2"></i>Vector Projection $\text{proj}_{\mathbf{v}_2}(\mathbf{v}_1)$</h5>
                     <button onclick="copyToClipboard('\\text{proj}_{\\mathbf{v}_2}(\\mathbf{v}_1) = \\begin{bmatrix} {{ result.proj_vector.0 }} \\\\ {{ result.proj_vector.1 }} \\\\ {{ result.proj_vector.2 }} \\end{bmatrix}')" class="btn btn-copy no-print">
                         <i class="bi bi-clipboard me-1"></i> Copy Projection LaTeX
                     </button>
                 </div>
-                <p class="text-light mb-2">The orthogonal projection of vector $\mathbf{v}_1$ onto vector $\mathbf{v}_2$ is given by:</p>
-                <div class="fs-4 text-white text-center py-2 bg-dark rounded border border-warning mb-2">
+                <p class="text-light small mb-2">The orthogonal projection of vector $\mathbf{v}_1$ onto vector $\mathbf{v}_2$ is given by:</p>
+                <div class="latex-scroll-wrapper text-center my-2">
                     $$\text{proj}_{\mathbf{v}_2}(\mathbf{v}_1) = \left(\frac{\mathbf{v}_1 \cdot \mathbf{v}_2}{\|\mathbf{v}_2\|^2}\right) \mathbf{v}_2 = {{ result.proj_scalar }} \cdot \mathbf{v}_2 = \begin{bmatrix} {{ result.proj_vector.0 }} \\ {{ result.proj_vector.1 }} \\ {{ result.proj_vector.2 }} \end{bmatrix}$$
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 
