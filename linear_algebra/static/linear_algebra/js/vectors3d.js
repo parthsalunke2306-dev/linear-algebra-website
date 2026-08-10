@@ -7,16 +7,8 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
     if (!canvas) return;
     
     const ctx = canvas.getContext('2d');
-    function resizeCanvas() {
-        if (!canvas.parentElement) return;
-        width = canvas.width = canvas.parentElement.clientWidth;
-        height = canvas.height = Math.min(Math.max(window.innerHeight * 0.45, 280), 400);
-        render();
-    }
-
-    let width = 0;
-    let height = 0;
-    resizeCanvas();
+    let width = 340;
+    let height = 320;
 
     let angleX = 0.5;
     let angleY = 0.6;
@@ -27,7 +19,7 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
     function project(x, y, z) {
         const originX = width / 2;
         const originY = height / 2;
-        const scale = Math.min(width, height) / 12;
+        const scale = Math.max(Math.min(width, height) / 12, 22);
 
         // Rotate around Y
         let radY = angleY;
@@ -71,6 +63,7 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
     }
 
     function render() {
+        if (!width || !height) return;
         ctx.clearRect(0, 0, width, height);
 
         // Draw 3D Axes
@@ -79,22 +72,27 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
         const yAxis = project(0, 6, 0);
         const zAxis = project(0, 0, 6);
 
-        drawArrow(ctx, o.px, o.py, xAxis.px, xAxis.py, '#475569', 'X (Red)', 1);
-        drawArrow(ctx, o.px, o.py, yAxis.px, yAxis.py, '#475569', 'Y (Green)', 1);
-        drawArrow(ctx, o.px, o.py, zAxis.px, zAxis.py, '#475569', 'Z (Blue)', 1);
+        drawArrow(ctx, o.px, o.py, xAxis.px, xAxis.py, '#94a3b8', 'X', 1.5);
+        drawArrow(ctx, o.px, o.py, yAxis.px, yAxis.py, '#94a3b8', 'Y', 1.5);
+        drawArrow(ctx, o.px, o.py, zAxis.px, zAxis.py, '#94a3b8', 'Z', 1.5);
 
         // Draw Vector v1
-        const p1 = project(v1[0], v1[1], v1[2]);
-        drawArrow(ctx, o.px, o.py, p1.px, p1.py, '#06b6d4', 'v1', 3.5);
+        if (v1) {
+            const p1 = project(v1[0], v1[1], v1[2]);
+            drawArrow(ctx, o.px, o.py, p1.px, p1.py, '#06b6d4', 'v1', 3.5);
+        }
 
         // Draw Vector v2
-        const p2 = project(v2[0], v2[1], v2[2]);
-        drawArrow(ctx, o.px, o.py, p2.px, p2.py, '#6366f1', 'v2', 3.5);
+        if (v2) {
+            const p2 = project(v2[0], v2[1], v2[2]);
+            drawArrow(ctx, o.px, o.py, p2.px, p2.py, '#6366f1', 'v2', 3.5);
+        }
 
         // Draw Projection Vector
-        if (projVec) {
+        if (projVec && v1) {
+            const p1 = project(v1[0], v1[1], v1[2]);
             const pProj = project(projVec[0], projVec[1], projVec[2]);
-            drawArrow(ctx, o.px, o.py, pProj.px, pProj.py, '#f59e0b', 'proj_v2(v1)', 2.5);
+            drawArrow(ctx, o.px, o.py, pProj.px, pProj.py, '#f59e0b', 'proj', 2.5);
 
             // Dotted line from v1 tip to proj tip
             ctx.beginPath();
@@ -112,6 +110,14 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
             const pCross = project(crossProd[0], crossProd[1], crossProd[2]);
             drawArrow(ctx, o.px, o.py, pCross.px, pCross.py, '#10b981', 'v1 × v2', 3);
         }
+    }
+
+    function resizeCanvas() {
+        if (!canvas.parentElement) return;
+        const pWidth = canvas.parentElement.clientWidth;
+        width = canvas.width = pWidth > 0 ? pWidth : (canvas.clientWidth || 340);
+        height = canvas.height = 320;
+        render();
     }
 
     function getEventPos(e) {
@@ -161,6 +167,9 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
     // Window Resize Handling
     window.addEventListener('resize', resizeCanvas);
 
-    render();
+    // Initial resize and render
+    resizeCanvas();
+    setTimeout(resizeCanvas, 100);
 }
+
 
