@@ -213,7 +213,7 @@
     <div class="row g-3">
         <div class="col-md-6">
             <div class="p-3 rounded-3 border border-secondary h-100" style="background: var(--surface-slate);">
-                <h6 class="text-info mb-2"><i class="bi bi-plus-lg me-1"></i>Additive Inverses ($-a \equiv ({{ result.modulus }} - a) \pmod{{{ result.modulus }}}$)</h6>
+                <h6 class="text-info mb-2"><i class="bi bi-plus-lg me-1"></i>Additive Inverses ($-a \equiv ({{ result.modulus }} - a) \pmod{ {{ result.modulus }} }$)</h6>
                 <ul class="list-group list-group-flush bg-transparent">
                     {% for inv_str in result.add_inverses_latex %}
                     <li class="list-group-item bg-transparent text-light border-secondary font-monospace py-1 px-0">
@@ -225,7 +225,8 @@
         </div>
         <div class="col-md-6">
             <div class="p-3 rounded-3 border border-secondary h-100" style="background: var(--surface-slate);">
-                <h6 class="text-warning mb-2"><i class="bi bi-x-lg me-1"></i>Multiplicative Inverses ($a^{-1} \pmod{{{ result.modulus }}}$ for $a \ne 0$)</h6>
+                <h6 class="text-warning mb-2"><i class="bi bi-x-lg me-1"></i>Multiplicative Inverses ($a^{-1} \pmod{ {{ result.modulus }} }$ for $a \ne 0$)</h6>
+
                 <ul class="list-group list-group-flush bg-transparent">
                     {% for inv_str in result.mul_inverses_latex %}
                     <li class="list-group-item bg-transparent text-light border-secondary font-monospace py-1 px-0">
