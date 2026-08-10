@@ -726,3 +726,48 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
         border: 1px solid #ddd !important;
     }
 }
+
+/* Spin animation for PDF export feedback */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.spin {
+    animation: spin 1s linear infinite;
+    display: inline-block;
+}
+
+/* Professional PDF Export Mode Styles */
+.pdf-export-mode {
+    background: #0f172a !important;
+    color: #f8fafc !important;
+    padding: 15px !important;
+    border-radius: 8px !important;
+}
+
+.pdf-export-mode .no-print {
+    display: none !important;
+}
+
+.pdf-export-mode .pdf-only-header {
+    display: block !important;
+}
+
+.pdf-export-mode .latex-scroll-wrapper {
+    overflow: visible !important;
+    white-space: normal !important;
+    font-size: 1rem !important;
+}
+
+.pdf-export-mode .glass-card {
+    background: #1e293b !important;
+    border: 1px solid #334155 !important;
+    box-shadow: none !important;
+    margin-bottom: 15px !important;
+}
+
+.pdf-export-mode .accordion-collapse {
+    display: block !important;
+    height: auto !important;
+    visibility: visible !important;
+}

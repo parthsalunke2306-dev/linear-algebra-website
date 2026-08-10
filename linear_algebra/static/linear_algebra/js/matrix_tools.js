@@ -187,3 +187,80 @@ function toggleAllSteps(accordionId) {
     });
 }
 
+// 6. Professional PDF Export Engine for Mathematical Solutions
+function downloadSolutionPDF(topicTitle, filenamePrefix) {
+    const solutionContainer = document.getElementById('solutionExportContainer') || 
+                              document.querySelector('.glass-card:has(.accordion)') ||
+                              document.querySelector('.glass-card:has(.latex-scroll-wrapper)');
+    
+    if (!solutionContainer) {
+        alert("No solution content available to export. Please compute a solution first.");
+        return;
+    }
+
+    const btn = (event && event.currentTarget) ? event.currentTarget : document.getElementById('pdfDownloadBtn');
+    const originalBtnText = btn ? btn.innerHTML : '';
+    
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="bi bi-arrow-repeat spin me-1"></i> Generating PDF...';
+    }
+
+    const runExport = () => {
+        const dateStr = new Date().toISOString().slice(0, 10);
+        const prefix = filenamePrefix || topicTitle || 'Solution';
+        const cleanName = prefix.replace(/[^a-zA-Z0-9_-]/g, '_');
+        const filename = `Solution_${cleanName}_${dateStr}.pdf`;
+
+        // Temporarily expand all collapsible steps for complete solution export
+        const accordions = solutionContainer.querySelectorAll('.accordion-collapse');
+        accordions.forEach(acc => acc.classList.add('show'));
+
+        const opt = {
+            margin:       [10, 10, 10, 10],
+            filename:     filename,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        solutionContainer.classList.add('pdf-export-mode');
+
+        if (typeof html2pdf !== 'undefined') {
+            html2pdf().set(opt).from(solutionContainer).save().then(() => {
+                solutionContainer.classList.remove('pdf-export-mode');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-check-lg me-1 text-success"></i> PDF Downloaded';
+                    setTimeout(() => { btn.innerHTML = originalBtnText; }, 3000);
+                }
+            }).catch(err => {
+                console.error("PDF generation failed:", err);
+                solutionContainer.classList.remove('pdf-export-mode');
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = originalBtnText;
+                }
+                alert("Opening print view for PDF export...");
+                window.print();
+            });
+        } else {
+            solutionContainer.classList.remove('pdf-export-mode');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = originalBtnText;
+            }
+            alert("Opening print view for PDF export...");
+            window.print();
+        }
+    };
+
+    if (window.MathJax && window.MathJax.typesetPromise) {
+        window.MathJax.typesetPromise().then(runExport).catch(runExport);
+    } else {
+        runExport();
+    }
+}
+
+
