@@ -724,7 +724,10 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
     .bg-dark {
         background: #F8FAFC !important;
         border: 1px solid #ddd !important;
-    }
+    }/* Default hidden state for PDF headers & question box on web screen */
+.pdf-only-header,
+.pdf-question-box {
+    display: none;
 }
 
 /* Spin animation for PDF export feedback */
@@ -737,112 +740,169 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
     display: inline-block;
 }
 
-/* Default hidden state for PDF headers & question box on web screen */
-.pdf-only-header,
-.pdf-question-box {
-    display: none;
-}
-
-/* Professional Clean White Academic PDF Export Mode Styles */
+/* ==========================================================================
+   UNIFORM & ELEGANT ACADEMIC PDF EXPORT STYLES (PURE WHITE PAPER SCHEME)
+   ========================================================================== */
 @media print, body.pdf-export-active {
-    background: #ffffff !important;
-    color: #0f172a !important;
-}
+    /* 1. Global Page Background & Variables Override */
+    body {
+        --surface-slate: #f8fafc !important;
+        --glass-bg: #ffffff !important;
+        --text-primary: #0f172a !important;
+        --text-secondary: #475569 !important;
+        --text-muted: #64748b !important;
+        --glass-border: #e2e8f0 !important;
+        background: #ffffff !important;
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        font-family: "Inter", -apple-system, sans-serif !important;
+    }
 
-body.pdf-export-active .sidebar-wrapper,
-body.pdf-export-active .mobile-header,
-body.pdf-export-active footer,
-body.pdf-export-active .no-print,
-body.pdf-export-active button,
-body.pdf-export-active form,
-body.pdf-export-active .matrix-resizer-controls,
-body.pdf-export-active .preset-container {
-    display: none !important;
-}
+    /* 2. Hide Non-Printable Web UI Controls */
+    .sidebar-wrapper,
+    .mobile-header,
+    footer,
+    .no-print,
+    button,
+    form,
+    .matrix-resizer-controls,
+    .preset-container {
+        display: none !important;
+    }
 
-body.pdf-export-active .main-content-wrapper {
-    margin-left: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-}
+    .main-content-wrapper {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
 
-body.pdf-export-active .pdf-only-header {
-    display: block !important;
-    background: #ffffff !important;
-    color: #0f172a !important;
-    border-bottom: 2px solid #0f172a !important;
-    padding-bottom: 12px !important;
-    margin-bottom: 20px !important;
-}
+    /* 3. Document Branding Header */
+    .pdf-only-header {
+        display: block !important;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border-bottom: 2px solid #0f172a !important;
+        padding-bottom: 12px !important;
+        margin-bottom: 20px !important;
+    }
 
-body.pdf-export-active .pdf-question-box {
-    display: block !important;
-    background: #f8fafc !important;
-    border: 1px solid #cbd5e1 !important;
-    padding: 12px 16px !important;
-    border-radius: 6px !important;
-    margin-bottom: 20px !important;
-    color: #0f172a !important;
-}
+    /* 4. Section 1: Question / Input Problem Statement Card */
+    .pdf-question-box {
+        display: block !important;
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        border-left: 4px solid #6366f1 !important;
+        padding: 14px 18px !important;
+        border-radius: 6px !important;
+        margin-bottom: 20px !important;
+        color: #0f172a !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
 
-body.pdf-export-active .glass-card {
-    background: #ffffff !important;
-    color: #0f172a !important;
-    border: 1px solid #cbd5e1 !important;
-    box-shadow: none !important;
-    padding: 20px !important;
-    margin-bottom: 20px !important;
-    border-radius: 8px !important;
-}
+    .pdf-question-box pre {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+        padding: 10px 14px !important;
+        border-radius: 4px !important;
+        margin-top: 6px !important;
+        font-family: monospace !important;
+        font-size: 13px !important;
+    }
 
-body.pdf-export-active .accordion-collapse {
-    display: block !important;
-    height: auto !important;
-    visibility: visible !important;
-}
+    /* 5. Glass Cards & Outer Containers */
+    .glass-card {
+        background: #ffffff !important;
+        color: #0f172a !important;
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: none !important;
+        padding: 20px !important;
+        margin-bottom: 20px !important;
+        border-radius: 8px !important;
+    }
 
-body.pdf-export-active .accordion-item {
-    background: #ffffff !important;
-    border: 1px solid #cbd5e1 !important;
-    color: #0f172a !important;
-    margin-bottom: 12px !important;
-    border-radius: 6px !important;
-}
+    /* 6. Step Accordions & Derivation Cards */
+    .accordion-collapse {
+        display: block !important;
+        height: auto !important;
+        visibility: visible !important;
+    }
 
-body.pdf-export-active .accordion-button {
-    background: #f1f5f9 !important;
-    color: #0f172a !important;
-    box-shadow: none !important;
-    font-weight: 700 !important;
-}
+    .accordion-item {
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        color: #0f172a !important;
+        margin-bottom: 14px !important;
+        border-radius: 6px !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
 
-body.pdf-export-active .accordion-body,
-body.pdf-export-active .bg-dark,
-body.pdf-export-active .table-dark {
-    background: #f8fafc !important;
-    border: 1px solid #e2e8f0 !important;
-    color: #0f172a !important;
-}
+    .accordion-button {
+        background: #f1f5f9 !important;
+        color: #0f172a !important;
+        box-shadow: none !important;
+        font-weight: 700 !important;
+        border-bottom: 1px solid #cbd5e1 !important;
+    }
 
-body.pdf-export-active .latex-scroll-wrapper {
-    overflow: visible !important;
-    white-space: normal !important;
-    font-size: 1.1rem !important;
-    color: #0f172a !important;
-}
+    .accordion-body,
+    .bg-dark,
+    .table-dark {
+        background: #ffffff !important;
+        border-color: #cbd5e1 !important;
+        color: #0f172a !important;
+    }
 
-body.pdf-export-active .text-white,
-body.pdf-export-active .text-light,
-body.pdf-export-active .text-muted,
-body.pdf-export-active .text-purple,
-body.pdf-export-active h1,
-body.pdf-export-active h2,
-body.pdf-export-active h3,
-body.pdf-export-active h4,
-body.pdf-export-active h5,
-body.pdf-export-active h6,
-body.pdf-export-active p,
-body.pdf-export-active span,
-body.pdf-export-active div {
-    color: #0f172a !important;
+    /* 7. Math Formula Wrappers (.latex-scroll-wrapper) - CRISP UNIFORM LIGHT CARDS */
+    .latex-scroll-wrapper,
+    div[style*="background"] {
+        background: #f8fafc !important;
+        background-color: #f8fafc !important;
+        border: 1px solid #cbd5e1 !important;
+        border-radius: 6px !important;
+        padding: 12px 16px !important;
+        margin: 10px 0 !important;
+        color: #000000 !important;
+        overflow: visible !important;
+        white-space: normal !important;
+    }
+
+    /* 8. Final Solution Summary Box - Soft Indigo Highlight */
+    .p-3.p-md-4.rounded-3.border,
+    .border-purple {
+        background: #f5f3ff !important;
+        border: 1px solid #c7d2fe !important;
+        border-left: 4px solid #6366f1 !important;
+        color: #1e1b4b !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    /* 9. Force All Text & Headings to Deep Navy/Black */
+    .text-white,
+    .text-light,
+    .text-muted,
+    .text-purple,
+    h1, h2, h3, h4, h5, h6, p, span, div, li, td, th {
+        color: #0f172a !important;
+    }
+
+    /* 10. MathJax SVG Math & Text Rendering Rules */
+    mjx-container,
+    mjx-container *,
+    .MathJax,
+    .MathJax * {
+        color: #000000 !important;
+        fill: #000000 !important;
+        stroke: #000000 !important;
+    }
+
+    /* Hide Assistive MML to prevent duplicate MathJax text (Snapshot: Snapshot:) */
+    mjx-assistive-mml,
+    .mjx-assistive-mml,
+    .mjx-speech {
+        display: none !important;
+    }
 }

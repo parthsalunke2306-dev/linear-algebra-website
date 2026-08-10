@@ -237,6 +237,22 @@ function downloadSolutionPDF(topicTitle, filenamePrefix) {
     // Temporarily activate clean white academic paper mode on-screen for capture
     document.body.classList.add('pdf-export-active');
 
+    // Strip inline dark background styles during capture to guarantee uniform color scheme
+    const styledElements = solutionElement.querySelectorAll('*');
+    const inlineStyleMap = new Map();
+    styledElements.forEach(el => {
+        if (el.style.background || el.style.backgroundColor) {
+            inlineStyleMap.set(el, {
+                bg: el.style.background,
+                bgColor: el.style.backgroundColor,
+                color: el.style.color
+            });
+            el.style.background = '#f8fafc';
+            el.style.backgroundColor = '#f8fafc';
+            el.style.color = '#0f172a';
+        }
+    });
+
     const cleanName = (filenamePrefix || topicTitle || 'Solution').replace(/[^a-zA-Z0-9_-]/g, '_');
     const filename = `Solution_${cleanName}_${new Date().toISOString().slice(0,10)}.pdf`;
 
@@ -251,12 +267,18 @@ function downloadSolutionPDF(topicTitle, filenamePrefix) {
 
     const cleanup = () => {
         document.body.classList.remove('pdf-export-active');
+        inlineStyleMap.forEach((styleObj, el) => {
+            el.style.background = styleObj.bg;
+            el.style.backgroundColor = styleObj.bgColor;
+            el.style.color = styleObj.color;
+        });
         if (btn) {
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-check-lg me-1 text-success"></i> PDF Downloaded';
             setTimeout(() => { btn.innerHTML = originalBtnText; }, 3000);
         }
     };
+
 
     const runExport = () => {
         if (typeof html2pdf !== 'undefined') {
