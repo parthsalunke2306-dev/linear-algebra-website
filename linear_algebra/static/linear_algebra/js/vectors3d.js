@@ -7,8 +7,16 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
     if (!canvas) return;
     
     const ctx = canvas.getContext('2d');
-    let width = canvas.width = canvas.parentElement.clientWidth;
-    let height = canvas.height = 400;
+    function resizeCanvas() {
+        if (!canvas.parentElement) return;
+        width = canvas.width = canvas.parentElement.clientWidth;
+        height = canvas.height = Math.min(Math.max(window.innerHeight * 0.45, 280), 400);
+        render();
+    }
+
+    let width = 0;
+    let height = 0;
+    resizeCanvas();
 
     let angleX = 0.5;
     let angleY = 0.6;
@@ -16,12 +24,11 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
     let lastMouseX = 0;
     let lastMouseY = 0;
 
-    // Projection factors
-    const scale = 30;
-    const originX = width / 2;
-    const originY = height / 2;
-
     function project(x, y, z) {
+        const originX = width / 2;
+        const originY = height / 2;
+        const scale = Math.min(width, height) / 12;
+
         // Rotate around Y
         let radY = angleY;
         let x1 = x * Math.cos(radY) + z * Math.sin(radY);
@@ -58,7 +65,7 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
 
         // Label
         if (label) {
-            ctx.font = 'bold 13px Inter, sans-serif';
+            ctx.font = 'bold 12px Inter, sans-serif';
             ctx.fillText(label, toX + 8, toY - 8);
         }
     }
@@ -107,27 +114,53 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
         }
     }
 
-    // Mouse Interaction for 3D Orbiting
-    canvas.addEventListener('mousedown', (e) => {
+    function getEventPos(e) {
+        if (e.touches && e.touches.length > 0) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        return { x: e.clientX, y: e.clientY };
+    }
+
+    function handleStart(e) {
         isDragging = true;
-        lastMouseX = e.clientX;
-        lastMouseY = e.clientY;
-    });
+        const pos = getEventPos(e);
+        lastMouseX = pos.x;
+        lastMouseY = pos.y;
+    }
 
-    window.addEventListener('mousemove', (e) => {
+    function handleMove(e) {
         if (!isDragging) return;
-        const deltaX = e.clientX - lastMouseX;
-        const deltaY = e.clientY - lastMouseY;
-        angleY += deltaX * 0.01;
-        angleX += deltaY * 0.01;
-        lastMouseX = e.clientX;
-        lastMouseY = e.clientY;
+        if (e.touches && e.touches.length === 1) {
+            e.preventDefault();
+        }
+        const pos = getEventPos(e);
+        const deltaX = pos.x - lastMouseX;
+        const deltaY = pos.y - lastMouseY;
+        angleY += deltaX * 0.012;
+        angleX += deltaY * 0.012;
+        lastMouseX = pos.x;
+        lastMouseY = pos.y;
         render();
-    });
+    }
 
-    window.addEventListener('mouseup', () => {
+    function handleEnd() {
         isDragging = false;
-    });
+    }
+
+    // Mouse Event Listeners
+    canvas.addEventListener('mousedown', handleStart);
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleEnd);
+
+    // Touch Event Listeners for Mobile & Tablet 3D Orbiting
+    canvas.addEventListener('touchstart', handleStart, { passive: false });
+    window.addEventListener('touchmove', handleMove, { passive: false });
+    window.addEventListener('touchend', handleEnd);
+    window.addEventListener('touchcancel', handleEnd);
+
+    // Window Resize Handling
+    window.addEventListener('resize', resizeCanvas);
 
     render();
 }
+
