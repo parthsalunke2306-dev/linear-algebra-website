@@ -737,37 +737,112 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
     display: inline-block;
 }
 
-/* Professional PDF Export Mode Styles */
-.pdf-export-mode {
-    background: #0f172a !important;
-    color: #f8fafc !important;
-    padding: 15px !important;
-    border-radius: 8px !important;
+/* Default hidden state for PDF headers & question box on web screen */
+.pdf-only-header,
+.pdf-question-box {
+    display: none;
 }
 
-.pdf-export-mode .no-print {
+/* Professional Clean White Academic PDF Export Mode Styles */
+@media print, body.pdf-export-active {
+    background: #ffffff !important;
+    color: #0f172a !important;
+}
+
+body.pdf-export-active .sidebar-wrapper,
+body.pdf-export-active .mobile-header,
+body.pdf-export-active footer,
+body.pdf-export-active .no-print,
+body.pdf-export-active button,
+body.pdf-export-active form,
+body.pdf-export-active .matrix-resizer-controls,
+body.pdf-export-active .preset-container {
     display: none !important;
 }
 
-.pdf-export-mode .pdf-only-header {
+body.pdf-export-active .main-content-wrapper {
+    margin-left: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.pdf-export-active .pdf-only-header {
     display: block !important;
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border-bottom: 2px solid #0f172a !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 20px !important;
 }
 
-.pdf-export-mode .latex-scroll-wrapper {
-    overflow: visible !important;
-    white-space: normal !important;
-    font-size: 1rem !important;
+body.pdf-export-active .pdf-question-box {
+    display: block !important;
+    background: #f8fafc !important;
+    border: 1px solid #cbd5e1 !important;
+    padding: 12px 16px !important;
+    border-radius: 6px !important;
+    margin-bottom: 20px !important;
+    color: #0f172a !important;
 }
 
-.pdf-export-mode .glass-card {
-    background: #1e293b !important;
-    border: 1px solid #334155 !important;
+body.pdf-export-active .glass-card {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    border: 1px solid #cbd5e1 !important;
     box-shadow: none !important;
-    margin-bottom: 15px !important;
+    padding: 20px !important;
+    margin-bottom: 20px !important;
+    border-radius: 8px !important;
 }
 
-.pdf-export-mode .accordion-collapse {
+body.pdf-export-active .accordion-collapse {
     display: block !important;
     height: auto !important;
     visibility: visible !important;
+}
+
+body.pdf-export-active .accordion-item {
+    background: #ffffff !important;
+    border: 1px solid #cbd5e1 !important;
+    color: #0f172a !important;
+    margin-bottom: 12px !important;
+    border-radius: 6px !important;
+}
+
+body.pdf-export-active .accordion-button {
+    background: #f1f5f9 !important;
+    color: #0f172a !important;
+    box-shadow: none !important;
+    font-weight: 700 !important;
+}
+
+body.pdf-export-active .accordion-body,
+body.pdf-export-active .bg-dark,
+body.pdf-export-active .table-dark {
+    background: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #0f172a !important;
+}
+
+body.pdf-export-active .latex-scroll-wrapper {
+    overflow: visible !important;
+    white-space: normal !important;
+    font-size: 1.1rem !important;
+    color: #0f172a !important;
+}
+
+body.pdf-export-active .text-white,
+body.pdf-export-active .text-light,
+body.pdf-export-active .text-muted,
+body.pdf-export-active .text-purple,
+body.pdf-export-active h1,
+body.pdf-export-active h2,
+body.pdf-export-active h3,
+body.pdf-export-active h4,
+body.pdf-export-active h5,
+body.pdf-export-active h6,
+body.pdf-export-active p,
+body.pdf-export-active span,
+body.pdf-export-active div {
+    color: #0f172a !important;
 }
