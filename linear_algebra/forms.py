@@ -236,7 +236,45 @@ class ProfileUpdateForm(forms.Form):
         max_length=100,
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'required': True
+            'required': True,
+            'placeholder': 'Enter your full name'
         })
     )
+    avatar_file = forms.FileField(
+        required=False,
+        widget=forms.FileInput(attrs={
+            'class': 'form-control d-none',
+            'id': 'avatarFileInput',
+            'accept': 'image/png, image/jpeg, image/webp, image/gif, image/svg+xml'
+        })
+    )
+    avatar_preset = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput(attrs={'id': 'avatarPresetInput'})
+    )
+    avatar_url = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput(attrs={'id': 'avatarUrlInput'})
+    )
+    remove_avatar = forms.BooleanField(
+        required=False,
+        widget=forms.HiddenInput(attrs={'id': 'removeAvatarInput'})
+    )
+
+    def clean_avatar_file(self):
+        file = self.cleaned_data.get('avatar_file')
+        if not file:
+            return None
+        
+        # Max file size: 5MB
+        max_size = 5 * 1024 * 1024
+        if file.size > max_size:
+            raise forms.ValidationError("Profile picture file size cannot exceed 5MB.")
+        
+        valid_extensions = ('.png', '.jpg', '.jpeg', '.webp', '.gif', '.svg')
+        if not file.name.lower().endswith(valid_extensions):
+            raise forms.ValidationError("Supported image formats are JPG, PNG, WEBP, GIF, and SVG.")
+        
+        return file
+
 

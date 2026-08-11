@@ -316,10 +316,25 @@ h4, .h4 { font-size: clamp(1.05rem, 3vw, 1.5rem); }
 h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
 
 /* 3. Tabular Matrix Input Grid Styling across Device Sizes & Ratios */
+.matrix-grid-wrapper {
+    margin: 1.25rem auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.matrix-bracket-container {
+    position: relative;
+    padding: 2px 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .matrix-input-table {
     border-collapse: separate;
-    border-spacing: 6px;
-    margin: 0.5rem auto;
+    border-spacing: 8px;
+    margin: 0 auto;
     max-width: 100%;
 }
 
@@ -330,28 +345,43 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
 
 .matrix-input-table td.augmented-col-cell {
     border-left: 2px dashed var(--accent-purple);
-    padding-left: 8px !important;
+    padding-left: 12px !important;
 }
 
 .matrix-cell-input {
-    width: clamp(40px, 11vw, 60px) !important;
-    height: clamp(38px, 10vw, 46px) !important;
-    background: var(--surface-slate) !important;
-    border: 1px solid var(--glass-border) !important;
-    color: var(--text-main) !important;
-    font-size: clamp(0.82rem, 2.5vw, 1rem) !important;
+    width: clamp(42px, 10vw, 56px) !important;
+    height: clamp(38px, 9vw, 46px) !important;
+    background: #1E293B !important;
+    border: 1px solid rgba(255, 255, 255, 0.16) !important;
+    color: #F8FAFC !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: clamp(0.88rem, 2.2vw, 1.05rem) !important;
     font-weight: 700 !important;
     border-radius: 8px !important;
     transition: all 0.2s ease !important;
     text-align: center;
     padding: 0.2rem !important;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.25) !important;
 }
 
 .matrix-cell-input:focus {
     border-color: var(--accent-purple) !important;
-    box-shadow: 0 0 12px var(--accent-purple-glow) !important;
-    background: var(--glass-bg) !important;
+    box-shadow: 0 0 14px var(--accent-purple-glow) !important;
+    background: #0F172A !important;
     outline: none !important;
+}
+
+[data-theme="light"] .matrix-cell-input {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(15, 23, 42, 0.2) !important;
+    color: #0F172A !important;
+    box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.06) !important;
+}
+
+[data-theme="light"] .matrix-cell-input:focus {
+    background: #F8FAFC !important;
+    border-color: var(--accent-purple) !important;
+    box-shadow: 0 0 12px var(--accent-purple-glow) !important;
 }
 
 /* 4. Medium & Small Mobile Breakpoints (< 576px) */
@@ -364,14 +394,15 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
         border-radius: 12px !important;
     }
     .matrix-cell-input {
-        width: clamp(36px, 12vw, 48px) !important;
+        width: clamp(36px, 12vw, 46px) !important;
         height: 38px !important;
-        font-size: 0.88rem !important;
+        font-size: 0.9rem !important;
     }
     .matrix-input-table {
-        border-spacing: 4px;
+        border-spacing: 5px;
     }
 }
+
 
 /* 5. Compact & Narrow Mobile Breakpoints (< 380px e.g. iPhone SE, Fold) */
 @media (max-width: 380px) {
@@ -679,6 +710,199 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
     border-radius: 10px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
     display: none;
+}
+
+/* ==========================================================================
+   AVATAR & PROFILE PICTURE MANAGEMENT STYLES
+   ========================================================================== */
+.avatar-ring-container {
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 25px var(--accent-purple-glow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.avatar-ring-container:hover {
+    transform: scale(1.04);
+    box-shadow: 0 0 35px var(--accent-purple-glow);
+}
+
+.avatar-img-lg {
+    width: 98px;
+    height: 98px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--bg-main);
+    display: block;
+}
+
+.avatar-fallback-lg {
+    width: 98px;
+    height: 98px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #7C3AED, #4F46E5);
+}
+
+.avatar-status-badge {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    background: var(--surface-slate);
+    border-radius: 50%;
+    padding: 2px;
+    font-size: 1.1rem;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--surface-slate);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.text-emerald {
+    color: #34D399 !important;
+}
+
+.text-cyan {
+    color: var(--accent-cyan) !important;
+}
+
+/* Avatar Preview in Settings Form */
+.avatar-preview-box {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    padding: 2px;
+    background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.avatar-preview-img {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--bg-main);
+}
+
+.avatar-preview-fallback {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, #7C3AED, #4F46E5);
+}
+
+/* Drag and Drop Zone */
+.avatar-dropzone {
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px dashed var(--glass-border);
+    cursor: pointer;
+    transition: all 0.25s ease-in-out;
+}
+
+.avatar-dropzone:hover,
+.avatar-dropzone.dropzone-active {
+    background: rgba(192, 132, 252, 0.08);
+    border-color: var(--accent-purple);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px var(--accent-purple-glow);
+}
+
+/* Preset Avatar Selection Grid */
+.preset-avatar-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.preset-avatar-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--accent-purple);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.preset-avatar-card.active {
+    background: rgba(192, 132, 252, 0.15);
+    border-color: var(--accent-purple) !important;
+    box-shadow: 0 0 15px var(--accent-purple-glow);
+}
+
+.preset-avatar-img {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+}
+
+.preset-avatar-card:hover .preset-avatar-img {
+    transform: scale(1.08);
+}
+
+.preset-avatar-title {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.preset-avatar-check {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    color: var(--accent-purple);
+    font-size: 1rem;
+    display: none;
+    background: var(--surface-slate);
+    border-radius: 50%;
+    line-height: 1;
+}
+
+.preset-avatar-card.active .preset-avatar-check {
+    display: block;
+}
+
+/* Light Mode Overrides for Avatar Box */
+[data-theme="light"] .avatar-dropzone {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: rgba(15, 23, 42, 0.15);
+}
+
+[data-theme="light"] .preset-avatar-card {
+    background: rgba(15, 23, 42, 0.03);
+    border-color: rgba(15, 23, 42, 0.12);
+}
+
+[data-theme="light"] .preset-avatar-card.active {
+    background: rgba(109, 40, 217, 0.1);
 }
 
 /* Print CSS Support */

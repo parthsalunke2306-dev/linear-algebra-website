@@ -17,7 +17,7 @@
         <!-- Input Form Column -->
         <div class="col-lg-5">
             <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-                <h5 class="text-white mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Vector Inputs</h5>
+                <h5 class="text-white mb-0"><i class="bi bi-sliders me-2 text-purple" style="color: var(--accent-purple);"></i>Vector Inputs & Dynamic Controls</h5>
                 
                 <!-- Quick Presets -->
                 <div class="preset-container d-flex align-items-center gap-1 flex-wrap">
@@ -25,28 +25,56 @@
                     <button type="button" onclick="loadVectorPreset('standard')" class="btn btn-preset">Standard 3D</button>
                     <button type="button" onclick="loadVectorPreset('orthogonal')" class="btn btn-preset">Orthogonal</button>
                     <button type="button" onclick="loadVectorPreset('parallel')" class="btn btn-preset">Parallel</button>
+                    <button type="button" onclick="loadVectorPreset('unit')" class="btn btn-preset">Unit Vectors</button>
                 </div>
             </div>
 
-
             <form method="post" id="vectorForm">
                 {% csrf_token %}
-                <h6 class="text-purple fw-bold mb-2" style="color: var(--accent-purple);">Vector $\mathbf{v}_1$</h6>
-                <div class="row g-2 mb-3">
-                    <div class="col-4"><label class="text-muted small">X</label>{{ form.v1_x }}</div>
-                    <div class="col-4"><label class="text-muted small">Y</label>{{ form.v1_y }}</div>
-                    <div class="col-4"><label class="text-muted small">Z</label>{{ form.v1_z }}</div>
+                <div class="p-3 rounded-3 mb-3" style="background: rgba(15, 23, 42, 0.45); border: 1px solid var(--glass-border);">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <label class="form-label text-purple fw-bold mb-0" style="color: var(--accent-purple);"><i class="bi bi-compass me-1"></i>Vector $\mathbf{v}_1 = [x, y, z]$</label>
+                        <span class="badge bg-dark text-muted border font-monospace" style="border-color: var(--glass-border) !important;">3D Vector</span>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-4">
+                            <label class="text-muted small d-block text-center font-monospace">X</label>
+                            {{ form.v1_x }}
+                        </div>
+                        <div class="col-4">
+                            <label class="text-muted small d-block text-center font-monospace">Y</label>
+                            {{ form.v1_y }}
+                        </div>
+                        <div class="col-4">
+                            <label class="text-muted small d-block text-center font-monospace">Z</label>
+                            {{ form.v1_z }}
+                        </div>
+                    </div>
                 </div>
 
-                <h6 class="text-info fw-bold mb-2">Vector $\mathbf{v}_2$</h6>
-                <div class="row g-2 mb-4">
-                    <div class="col-4"><label class="text-muted small">X</label>{{ form.v2_x }}</div>
-                    <div class="col-4"><label class="text-muted small">Y</label>{{ form.v2_y }}</div>
-                    <div class="col-4"><label class="text-muted small">Z</label>{{ form.v2_z }}</div>
+                <div class="p-3 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.45); border: 1px solid var(--glass-border);">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <label class="form-label text-cyan fw-bold mb-0" style="color: var(--accent-cyan);"><i class="bi bi-compass me-1"></i>Vector $\mathbf{v}_2 = [x, y, z]$</label>
+                        <span class="badge bg-dark text-muted border font-monospace" style="border-color: var(--glass-border) !important;">3D Vector</span>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-4">
+                            <label class="text-muted small d-block text-center font-monospace">X</label>
+                            {{ form.v2_x }}
+                        </div>
+                        <div class="col-4">
+                            <label class="text-muted small d-block text-center font-monospace">Y</label>
+                            {{ form.v2_y }}
+                        </div>
+                        <div class="col-4">
+                            <label class="text-muted small d-block text-center font-monospace">Z</label>
+                            {{ form.v2_z }}
+                        </div>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn btn-gradient w-100">
-                    <i class="bi bi-calculator me-1"></i> Calculate Vector Products
+                <button type="submit" class="btn btn-gradient w-100 py-2 fs-6 fw-bold">
+                    <i class="bi bi-play-fill me-1"></i> Calculate Vector Products & Projections
                 </button>
             </form>
         </div>
@@ -180,6 +208,14 @@
             document.getElementById('id_v2_x').value = 1;
             document.getElementById('id_v2_y').value = 2;
             document.getElementById('id_v2_z').value = 3;
+        } else if (type === 'unit') {
+            document.getElementById('id_v1_x').value = 1;
+            document.getElementById('id_v1_y').value = 0;
+            document.getElementById('id_v1_z').value = 0;
+
+            document.getElementById('id_v2_x').value = 0;
+            document.getElementById('id_v2_y').value = 0;
+            document.getElementById('id_v2_z').value = 1;
         }
         document.getElementById('vectorForm').submit();
     }

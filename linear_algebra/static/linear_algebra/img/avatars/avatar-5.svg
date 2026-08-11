@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="grad5" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4" />
+      <stop offset="100%" stop-color="#3B82F6" />
+    </linearGradient>
+  </defs>
+  <circle cx="50" cy="50" r="48" fill="#0C1B2A" stroke="url(#grad5)" stroke-width="4" />
+  <!-- Vector Grid & Matrix lines -->
+  <line x1="20" y1="50" x2="80" y2="50" stroke="#06B6D4" stroke-width="1.5" opacity="0.4" />
+  <line x1="50" y1="20" x2="50" y2="80" stroke="#06B6D4" stroke-width="1.5" opacity="0.4" />
+  <circle cx="50" cy="38" r="13" fill="url(#grad5)" />
+  <path d="M 27 78 C 27 63, 37 57, 50 57 C 63 57, 73 63, 73 78 Z" fill="url(#grad5)" />
+</svg>

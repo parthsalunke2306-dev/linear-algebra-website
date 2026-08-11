@@ -46,9 +46,14 @@ class SupabaseAuthMiddleware:
                             "id": session.get("user_id", "demo-user-uuid-1234"),
                             "email": session.get("user_email", ""),
                             "full_name": session.get("user_name", ""),
+                            "avatar_url": session.get("user_avatar", ""),
                         }
                 else:
                     user_data = get_user_from_token(token)
+                    if user_data:
+                        if hasattr(request, 'session') and request.session.get("user_avatar"):
+                            if not user_data.get("avatar_url"):
+                                user_data["avatar_url"] = request.session.get("user_avatar", "")
                     request.supabase_user = user_data
         except Exception as e:
             print(f"[Supabase Middleware Warning]: {e}")

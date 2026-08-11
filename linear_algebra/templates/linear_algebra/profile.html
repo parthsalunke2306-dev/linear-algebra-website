@@ -3,29 +3,61 @@
 
 {% block content %}
 <div class="row g-4 mb-5">
+    <!-- Left Column: User Identity Card -->
     <div class="col-lg-4">
-        <!-- User Identity Card -->
-        <div class="glass-card p-4 text-center h-100">
-            <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3 p-3" style="background: rgba(192, 132, 252, 0.15); border: 2px solid var(--accent-purple-glow); width: 90px; height: 90px;">
-                <i class="bi bi-person-fill display-4" style="color: var(--accent-purple);"></i>
+        <div class="glass-card p-4 text-center h-100 position-relative overflow-hidden">
+            <!-- Ambient Glow Background -->
+            <div class="position-absolute top-0 start-50 translate-middle-x" style="width: 200px; height: 200px; background: var(--accent-purple-glow); filter: blur(60px); border-radius: 50%; pointer-events: none; opacity: 0.6;"></div>
+
+            <!-- Avatar Container -->
+            <div class="position-relative d-inline-block mb-3">
+                <div id="identityAvatarWrapper" class="avatar-ring-container">
+                    {% if current_avatar or session_user_avatar %}
+                    <img id="identityAvatarImg" src="{{ current_avatar|default:session_user_avatar }}" alt="{{ user.full_name|default:'User Avatar' }}" class="avatar-img-lg">
+                    <div id="identityAvatarFallback" class="avatar-fallback-lg d-none">
+                        {{ user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
+                    </div>
+                    {% else %}
+                    <img id="identityAvatarImg" src="" alt="User Avatar" class="avatar-img-lg d-none">
+                    <div id="identityAvatarFallback" class="avatar-fallback-lg">
+                        {{ user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="avatar-status-badge" title="Active Scholar">
+                    <i class="bi bi-patch-check-fill text-emerald"></i>
+                </div>
             </div>
-            <h3 class="fw-bold mb-1">{{ user.full_name|default:"Data Science Scholar" }}</h3>
-            <p class="text-muted small mb-3"><i class="bi bi-envelope-fill me-1" style="color: var(--accent-cyan);"></i>{{ user.email }}</p>
+
+            <h3 class="fw-bold mb-1" id="identityDisplayName">{{ user.full_name|default:session_user_name|default:"Data Science Scholar" }}</h3>
+            <p class="text-muted small mb-3"><i class="bi bi-envelope-fill me-1" style="color: var(--accent-cyan);"></i>{{ user.email|default:session_user_email }}</p>
+            
             <div class="p-2 rounded-3 bg-dark border font-monospace text-muted small text-break mb-3" style="border-color: var(--glass-border) !important; font-size: 0.75rem;">
-                <span class="text-purple fw-bold">UUID:</span> {{ user.id }}
+                <span class="text-purple fw-bold">UUID:</span> {{ user.id|default:"demo-user-uuid-1234" }}
             </div>
-            <span class="badge px-3 py-2 rounded-pill font-monospace" style="background: rgba(52, 211, 153, 0.2); color: #34D399; border: 1px solid rgba(52, 211, 153, 0.4);">
-                <i class="bi bi-shield-check me-1"></i> Supabase Authenticated
-            </span>
+            
+            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                <span class="badge px-3 py-2 rounded-pill font-monospace" style="background: rgba(52, 211, 153, 0.18); color: #34D399; border: 1px solid rgba(52, 211, 153, 0.4);">
+                    <i class="bi bi-shield-check me-1"></i> Authenticated
+                </span>
+                <span class="badge px-3 py-2 rounded-pill font-monospace" style="background: rgba(192, 132, 252, 0.18); color: var(--accent-purple); border: 1px solid var(--accent-purple-glow);">
+                    <i class="bi bi-cpu me-1"></i> LA Explorer
+                </span>
+            </div>
         </div>
     </div>
 
+    <!-- Right Column: Profile & Picture Management Form -->
     <div class="col-lg-8">
-        <!-- Account Settings Card -->
         <div class="glass-card p-4 p-md-5 h-100">
-            <h4 class="fw-bold mb-4 d-flex align-items-center gap-2">
-                <i class="bi bi-sliders" style="color: var(--accent-purple);"></i> Account Settings
-            </h4>
+            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+                <h4 class="fw-bold mb-0 d-flex align-items-center gap-2">
+                    <i class="bi bi-person-bounding-box" style="color: var(--accent-purple);"></i> Account & Profile Picture
+                </h4>
+                <span class="badge bg-dark border text-muted px-2 py-1 font-monospace" style="border-color: var(--glass-border) !important;">
+                    User Settings
+                </span>
+            </div>
 
             {% if error %}
             <div class="alert alert-danger d-flex align-items-center gap-2 mb-4 rounded-3 border-0" role="alert" style="background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3) !important;">
@@ -41,29 +73,109 @@
             </div>
             {% endif %}
 
-            <form method="post" action="{% url 'linear_algebra:profile' %}">
+            <form method="post" action="{% url 'linear_algebra:profile' %}" enctype="multipart/form-data" id="profileForm">
                 {% csrf_token %}
+                {{ form.avatar_preset }}
+                {{ form.avatar_url }}
+                {{ form.remove_avatar }}
+                {{ form.avatar_file }}
+
+                <!-- 1. Profile Picture Management Section -->
+                <div class="mb-5 p-4 rounded-3" style="background: rgba(15, 23, 42, 0.45); border: 1px solid var(--glass-border);">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <label class="form-label text-white fw-bold mb-0">
+                            <i class="bi bi-camera-fill me-1" style="color: var(--accent-purple);"></i> Profile Picture
+                        </label>
+                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" id="removeAvatarBtn" onclick="handleRemoveAvatar()" {% if not current_avatar and not session_user_avatar %}style="display: none;"{% endif %}>
+                            <i class="bi bi-trash3 me-1"></i> Remove Photo
+                        </button>
+                    </div>
+
+                    <!-- Live Avatar Preview & Upload Action Controls -->
+                    <div class="d-flex flex-wrap align-items-center gap-4 mb-4">
+                        <div class="position-relative">
+                            <div class="avatar-preview-box" id="avatarPreviewContainer">
+                                {% if current_avatar or session_user_avatar %}
+                                <img id="avatarPreviewImg" src="{{ current_avatar|default:session_user_avatar }}" alt="Preview" class="avatar-preview-img">
+                                <div id="avatarPreviewFallback" class="avatar-preview-fallback d-none">
+                                    {{ user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
+                                </div>
+                                {% else %}
+                                <img id="avatarPreviewImg" src="" alt="Preview" class="avatar-preview-img d-none">
+                                <div id="avatarPreviewFallback" class="avatar-preview-fallback">
+                                    {{ user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="flex-grow-1">
+                            <div class="d-flex flex-wrap gap-2 mb-2">
+                                <button type="button" class="btn btn-gradient btn-sm px-3" onclick="document.getElementById('avatarFileInput').click()">
+                                    <i class="bi bi-upload me-1"></i> Upload Image
+                                </button>
+                                <button type="button" class="btn btn-outline-light btn-sm px-3" id="cancelUploadBtn" style="display: none;" onclick="resetAvatarSelection()">
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i> Revert
+                                </button>
+                            </div>
+                            <small class="text-muted d-block">Supports PNG, JPG, JPEG, WEBP, SVG, or GIF (Max 5MB).</small>
+                            <div id="uploadFileStatus" class="small text-cyan mt-1 fw-semibold font-monospace" style="display: none;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Drag & Drop Zone Area -->
+                    <div id="dropZone" class="avatar-dropzone mb-4 text-center p-3 rounded-3" onclick="document.getElementById('avatarFileInput').click()">
+                        <i class="bi bi-cloud-arrow-up fs-2 text-purple mb-1 d-block"></i>
+                        <span class="text-main fw-semibold small">Drag & drop your new avatar here</span>
+                        <small class="text-muted d-block">or click to browse files from your computer</small>
+                    </div>
+
+                    <!-- Curated Preset Avatars Grid -->
+                    <label class="form-label text-muted small fw-semibold d-block mb-2">Or Choose from Curated Mathematician Avatars:</label>
+                    <div class="row g-3" id="presetAvatarGrid">
+                        {% for preset in preset_avatars %}
+                        <div class="col-4 col-sm-2">
+                            <div class="preset-avatar-card text-center p-2 rounded-3 {% if current_avatar == preset.url or current_avatar == preset.id %}active{% endif %}" 
+                                 data-preset-url="{{ preset.url }}" 
+                                 data-preset-id="{{ preset.id }}" 
+                                 onclick="selectPresetAvatar('{{ preset.url }}', this)" 
+                                 title="{{ preset.title }}">
+                                <img src="{{ preset.url }}" alt="{{ preset.title }}" class="preset-avatar-img mb-1">
+                                <div class="preset-avatar-title">{{ preset.title }}</div>
+                                <div class="preset-avatar-check"><i class="bi bi-check-circle-fill"></i></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- 2. Personal Information Section -->
                 <div class="mb-4">
                     <label class="form-label text-muted small fw-semibold">Display Full Name</label>
                     <div class="input-group">
                         <span class="input-group-text bg-dark text-muted border-end-0" style="border-color: var(--glass-border);"><i class="bi bi-person"></i></span>
                         {{ form.full_name }}
                     </div>
+                    {% if form.full_name.errors %}
+                    <div class="text-danger small mt-1">{{ form.full_name.errors }}</div>
+                    {% endif %}
                 </div>
 
                 <div class="mb-4">
                     <label class="form-label text-muted small fw-semibold">Registered Email Address (Read-only)</label>
                     <div class="input-group">
                         <span class="input-group-text bg-dark text-muted border-end-0" style="border-color: var(--glass-border);"><i class="bi bi-envelope"></i></span>
-                        <input type="email" class="form-control" value="{{ user.email }}" readonly disabled style="opacity: 0.7;">
+                        <input type="email" class="form-control font-monospace" value="{{ user.email|default:session_user_email }}" readonly disabled style="opacity: 0.7;">
                     </div>
+                    <small class="text-muted">Email is linked to your Supabase Auth account.</small>
                 </div>
 
+                <!-- 3. Form Submit and Secondary Actions -->
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-3 border-top" style="border-color: var(--glass-border) !important;">
-                    <button type="submit" class="btn btn-gradient px-4">
-                        Save Profile Changes <i class="bi bi-check-lg ms-1"></i>
+                    <button type="submit" class="btn btn-gradient px-4 py-2 fw-bold" id="saveProfileBtn">
+                        Save Profile Changes <i class="bi bi-check2-circle ms-1"></i>
                     </button>
-                    <a href="{% url 'linear_algebra:forgot_password' %}" class="btn btn-preset">
+                    <a href="{% url 'linear_algebra:forgot_password' %}" class="btn btn-preset py-2">
                         <i class="bi bi-key me-1"></i> Change Password
                     </a>
                 </div>
@@ -71,4 +183,189 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const fileInput = document.getElementById('avatarFileInput');
+    const presetInput = document.getElementById('avatarPresetInput');
+    const removeInput = document.getElementById('removeAvatarInput');
+    const previewImg = document.getElementById('avatarPreviewImg');
+    const previewFallback = document.getElementById('avatarPreviewFallback');
+    const identityImg = document.getElementById('identityAvatarImg');
+    const identityFallback = document.getElementById('identityAvatarFallback');
+    const removeBtn = document.getElementById('removeAvatarBtn');
+    const cancelBtn = document.getElementById('cancelUploadBtn');
+    const fileStatus = document.getElementById('uploadFileStatus');
+    const dropZone = document.getElementById('dropZone');
+
+    const originalAvatar = "{{ current_avatar|default:session_user_avatar|default:'' }}";
+
+    // Handle File Input Change (Live Preview)
+    if (fileInput) {
+        fileInput.addEventListener('change', function(e) {
+            const file = this.files[0];
+            if (file) {
+                if (file.size > 5 * 1024 * 1024) {
+                    alert("File size exceeds 5MB limit. Please select a smaller image.");
+                    this.value = "";
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    setAvatarPreview(event.target.result);
+                    presetInput.value = "";
+                    removeInput.value = "false";
+                    
+                    // Clear preset active cards
+                    document.querySelectorAll('.preset-avatar-card').forEach(c => c.classList.remove('active'));
+                    
+                    cancelBtn.style.display = 'inline-block';
+                    removeBtn.style.display = 'inline-block';
+                    fileStatus.textContent = `Selected: ${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+                    fileStatus.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Drag and Drop support
+    if (dropZone) {
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.add('dropzone-active');
+            }, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.classList.remove('dropzone-active');
+            }, false);
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                fileInput.dispatchEvent(new Event('change'));
+            }
+        });
+    }
+
+    // Handle Preset Avatar Selection
+    function selectPresetAvatar(presetUrl, cardElement) {
+        fileInput.value = "";
+        presetInput.value = presetUrl;
+        removeInput.value = "false";
+        
+        setAvatarPreview(presetUrl);
+
+        document.querySelectorAll('.preset-avatar-card').forEach(c => c.classList.remove('active'));
+        if (cardElement) {
+            cardElement.classList.add('active');
+        }
+
+        cancelBtn.style.display = 'inline-block';
+        removeBtn.style.display = 'inline-block';
+        fileStatus.textContent = `Selected Preset: ${cardElement.getAttribute('title') || 'Mathematician Avatar'}`;
+        fileStatus.style.display = 'block';
+    }
+
+    // Handle Remove Avatar
+    function handleRemoveAvatar() {
+        if (confirm("Are you sure you want to remove your custom avatar and revert to default initials?")) {
+            fileInput.value = "";
+            presetInput.value = "";
+            removeInput.value = "true";
+            
+            clearAvatarPreview();
+
+            document.querySelectorAll('.preset-avatar-card').forEach(c => c.classList.remove('active'));
+            cancelBtn.style.display = 'inline-block';
+            removeBtn.style.display = 'none';
+            fileStatus.textContent = "Avatar will be reset to default initials on save.";
+            fileStatus.style.display = 'block';
+        }
+    }
+
+    // Reset Selection
+    function resetAvatarSelection() {
+        fileInput.value = "";
+        presetInput.value = "";
+        removeInput.value = "false";
+        fileStatus.style.display = 'none';
+        cancelBtn.style.display = 'none';
+
+        if (originalAvatar) {
+            setAvatarPreview(originalAvatar);
+            removeBtn.style.display = 'inline-block';
+            
+            // Re-highlight original preset if applicable
+            document.querySelectorAll('.preset-avatar-card').forEach(c => {
+                if (c.getAttribute('data-preset-url') === originalAvatar) {
+                    c.classList.add('active');
+                } else {
+                    c.classList.remove('active');
+                }
+            });
+        } else {
+            clearAvatarPreview();
+            removeBtn.style.display = 'none';
+            document.querySelectorAll('.preset-avatar-card').forEach(c => c.classList.remove('active'));
+        }
+    }
+
+    function setAvatarPreview(src) {
+        if (previewImg) {
+            previewImg.src = src;
+            previewImg.classList.remove('d-none');
+        }
+        if (previewFallback) previewFallback.classList.add('d-none');
+
+        if (identityImg) {
+            identityImg.src = src;
+            identityImg.classList.remove('d-none');
+        }
+        if (identityFallback) identityFallback.classList.add('d-none');
+    }
+
+    function clearAvatarPreview() {
+        if (previewImg) {
+            previewImg.src = "";
+            previewImg.classList.add('d-none');
+        }
+        if (previewFallback) previewFallback.classList.remove('d-none');
+
+        if (identityImg) {
+            identityImg.src = "";
+            identityImg.classList.add('d-none');
+        }
+        if (identityFallback) identityFallback.classList.remove('d-none');
+    }
+
+    // Dynamic Display Name Sync with Identity Card
+    const nameInput = document.querySelector('input[name="full_name"]');
+    if (nameInput) {
+        nameInput.addEventListener('input', function() {
+            const val = this.value.trim();
+            const identityTitle = document.getElementById('identityDisplayName');
+            if (identityTitle) {
+                identityTitle.textContent = val || 'Data Science Scholar';
+            }
+            if (previewFallback && val) {
+                previewFallback.textContent = val.charAt(0).toUpperCase();
+            }
+            if (identityFallback && val) {
+                identityFallback.textContent = val.charAt(0).toUpperCase();
+            }
+        });
+    }
+</script>
 {% endblock %}

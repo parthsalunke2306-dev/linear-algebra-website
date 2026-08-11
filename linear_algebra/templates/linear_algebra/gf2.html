@@ -14,35 +14,28 @@
 <!-- Question Input & Upload Card -->
 <div class="glass-card p-4 mb-4">
     <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-        <h4 class="text-white mb-0"><i class="bi bi-file-earmark-text me-2 text-warning"></i>Galois Field Question Solver & Input Parser</h4>
-        <span class="badge bg-secondary px-3 py-2 font-monospace">Supports Text, Presets & Image Upload</span>
-    </div>
-
-    <form method="post" action="{% url 'linear_algebra:gf2' %}" enctype="multipart/form-data" id="galoisForm">
-        {% csrf_token %}
-        {{ form.confirm_action }}
-
+        <h5 class="text-white mb-0"><i class="bi bi-sliders me-2 text-purple" style="color: var(--accent-purple);"></i>Finite Field Input & Dynamic Controls</h5>
+        
         <!-- Preset Quick Select Buttons -->
-        <div class="mb-3">
-            <label class="form-label text-muted small fw-semibold me-2">Sample Question Presets:</label>
-            <div class="d-flex flex-wrap gap-2">
-                <button type="button" class="btn btn-preset btn-sm" onclick="setPreset('Verify that F₂ = {0,1} forms a field under addition and multiplication modulo 2.', 2, 'verify_field_axioms')">
-                    <i class="bi bi-magic me-1"></i> F₂ = {0, 1} (mod 2)
-                </button>
-                <button type="button" class="btn btn-preset btn-sm" onclick="setPreset('Verify that F₃ = {0,1,2} forms a field under addition and multiplication modulo 3.', 3, 'verify_field_axioms')">
-                    <i class="bi bi-magic me-1"></i> F₃ = {0, 1, 2} (mod 3)
-                </button>
-                <button type="button" class="btn btn-preset btn-sm" onclick="setPreset('Verify field axioms and inverses for F₅ = {0,1,2,3,4} modulo 5.', 5, 'verify_field_axioms')">
-                    <i class="bi bi-magic me-1"></i> F₅ = {0, 1, 2, 3, 4} (mod 5)
-                </button>
-                <button type="button" class="btn btn-preset btn-sm" onclick="setPreset('Find additive and multiplicative inverses in F₇ modulo 7.', 7, 'find_inverses')">
-                    <i class="bi bi-magic me-1"></i> Inverses in F₇
-                </button>
-                <button type="button" class="btn btn-preset btn-sm" onclick="setPreset('Determine whether Z₄ = {0,1,2,3} forms a field under modulo 4.', 4, 'check_field')">
-                    <i class="bi bi-exclamation-triangle text-warning me-1"></i> Z₄ (Composite Modulus)
-                </button>
-            </div>
+        <div class="preset-container d-flex align-items-center gap-1 flex-wrap">
+            <span class="text-muted small font-monospace me-1"><i class="bi bi-lightning-charge-fill text-warning"></i>PRESETS:</span>
+            <button type="button" class="btn btn-preset" onclick="setPreset('Verify that F₂ = {0,1} forms a field under addition and multiplication modulo 2.', 2, 'verify_field_axioms')">
+                $\mathbb{F}_2 = \{0, 1\}$
+            </button>
+            <button type="button" class="btn btn-preset" onclick="setPreset('Verify that F₃ = {0,1,2} forms a field under addition and multiplication modulo 3.', 3, 'verify_field_axioms')">
+                $\mathbb{F}_3 = \{0, 1, 2\}$
+            </button>
+            <button type="button" class="btn btn-preset" onclick="setPreset('Verify field axioms and inverses for F₅ = {0,1,2,3,4} modulo 5.', 5, 'verify_field_axioms')">
+                $\mathbb{F}_5$ Mod 5
+            </button>
+            <button type="button" class="btn btn-preset" onclick="setPreset('Find additive and multiplicative inverses in F₇ modulo 7.', 7, 'find_inverses')">
+                Inverses $\mathbb{F}_7$
+            </button>
+            <button type="button" class="btn btn-preset" onclick="setPreset('Determine whether Z₄ = {0,1,2,3} forms a field under modulo 4.', 4, 'check_field')">
+                $\mathbb{Z}_4$ Ring
+            </button>
         </div>
+    </div>
 
         <div class="row g-3 mb-3">
             <!-- Question Textarea -->

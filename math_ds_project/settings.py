@@ -136,6 +136,10 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Media files (User uploaded profile pictures and media)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
 # ==========================================
 # AUTHORIZED EMAIL RESTRICTION SYSTEM
 # ==========================================

@@ -20,13 +20,15 @@
 <!-- Stacked Card 1: Matrix Input & Settings -->
 <div class="glass-card p-4 mb-4">
     <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-        <h5 class="text-white mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Matrix Input & Expansion Settings</h5>
+        <h5 class="text-white mb-0"><i class="bi bi-sliders me-2 text-purple" style="color: var(--accent-purple);"></i>Matrix Input & Dynamic Controls</h5>
         
         <!-- Presets -->
         <div class="preset-container d-flex align-items-center gap-1 flex-wrap">
             <span class="text-muted small font-monospace me-1"><i class="bi bi-lightning-charge-fill text-warning"></i>PRESETS:</span>
-            <button type="button" onclick="loadCofactorPreset('3x3')" class="btn btn-preset">3x3 Matrix</button>
-            <button type="button" onclick="loadCofactorPreset('4x4')" class="btn btn-preset">4x4 Matrix</button>
+            <button type="button" onclick="loadCofactorPreset('3x3')" class="btn btn-preset">3×3 Matrix</button>
+            <button type="button" onclick="loadCofactorPreset('4x4')" class="btn btn-preset">4×4 Matrix</button>
+            <button type="button" onclick="loadCofactorPreset('triangular')" class="btn btn-preset">Triangular</button>
+            <button type="button" onclick="loadCofactorPreset('singular')" class="btn btn-preset">Singular</button>
         </div>
     </div>
 
@@ -34,30 +36,33 @@
         {% csrf_token %}
         <div class="mb-3">
             <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
-                <label class="form-label text-muted small fw-semibold mb-0">Square Matrix $A$</label>
+                <label class="form-label text-muted small fw-semibold mb-0">Square Matrix $[A]$</label>
                 <div class="matrix-resizer-controls">
-                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'add_row', 'cofactorGrid'); modifyMatrixSize('id_matrix_text', 'add_col', 'cofactorGrid');" class="btn btn-preset">+ Size</button>
-                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'remove_row', 'cofactorGrid'); modifyMatrixSize('id_matrix_text', 'remove_col', 'cofactorGrid');" class="btn btn-preset">- Size</button>
+                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'add_row', 'cofactorGrid')" class="btn btn-preset">+ Row</button>
+                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'remove_row', 'cofactorGrid')" class="btn btn-preset">- Row</button>
+                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'add_col', 'cofactorGrid')" class="btn btn-preset">+ Col</button>
+                    <button type="button" onclick="modifyMatrixSize('id_matrix_text', 'remove_col', 'cofactorGrid')" class="btn btn-preset">- Col</button>
                 </div>
             </div>
 
             <!-- Tabular Matrix Grid Display -->
             <div id="cofactorGrid" class="mb-2"></div>
             {{ form.matrix_text }}
+            <div class="form-text text-muted text-center">Enter square matrix $[A]$ row by row. Separate numbers with spaces.</div>
         </div>
 
-        <div class="row g-2 mb-4">
-            <div class="col-6">
-                <label class="form-label text-muted small fw-semibold">Expand Along</label>
+        <div class="row g-3 mb-4 p-3 rounded-3" style="background: rgba(15, 23, 42, 0.45); border: 1px solid var(--glass-border);">
+            <div class="col-sm-6">
+                <label class="form-label text-muted small fw-semibold"><i class="bi bi-arrows-expand me-1 text-purple"></i>Expand Along</label>
                 {{ form.expand_by }}
             </div>
-            <div class="col-6">
-                <label class="form-label text-muted small fw-semibold">Index (1-based)</label>
+            <div class="col-sm-6">
+                <label class="form-label text-muted small fw-semibold"><i class="bi bi-hash me-1 text-cyan"></i>Index (1-based)</label>
                 {{ form.index }}
             </div>
         </div>
-        <button type="submit" class="btn btn-gradient w-100">
-            <i class="bi bi-calculator me-1"></i> Compute Cofactor Expansion
+        <button type="submit" class="btn btn-gradient w-100 py-2 fs-6 fw-bold">
+            <i class="bi bi-play-fill me-1"></i> Compute Cofactor Expansion
         </button>
     </form>
 </div>
@@ -155,6 +160,10 @@
             textarea.value = '3 1 2\n0 -1 4\n2 1 5';
         } else if (type === '4x4') {
             textarea.value = '1 2 0 1\n3 0 -1 2\n2 1 0 4\n0 1 2 3';
+        } else if (type === 'triangular') {
+            textarea.value = '4 2 1\n0 3 -2\n0 0 5';
+        } else if (type === 'singular') {
+            textarea.value = '1 2 3\n2 4 6\n1 0 1';
         }
         renderMatrixTable('id_matrix_text', 'cofactorGrid', false);
         document.getElementById('cofactorForm').submit();

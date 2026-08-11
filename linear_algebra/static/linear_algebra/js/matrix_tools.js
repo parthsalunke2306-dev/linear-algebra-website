@@ -48,7 +48,7 @@ function copyToClipboard(text) {
     });
 }
 
-// 3. Tabular Matrix Grid Renderer
+// 3. Tabular Matrix Grid Renderer & Interactive UI Engine
 function initMatrixGrid(textareaId, gridContainerId, isAugmented = false) {
     const textarea = document.getElementById(textareaId);
     const container = document.getElementById(gridContainerId);
@@ -81,9 +81,10 @@ function renderMatrixTable(textareaId, gridContainerId, isAugmented = false) {
     let rows = matrix.length;
     let cols = matrix[0].length;
 
-    let html = `<div class="table-responsive text-center mb-2">
-        <table class="matrix-input-table mx-auto">
-            <tbody>`;
+    let html = `<div class="matrix-grid-wrapper table-responsive text-center my-3">
+        <div class="matrix-bracket-container d-inline-flex align-items-center justify-content-center">
+            <table class="matrix-input-table mx-auto">
+                <tbody>`;
     for (let r = 0; r < rows; r++) {
         html += `<tr>`;
         for (let c = 0; c < cols; c++) {
@@ -95,13 +96,18 @@ function renderMatrixTable(textareaId, gridContainerId, isAugmented = false) {
                        data-row="${r}" 
                        data-col="${c}" 
                        value="${cellVal}" 
-                       oninput="syncGridToTextarea('${textareaId}', '${gridContainerId}')">
+                       autocomplete="off"
+                       spellcheck="false"
+                       oninput="syncGridToTextarea('${textareaId}', '${gridContainerId}')"
+                       onkeydown="handleMatrixKeyNav(event, this, '${gridContainerId}')"
+                       onpaste="handleMatrixPaste(event, this, '${textareaId}', '${gridContainerId}')">
             </td>`;
         }
         html += `</tr>`;
     }
     html += `</tbody>
-        </table>
+            </table>
+        </div>
     </div>`;
 
     container.innerHTML = html;
@@ -127,17 +133,94 @@ function syncGridToTextarea(textareaId, gridContainerId) {
     textarea.value = matrixLines.join('\n');
 }
 
+// Keyboard Arrow Navigation (Up, Down, Left, Right, Enter)
+function handleMatrixKeyNav(e, input, gridContainerId) {
+    const row = parseInt(input.dataset.row, 10);
+    const col = parseInt(input.dataset.col, 10);
+    const container = document.getElementById(gridContainerId);
+    if (!container) return;
+
+    let targetRow = row;
+    let targetCol = col;
+
+    if (e.key === 'ArrowUp') {
+        targetRow = row - 1;
+        e.preventDefault();
+    } else if (e.key === 'ArrowDown' || e.key === 'Enter') {
+        targetRow = row + 1;
+        e.preventDefault();
+    } else if (e.key === 'ArrowLeft' && input.selectionStart === 0 && input.selectionEnd === 0) {
+        targetCol = col - 1;
+        e.preventDefault();
+    } else if (e.key === 'ArrowRight' && input.selectionStart === input.value.length) {
+        targetCol = col + 1;
+        e.preventDefault();
+    } else {
+        return;
+    }
+
+    const nextInput = container.querySelector(`input.matrix-cell-input[data-row="${targetRow}"][data-col="${targetCol}"]`);
+    if (nextInput) {
+        nextInput.focus();
+        nextInput.select();
+    }
+}
+
+// Matrix Paste Support (Paste tab/space separated rows into matrix cells)
+function handleMatrixPaste(e, startInput, textareaId, gridContainerId) {
+    const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+    if (!pasteData || (!pasteData.includes('\n') && !pasteData.includes('\t') && !pasteData.includes(' '))) {
+        return; // normal single-value paste
+    }
+
+    e.preventDefault();
+    const rows = pasteData.trim().split('\n').map(r => r.trim().split(/[\t\s,]+/));
+    if (rows.length === 0) return;
+
+    const textarea = document.getElementById(textareaId);
+    if (!textarea) return;
+
+    // Build current matrix
+    let currentMatrix = textarea.value.trim().split('\n').map(l => l.trim().split(/\s+/));
+    const startRow = parseInt(startInput.dataset.row, 10) || 0;
+    const startCol = parseInt(startInput.dataset.col, 10) || 0;
+
+    // Expand matrix size if paste exceeds current bounds
+    while (currentMatrix.length < startRow + rows.length) {
+        let cols = currentMatrix[0] ? currentMatrix[0].length : rows[0].length;
+        currentMatrix.push(new Array(cols).fill('0'));
+    }
+
+    for (let r = 0; r < rows.length; r++) {
+        let curR = startRow + r;
+        while (currentMatrix[curR].length < startCol + rows[r].length) {
+            currentMatrix[curR].push('0');
+        }
+        for (let c = 0; c < rows[r].length; c++) {
+            let curC = startCol + c;
+            currentMatrix[curR][curC] = rows[r][c];
+        }
+    }
+
+    textarea.value = currentMatrix.map(row => row.join(' ')).join('\n');
+    const container = document.getElementById(gridContainerId);
+    let isAug = container && container.dataset.isAugmented === 'true';
+    renderMatrixTable(textareaId, gridContainerId, isAug);
+}
+
 // 4. Dynamic Matrix Resizer with Grid Auto-Sync
 function modifyMatrixSize(textareaId, action, gridContainerId = null) {
     const textarea = document.getElementById(textareaId);
     if (!textarea) return;
 
     let lines = textarea.value.trim().split('\n').filter(l => l.trim().length > 0);
-    if (lines.length === 0) return;
+    if (lines.length === 0) {
+        lines = ["1 0 0", "0 1 0", "0 0 1"];
+    }
 
     let matrix = lines.map(line => line.trim().split(/\s+/));
     let rows = matrix.length;
-    let cols = matrix[0].length;
+    let cols = matrix[0] ? matrix[0].length : 1;
 
     if (action === 'add_row') {
         let newRow = new Array(cols).fill('0');
@@ -147,6 +230,13 @@ function modifyMatrixSize(textareaId, action, gridContainerId = null) {
     } else if (action === 'add_col') {
         matrix.forEach(row => row.push('0'));
     } else if (action === 'remove_col' && cols > 1) {
+        matrix.forEach(row => row.pop());
+    } else if (action === 'add_size') {
+        let newRow = new Array(cols + 1).fill('0');
+        matrix.forEach(row => row.push('0'));
+        matrix.push(newRow);
+    } else if (action === 'remove_size' && rows > 1 && cols > 1) {
+        matrix.pop();
         matrix.forEach(row => row.pop());
     }
 

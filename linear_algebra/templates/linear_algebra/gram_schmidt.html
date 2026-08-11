@@ -20,13 +20,15 @@
 <!-- Stacked Card 1: Vector Inputs & Presets -->
 <div class="glass-card p-4 mb-4">
     <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-        <h5 class="text-white mb-0"><i class="bi bi-sliders me-2" style="color: var(--accent-purple);"></i>Vector Set Input & Resizer</h5>
+        <h5 class="text-white mb-0"><i class="bi bi-sliders me-2 text-purple" style="color: var(--accent-purple);"></i>Matrix Input & Dynamic Controls</h5>
         
         <!-- Presets -->
         <div class="preset-container d-flex align-items-center gap-1 flex-wrap">
             <span class="text-muted small font-monospace me-1"><i class="bi bi-lightning-charge-fill text-warning"></i>PRESETS:</span>
             <button type="button" onclick="loadGSPreset('3d')" class="btn btn-preset">3 Vectors in R³</button>
             <button type="button" onclick="loadGSPreset('4d')" class="btn btn-preset">3 Vectors in R⁴</button>
+            <button type="button" onclick="loadGSPreset('basis')" class="btn btn-preset">Standard Basis</button>
+            <button type="button" onclick="loadGSPreset('dependent')" class="btn btn-preset">Dependent Set</button>
         </div>
     </div>
 
@@ -34,21 +36,23 @@
         {% csrf_token %}
         <div class="mb-3">
             <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
-                <label class="form-label text-muted small fw-semibold mb-0">Input Vectors $\{\mathbf{v}_1, \mathbf{v}_2, \dots\}$</label>
+                <label class="form-label text-muted small fw-semibold mb-0">Input Vectors Matrix $[ \mathbf{v}_1, \mathbf{v}_2, \dots ]^T$</label>
                 <div class="matrix-resizer-controls">
-                    <button type="button" onclick="modifyMatrixSize('id_vectors_text', 'add_row', 'gsGrid')" class="btn btn-preset">+ Vector</button>
-                    <button type="button" onclick="modifyMatrixSize('id_vectors_text', 'remove_row', 'gsGrid')" class="btn btn-preset">- Vector</button>
+                    <button type="button" onclick="modifyMatrixSize('id_vectors_text', 'add_row', 'gsGrid')" class="btn btn-preset">+ Row</button>
+                    <button type="button" onclick="modifyMatrixSize('id_vectors_text', 'remove_row', 'gsGrid')" class="btn btn-preset">- Row</button>
+                    <button type="button" onclick="modifyMatrixSize('id_vectors_text', 'add_col', 'gsGrid')" class="btn btn-preset">+ Col</button>
+                    <button type="button" onclick="modifyMatrixSize('id_vectors_text', 'remove_col', 'gsGrid')" class="btn btn-preset">- Col</button>
                 </div>
             </div>
 
             <!-- Tabular Matrix Grid Display -->
             <div id="gsGrid" class="mb-2"></div>
             {{ form.vectors_text }}
-            <div class="form-text text-muted text-center">{{ form.vectors_text.help_text }}</div>
+            <div class="form-text text-muted text-center">Enter vectors row by row (one vector per row). Separate numbers with spaces.</div>
         </div>
 
-        <button type="submit" class="btn btn-gradient w-100">
-            <i class="bi bi-play-fill me-1"></i> Run Gram-Schmidt Process
+        <button type="submit" class="btn btn-gradient w-100 py-2 fs-6 fw-bold">
+            <i class="bi bi-play-fill me-1"></i> Run Gram–Schmidt Process
         </button>
     </form>
 </div>
@@ -150,6 +154,10 @@
             textarea.value = '1 1 0\n1 0 1\n0 1 1';
         } else if (type === '4d') {
             textarea.value = '1 1 0 1\n1 0 1 0\n0 1 1 1';
+        } else if (type === 'basis') {
+            textarea.value = '1 0 0\n0 1 0\n0 0 1';
+        } else if (type === 'dependent') {
+            textarea.value = '1 2 3\n2 4 6\n0 1 1';
         }
         renderMatrixTable('id_vectors_text', 'gsGrid', false);
         document.getElementById('gsForm').submit();

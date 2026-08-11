@@ -1,6 +1,9 @@
+import os
+import uuid
 import inspect
 from django.shortcuts import render, redirect
 from django.http import HttpResponseRedirect
+from django.conf import settings
 from .forms import (
     GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm, GF2Form, GaloisFieldForm,
     LoginForm, SignUpForm, ForgotPasswordForm, ResetPasswordForm, ProfileUpdateForm
@@ -11,7 +14,8 @@ from .galois_parser import extract_field_parameters
 from . import math_engine
 from .supabase_client import (
     sign_in_user, sign_up_user, sign_out_user,
-    reset_password_request, update_user_password
+    reset_password_request, update_user_password,
+    update_user_profile
 )
 from .decorators import supabase_login_required
 
@@ -38,6 +42,32 @@ def extract_full_name(user, fallback_email=""):
     if not full_name and fallback_email:
         full_name = fallback_email.split("@")[0]
     return full_name
+
+def extract_avatar_url(user):
+    """Safely extract avatar_url from a user dict or object."""
+    if isinstance(user, dict):
+        return (user.get("user_metadata") or {}).get("avatar_url", "") or user.get("avatar_url", "")
+    elif user is not None:
+        metadata = getattr(user, "user_metadata", None) or {}
+        return metadata.get("avatar_url", "") if isinstance(metadata, dict) else getattr(user, "avatar_url", "")
+    return ""
+
+def save_uploaded_avatar(user_id, uploaded_file):
+    """Saves an uploaded avatar image file to MEDIA_ROOT/avatars/ and returns its public URL."""
+    avatars_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
+    os.makedirs(avatars_dir, exist_ok=True)
+    
+    ext = os.path.splitext(uploaded_file.name)[1].lower()
+    clean_id = str(user_id).replace('-', '')[:16]
+    unique_filename = f"avatar_{clean_id}_{uuid.uuid4().hex[:8]}{ext}"
+    file_path = os.path.join(avatars_dir, unique_filename)
+    
+    with open(file_path, 'wb+') as destination:
+        for chunk in uploaded_file.chunks():
+            destination.write(chunk)
+            
+    return f"{settings.MEDIA_URL.rstrip('/')}/avatars/{unique_filename}"
+
 
 
 def index_view(request):
@@ -77,6 +107,7 @@ def login_view(request):
             request.session['user_email'] = email
             request.session['user_id'] = res['user'].get('id', 'demo-user-uuid') if isinstance(res['user'], dict) else getattr(res['user'], 'id', 'demo-user-uuid')
             request.session['user_name'] = extract_full_name(res['user'], fallback_email=email)
+            request.session['user_avatar'] = extract_avatar_url(res['user'])
             
             target = next_url if next_url and next_url.startswith('/') else 'linear_algebra:index'
             response = redirect(target)
@@ -179,24 +210,76 @@ def reset_password_confirm_view(request):
 @supabase_login_required
 def profile_view(request):
     """Authenticated User Profile & Account Management."""
-    user = getattr(request, 'supabase_user', None)
+    user = getattr(request, 'supabase_user', None) or {}
     error = None
     success_msg = None
     
-    initial_data = {'full_name': user.get('full_name', '') if user else ''}
-    form = ProfileUpdateForm(request.POST or None, initial=initial_data)
+    current_avatar = request.session.get('user_avatar', '') or (user.get('avatar_url', '') if isinstance(user, dict) else '')
+    
+    initial_data = {
+        'full_name': user.get('full_name', '') if isinstance(user, dict) else '',
+        'avatar_url': current_avatar,
+    }
+    
+    form = ProfileUpdateForm(request.POST or None, request.FILES or None, initial=initial_data)
+
+    preset_avatars = [
+        {'id': 'avatar-1', 'title': 'Neon Quantum', 'url': '/static/linear_algebra/img/avatars/avatar-1.svg'},
+        {'id': 'avatar-2', 'title': 'Cyber Math', 'url': '/static/linear_algebra/img/avatars/avatar-2.svg'},
+        {'id': 'avatar-3', 'title': 'Matrix Scholar', 'url': '/static/linear_algebra/img/avatars/avatar-3.svg'},
+        {'id': 'avatar-4', 'title': 'Galois Explorer', 'url': '/static/linear_algebra/img/avatars/avatar-4.svg'},
+        {'id': 'avatar-5', 'title': 'Gaussian Solver', 'url': '/static/linear_algebra/img/avatars/avatar-5.svg'},
+        {'id': 'avatar-6', 'title': 'Eigen Spark', 'url': '/static/linear_algebra/img/avatars/avatar-6.svg'},
+    ]
 
     if request.method == 'POST' and form.is_valid():
         new_name = form.cleaned_data['full_name']
-        if user:
-            user['full_name'] = new_name
+        avatar_file = form.cleaned_data.get('avatar_file')
+        avatar_preset = form.cleaned_data.get('avatar_preset')
+        avatar_url_input = form.cleaned_data.get('avatar_url')
+        remove_avatar = form.cleaned_data.get('remove_avatar')
+
+        new_avatar = current_avatar
+
+        if remove_avatar:
+            new_avatar = ""
+        elif avatar_file:
+            user_id = user.get('id', 'demo-user-uuid') if isinstance(user, dict) else 'demo-user-uuid'
+            try:
+                new_avatar = save_uploaded_avatar(user_id, avatar_file)
+            except Exception as upload_err:
+                error = f"Failed to save profile picture: {upload_err}"
+        elif avatar_preset:
+            new_avatar = avatar_preset
+        elif avatar_url_input:
+            new_avatar = avatar_url_input
+
+        if not error:
+            # Update session
             request.session['user_name'] = new_name
-            success_msg = "Profile information updated successfully!"
+            request.session['user_avatar'] = new_avatar
+            current_avatar = new_avatar
+            
+            # Update user object in memory for current template render
+            if isinstance(user, dict):
+                user['full_name'] = new_name
+                user['avatar_url'] = new_avatar
+            
+            # Sync with Supabase if connected
+            user_id = user.get('id') if isinstance(user, dict) else None
+            if user_id and user_id != 'demo-user-uuid-1234':
+                update_res = update_user_profile(user_id, new_name, new_avatar)
+                if not update_res.get('success') and update_res.get('error'):
+                    print(f"[Supabase Profile Sync Note]: {update_res['error']}")
+
+            success_msg = "Profile updated successfully! Your changes are saved."
 
     context = {
         'title': 'User Profile • Account Settings',
         'user': user,
         'form': form,
+        'preset_avatars': preset_avatars,
+        'current_avatar': current_avatar,
         'error': error,
         'success': success_msg
     }

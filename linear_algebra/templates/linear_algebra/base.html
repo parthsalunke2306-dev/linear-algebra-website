@@ -51,8 +51,14 @@
         </div>
         <div>
             {% if request.supabase_user or request.session.is_authenticated %}
-            <a href="{% url 'linear_algebra:profile' %}" class="rounded-circle d-flex align-items-center justify-content-center text-white font-monospace fw-bold text-decoration-none" style="background: var(--accent-purple); width: 32px; height: 32px; font-size: 0.85rem;">
-                {{ request.supabase_user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
+            <a href="{% url 'linear_algebra:profile' %}" class="d-inline-flex text-decoration-none" title="User Profile">
+                {% if request.supabase_user.avatar_url or session_user_avatar %}
+                <img src="{{ request.supabase_user.avatar_url|default:session_user_avatar }}" alt="Avatar" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover; border: 2px solid var(--accent-purple);">
+                {% else %}
+                <div class="rounded-circle d-flex align-items-center justify-content-center text-white font-monospace fw-bold" style="background: var(--accent-purple); width: 32px; height: 32px; font-size: 0.85rem;">
+                    {{ request.supabase_user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
+                </div>
+                {% endif %}
             </a>
             {% else %}
             <a href="{% url 'linear_algebra:login' %}" class="btn btn-gradient btn-sm py-1 px-2 fw-bold text-center">
@@ -117,9 +123,13 @@
                 {% if request.supabase_user or request.session.is_authenticated %}
                 <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom border-secondary opacity-75">
                     <a href="{% url 'linear_algebra:profile' %}" class="d-flex align-items-center gap-2 overflow-hidden text-decoration-none" title="View Profile">
-                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white font-monospace fw-bold flex-shrink-0" style="background: var(--accent-purple); width: 32px; height: 32px; font-size: 0.85rem;">
+                        {% if request.supabase_user.avatar_url or session_user_avatar %}
+                        <img src="{{ request.supabase_user.avatar_url|default:session_user_avatar }}" alt="Avatar" class="rounded-circle flex-shrink-0" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid var(--accent-purple);">
+                        {% else %}
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white font-monospace fw-bold flex-shrink-0" style="background: var(--accent-purple); width: 34px; height: 34px; font-size: 0.85rem;">
                             {{ request.supabase_user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
                         </div>
+                        {% endif %}
                         <div class="overflow-hidden" style="line-height: 1.2;">
                             <div class="fw-semibold text-truncate small text-white">{{ request.supabase_user.full_name|default:session_user_name|default:"Authenticated User" }}</div>
                             <small class="text-muted d-block text-truncate" style="font-size: 0.7rem;">{{ request.supabase_user.email|default:session_user_email }}</small>
@@ -201,9 +211,13 @@
             {% if request.supabase_user or request.session.is_authenticated %}
             <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom border-secondary opacity-75">
                 <a href="{% url 'linear_algebra:profile' %}" class="d-flex align-items-center gap-2 overflow-hidden text-decoration-none" title="View Profile">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white font-monospace fw-bold flex-shrink-0" style="background: var(--accent-purple); width: 32px; height: 32px; font-size: 0.85rem;">
+                    {% if request.supabase_user.avatar_url or session_user_avatar %}
+                    <img src="{{ request.supabase_user.avatar_url|default:session_user_avatar }}" alt="Avatar" class="rounded-circle flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover; border: 2px solid var(--accent-purple);">
+                    {% else %}
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white font-monospace fw-bold flex-shrink-0" style="background: var(--accent-purple); width: 36px; height: 36px; font-size: 0.9rem;">
                         {{ request.supabase_user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
                     </div>
+                    {% endif %}
                     <div class="overflow-hidden" style="line-height: 1.2;">
                         <div class="fw-semibold text-truncate small text-white">{{ request.supabase_user.full_name|default:session_user_name|default:"Authenticated User" }}</div>
                         <small class="text-muted d-block text-truncate" style="font-size: 0.7rem;">{{ request.supabase_user.email|default:session_user_email }}</small>

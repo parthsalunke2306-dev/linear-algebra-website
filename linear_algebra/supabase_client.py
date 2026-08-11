@@ -195,9 +195,57 @@ def update_user_password(new_password: str):
     except Exception as e:
         return {"success": False, "error": str(e)}
 
+def update_user_profile(user_id: str, full_name: str, avatar_url: str = ""):
+    """
+    Updates the authenticated user's profile metadata in Supabase (public.profiles & auth user metadata).
+    """
+    client = get_supabase_client()
+    if not client:
+        return {"success": True, "error": None}
+    
+    errors = []
+    try:
+        # Update user metadata
+        client.auth.update_user({
+            "data": {
+                "full_name": full_name,
+                "avatar_url": avatar_url
+            }
+        })
+    except Exception as e:
+        errors.append(f"Auth metadata update: {e}")
+
+    try:
+        # Update public.profiles table
+        client.table("profiles").upsert({
+            "id": user_id,
+            "full_name": full_name,
+            "avatar_url": avatar_url
+        }).execute()
+    except Exception as e:
+        errors.append(f"Profiles table upsert: {e}")
+
+    if errors:
+        return {"success": False, "error": "; ".join(errors)}
+    return {"success": True, "error": None}
+
+def get_user_profile(user_id: str):
+    """
+    Retrieves user profile data from public.profiles table if available.
+    """
+    client = get_supabase_client()
+    if client and user_id:
+        try:
+            res = client.table("profiles").select("*").eq("id", user_id).single().execute()
+            if res and res.data:
+                return res.data
+        except Exception:
+            pass
+    return None
+
 def get_user_from_token(token: str):
     """
-    Validates token and returns user identity.
+    Validates token and returns user identity with avatar.
     Note: the "demo_access_token_1234" placeholder (used when no Supabase
     credentials are configured) is handled directly in SupabaseAuthMiddleware
     from session data, since a bare token string carries no per-user info.
@@ -208,11 +256,21 @@ def get_user_from_token(token: str):
             res = client.auth.get_user(token)
             if res and res.user:
                 user_meta = getattr(res.user, "user_metadata", {}) or {}
+                avatar_url = user_meta.get("avatar_url", "")
+                
+                # Check profiles table for avatar if not in metadata
+                if not avatar_url:
+                    profile = get_user_profile(res.user.id)
+                    if profile:
+                        avatar_url = profile.get("avatar_url", "")
+
                 return {
                     "id": res.user.id,
                     "email": res.user.email,
-                    "full_name": user_meta.get("full_name", res.user.email.split("@")[0].title())
+                    "full_name": user_meta.get("full_name", res.user.email.split("@")[0].title()),
+                    "avatar_url": avatar_url
                 }
         except Exception:
             pass
     return None
+
