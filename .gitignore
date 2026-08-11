@@ -46,3 +46,5 @@ staticfiles/
 
 .vercel
 .env*
+media/avatars/*
+!media/avatars/.gitkeep

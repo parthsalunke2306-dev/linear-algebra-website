@@ -15,7 +15,7 @@ from . import math_engine
 from .supabase_client import (
     sign_in_user, sign_up_user, sign_out_user,
     reset_password_request, update_user_password,
-    update_user_profile
+    update_user_profile, get_supabase_client
 )
 from .decorators import supabase_login_required
 
@@ -52,21 +52,75 @@ def extract_avatar_url(user):
         return metadata.get("avatar_url", "") if isinstance(metadata, dict) else getattr(user, "avatar_url", "")
     return ""
 
+import base64
+import mimetypes
+
 def save_uploaded_avatar(user_id, uploaded_file):
-    """Saves an uploaded avatar image file to MEDIA_ROOT/avatars/ and returns its public URL."""
-    avatars_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
-    os.makedirs(avatars_dir, exist_ok=True)
+    """
+    Saves an uploaded avatar image file.
+    - 1. Attempts Supabase Storage bucket upload if configured.
+    - 2. Attempts local disk storage if filesystem is writable (local development).
+    - 3. Seamlessly converts to a Base64 Data URL for serverless read-only filesystems (e.g. Vercel).
+    """
+    if hasattr(uploaded_file, 'seek'):
+        try:
+            uploaded_file.seek(0)
+        except Exception:
+            pass
     
-    ext = os.path.splitext(uploaded_file.name)[1].lower()
-    clean_id = str(user_id).replace('-', '')[:16]
-    unique_filename = f"avatar_{clean_id}_{uuid.uuid4().hex[:8]}{ext}"
-    file_path = os.path.join(avatars_dir, unique_filename)
+    if hasattr(uploaded_file, 'read'):
+        file_bytes = uploaded_file.read()
+    elif isinstance(uploaded_file, bytes):
+        file_bytes = uploaded_file
+    else:
+        file_bytes = b''
     
-    with open(file_path, 'wb+') as destination:
-        for chunk in uploaded_file.chunks():
-            destination.write(chunk)
+    # Guess mime type
+    filename = getattr(uploaded_file, 'name', 'avatar.jpg')
+    content_type, _ = mimetypes.guess_type(filename)
+    if not content_type:
+        content_type = getattr(uploaded_file, 'content_type', 'image/jpeg') or 'image/jpeg'
+
+    # 1. Try Supabase Storage if available
+    client = get_supabase_client()
+    if client:
+        try:
+            clean_id = str(user_id).replace('-', '')[:16]
+            ext = os.path.splitext(uploaded_file.name)[1].lower() or '.jpg'
+            storage_path = f"avatar_{clean_id}_{uuid.uuid4().hex[:8]}{ext}"
             
-    return f"{settings.MEDIA_URL.rstrip('/')}/avatars/{unique_filename}"
+            client.storage.from_("avatars").upload(
+                path=storage_path,
+                file=file_bytes,
+                file_options={"content-type": content_type, "upsert": "true"}
+            )
+            public_url = client.storage.from_("avatars").get_public_url(storage_path)
+            if public_url:
+                return public_url
+        except Exception as storage_err:
+            print(f"[Supabase Storage upload fallback]: {storage_err}")
+
+    # 2. Try local filesystem save only if NOT on Vercel / read-only filesystem
+    if not os.environ.get('VERCEL') and not os.environ.get('VERCEL_ENV'):
+        try:
+            avatars_dir = os.path.join(settings.MEDIA_ROOT, 'avatars')
+            os.makedirs(avatars_dir, exist_ok=True)
+            
+            ext = os.path.splitext(uploaded_file.name)[1].lower() or '.jpg'
+            clean_id = str(user_id).replace('-', '')[:16]
+            unique_filename = f"avatar_{clean_id}_{uuid.uuid4().hex[:8]}{ext}"
+            file_path = os.path.join(avatars_dir, unique_filename)
+            
+            with open(file_path, 'wb+') as destination:
+                destination.write(file_bytes)
+                
+            return f"{settings.MEDIA_URL.rstrip('/')}/avatars/{unique_filename}"
+        except (OSError, PermissionError) as fs_err:
+            print(f"[Local filesystem write skipped due to read-only environment]: {fs_err}")
+
+    # 3. Universal serverless & read-only fallback: Base64 Data URL (100% serverless safe)
+    encoded_b64 = base64.b64encode(file_bytes).decode('utf-8')
+    return f"data:{content_type};base64,{encoded_b64}"
 
 
 

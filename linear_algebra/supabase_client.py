@@ -1,17 +1,28 @@
 import os
-import jwt
-from dotenv import load_dotenv
-from supabase import create_client, Client
+try:
+    import jwt
+except ImportError:
+    jwt = None
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+try:
+    from supabase import create_client, Client
+except ImportError:
+    create_client = None
+    Client = None
 
 from django.conf import settings
-
-load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
 SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 
-_supabase_client: Client | None = None
+_supabase_client = None
 
 def is_email_authorized(email: str) -> bool:
     """
@@ -52,7 +63,7 @@ def is_email_authorized(email: str) -> bool:
 
     return True
 
-def get_supabase_client() -> Client | None:
+def get_supabase_client():
     """
     Returns the Supabase Client instance if credentials are valid.
     """

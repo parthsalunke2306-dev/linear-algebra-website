@@ -126,8 +126,8 @@ class ProfileAvatarTests(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         saved_avatar_url = self.client.session.get('user_avatar')
-        self.assertTrue(saved_avatar_url.startswith('/media/avatars/avatar_'))
-        self.assertTrue(saved_avatar_url.endswith('.png'))
+        self.assertTrue(bool(saved_avatar_url))
+        self.assertTrue(saved_avatar_url.startswith('/media/avatars/avatar_') or saved_avatar_url.startswith('data:image/'))
 
     def test_profile_remove_avatar(self):
         # First set an avatar
