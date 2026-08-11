@@ -135,3 +135,14 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+# ==========================================
+# AUTHORIZED EMAIL RESTRICTION SYSTEM
+# ==========================================
+ENABLE_EMAIL_WHITELIST = os.getenv('ENABLE_EMAIL_WHITELIST', 'True').lower() in ('true', '1', 't')
+ALLOWED_EXACT_EMAILS = [
+    e.strip().lower() for e in os.getenv('ALLOWED_EXACT_EMAILS', 'parthsalunke2306@gmail.com,hariom@gmail.com,parth@gmail.com').split(',') if e.strip()
+]
+ALLOWED_EMAIL_DOMAINS = [
+    d.strip().lower() for d in os.getenv('ALLOWED_EMAIL_DOMAINS', '@gmail.com,@outlook.com,@yahoo.com,@edu.in,@ac.in,@iit.ac.in').split(',') if d.strip()
+]

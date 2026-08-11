@@ -126,6 +126,8 @@ class DiagonalizationForm(forms.Form):
 # AUTHENTICATION FORMS (Supabase Auth Integration)
 # ------------------------------------------------------------------------------
 
+from .supabase_client import is_email_authorized
+
 class LoginForm(forms.Form):
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={
@@ -141,6 +143,12 @@ class LoginForm(forms.Form):
             'required': True
         })
     )
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '').strip().lower()
+        if not is_email_authorized(email):
+            raise forms.ValidationError(f"Access Denied: '{email}' is not an authorized email address for this application.")
+        return email
 
 class SignUpForm(forms.Form):
     full_name = forms.CharField(
@@ -174,10 +182,17 @@ class SignUpForm(forms.Form):
         })
     )
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email', '').strip().lower()
+        if not is_email_authorized(email):
+            raise forms.ValidationError(f"Access Denied: '{email}' is not authorized to register. Please use an authorized email address.")
+        return email
+
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
         confirm_password = cleaned_data.get("confirm_password")
+
         if password and confirm_password and password != confirm_password:
             raise forms.ValidationError("Passwords do not match. Please re-enter passwords.")
         return cleaned_data

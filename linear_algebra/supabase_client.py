@@ -3,6 +3,8 @@ import jwt
 from dotenv import load_dotenv
 from supabase import create_client, Client
 
+from django.conf import settings
+
 load_dotenv()
 
 SUPABASE_URL = os.getenv("SUPABASE_URL", "")
@@ -10,6 +12,45 @@ SUPABASE_ANON_KEY = os.getenv("SUPABASE_ANON_KEY", "")
 SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "")
 
 _supabase_client: Client | None = None
+
+def is_email_authorized(email: str) -> bool:
+    """
+    Checks if an email address is authorized to register or access the application.
+    Rejects unauthorized domains (e.g. @parth.com or non-approved email addresses).
+    """
+    if not email or not isinstance(email, str):
+        return False
+    
+    clean_email = email.strip().lower()
+    if "@" not in clean_email:
+        return False
+    
+    domain = "@" + clean_email.split("@")[-1]
+
+    # Explicitly block unauthorized test/fake domains
+    unauthorized_domains = ['@parth.com', '@fake.com', '@test.com', '@temp.com', '@mailinator.com', '@dispostable.com']
+    if domain in unauthorized_domains:
+        return False
+
+    try:
+        if getattr(settings, 'ENABLE_EMAIL_WHITELIST', True):
+            exact_allowed = getattr(settings, 'ALLOWED_EXACT_EMAILS', [])
+            domain_allowed = getattr(settings, 'ALLOWED_EMAIL_DOMAINS', [])
+
+            # Check exact list first if specified
+            if exact_allowed and clean_email in [e.lower() for e in exact_allowed]:
+                return True
+
+            # Check domain list
+            if domain_allowed:
+                for d in domain_allowed:
+                    if clean_email.endswith(d.lower()):
+                        return True
+                return False
+    except Exception:
+        pass
+
+    return True
 
 def get_supabase_client() -> Client | None:
     """
@@ -31,8 +72,17 @@ def get_supabase_client() -> Client | None:
 def sign_up_user(email: str, password: str, full_name: str):
     """
     Registers a new user via Supabase Auth and creates their application profile.
+    Enforces Email Authorization restrictions.
     """
+    if not is_email_authorized(email):
+        return {
+            "user": None,
+            "session": None,
+            "error": f"Access Denied: The email address '{email}' is not authorized to register for this application."
+        }
+
     client = get_supabase_client()
+
     if not client:
         # Fallback local demo session if credentials not set yet
         return {
@@ -73,8 +123,17 @@ def sign_up_user(email: str, password: str, full_name: str):
 def sign_in_user(email: str, password: str):
     """
     Authenticates user using Supabase Auth.
+    Enforces Email Authorization restrictions.
     """
+    if not is_email_authorized(email):
+        return {
+            "user": None,
+            "session": None,
+            "error": f"Access Denied: The email address '{email}' is not authorized to log into this application."
+        }
+
     client = get_supabase_client()
+
     if not client:
         # Fallback local demo auth
         if email and password:
