@@ -61,61 +61,51 @@
 <!-- Stacked Card 2: Collapsible Vector Step Accordions -->
 <div class="glass-card p-4 mb-4">
     <h4 class="text-white mb-4"><i class="bi bi-diagram-3 me-2" style="color: var(--accent-purple);"></i>Step-by-Step Vector Orthogonalization</h4>
-
-    <div class="accordion accordion-custom mb-4" id="gsAccordion">
+    <div id="gsAccordion">
         {% for step in result.steps %}
-        <div class="accordion-item animate-step" style="animation-delay: {{ forloop.counter0 }}00ms;">
-            <h2 class="accordion-header" id="headingGS{{ forloop.counter }}">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGS{{ forloop.counter }}">
-                    <div class="d-flex align-items-center justify-content-between w-100 me-3">
-                        <span><span class="badge badge-topic me-2">Vector Step {{ step.step_num }}</span> Orthogonalizing $\mathbf{v}_{{ step.step_num }}$</span>
-                    </div>
-                </button>
-            </h2>
-            <div id="collapseGS{{ forloop.counter }}" class="accordion-collapse collapse show">
-
-                <div class="accordion-body">
-                    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-                        <span class="text-muted small">Subtracted projection terms:</span>
-                        <button onclick="copyToClipboard('\\mathbf{u}_{{ step.step_num }} = {{ step.u_latex|escapejs }}, \\mathbf{e}_{{ step.step_num }} = {{ step.e_latex|escapejs }}')" class="btn btn-copy no-print">
-                            <i class="bi bi-clipboard me-1"></i> Copy Step LaTeX
-                        </button>
-                    </div>
-
-                    <div class="row align-items-center mb-3">
-                        <div class="col-md-4 text-center">
-                            <span class="text-muted small d-block mb-1">Input Vector $\mathbf{v}_{{ step.step_num }}$:</span>
-                            <div class="latex-scroll-wrapper text-center">
-                                $${{ step.v_latex }}$$
-                            </div>
-                        </div>
-                        <div class="col-md-8">
-                            {% for proj in step.proj_explanations %}
-                            <div class="latex-scroll-wrapper text-center my-1 small">
-                                $${{ proj }}$$
-                            </div>
-                            {% empty %}
-                            <p class="text-muted small italic">First vector $\mathbf{u}_1 = \mathbf{v}_1$ (no projections subtracted).</p>
-                            {% endfor %}
-                        </div>
-                    </div>
-
-                    <div class="row align-items-center pt-2 border-top border-secondary">
-                        <div class="col-md-6 text-center">
-                            <span class="fw-bold d-block mb-1" style="color: var(--accent-purple);">Orthogonal Vector $\mathbf{u}_{{ step.step_num }}$:</span>
-                            <div class="latex-scroll-wrapper text-center">
-                                $${{ step.u_latex }}$$
-                            </div>
-                        </div>
-                        <div class="col-md-6 text-center">
-                            <span class="text-success fw-bold d-block mb-1">Normalized Unit Vector $\mathbf{e}_{{ step.step_num }}$:</span>
-                            <div class="latex-scroll-wrapper text-center">
-                                $${{ step.e_latex }}$$
-                            </div>
-                        </div>
-                    </div>
-
+        <div class="step-card mb-3 p-3 animate-step" style="animation-delay: {{ forloop.counter0 }}00ms; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border); border-radius: 12px;">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
+                <h5 class="text-white mb-0">
+                    <span class="badge badge-topic me-2">Vector Step {{ step.step_num }}</span> Orthogonalizing $\mathbf{v}_{{ step.step_num }}$
+                </h5>
+            </div>
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+                    <span class="text-muted small">Subtracted projection terms:</span>
+                    <button onclick="copyToClipboard('\\mathbf{u}_{{ step.step_num }} = {{ step.u_latex|escapejs }}, \\mathbf{e}_{{ step.step_num }} = {{ step.e_latex|escapejs }}')" class="btn btn-copy no-print">
+                        <i class="bi bi-clipboard me-1"></i> Copy Step LaTeX
+                    </button>
                 </div>
+
+                <div class="row align-items-center mb-3">
+                    <div class="col-md-4 text-center">
+                        <span class="text-muted small d-block mb-1">Input Vector $\mathbf{v}_{{ step.step_num }}$:</span>
+                        <div class="latex-scroll-wrapper text-center">
+                            $${{ step.v_latex }}$$
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <span class="text-muted small d-block mb-1">Orthogonal Vector $\mathbf{u}_{{ step.step_num }}$:</span>
+                        <div class="latex-scroll-wrapper text-center text-warning">
+                            $${{ step.u_latex }}$$
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <span class="text-muted small d-block mb-1">Normalized Unit Vector $\mathbf{e}_{{ step.step_num }}$:</span>
+                        <div class="latex-scroll-wrapper text-center text-cyan">
+                            $${{ step.e_latex }}$$
+                        </div>
+                    </div>
+                </div>
+
+                {% if step.projections %}
+                <div class="p-3 bg-dark rounded border border-secondary">
+                    <span class="text-muted small d-block mb-2">Projection calculations:</span>
+                    {% for proj in step.projections %}
+                    <div class="small mb-1">$$\text{Proj}_{\mathbf{u}_{{ proj.idx }}}(\mathbf{v}_{{ step.step_num }}) = {{ proj.latex }}$$</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
             </div>
         </div>
         {% endfor %}

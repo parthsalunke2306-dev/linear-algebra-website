@@ -67,35 +67,30 @@
     </div>
 
 
-    <!-- Collapsible Accordion Container for Steps -->
-    <div class="accordion accordion-custom mb-4" id="gaussianStepsAccordion">
+    <!-- Container for Derivation Steps -->
+    <div id="gaussianStepsAccordion">
         {% for step in result.steps %}
-        <div class="accordion-item animate-step" style="animation-delay: {{ forloop.counter0 }}00ms;">
-            <h2 class="accordion-header" id="heading{{ forloop.counter }}">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ forloop.counter }}">
-                    <div class="d-flex align-items-center justify-content-between w-100 me-3">
-                        <span><span class="badge badge-topic me-2">Step {{ forloop.counter }}</span> {{ step.title }}</span>
-                    </div>
-                </button>
-            </h2>
-            <div id="collapse{{ forloop.counter }}" class="accordion-collapse collapse show">
-
-                <div class="accordion-body">
-                    <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
-                        <p class="text-muted small mb-0 flex-grow-1 me-2">{{ step.explanation }}</p>
-                        <button onclick="copyToClipboard('{{ step.latex|escapejs }}')" class="btn btn-copy no-print">
-                            <i class="bi bi-clipboard me-1"></i> Copy Step LaTeX
-                        </button>
-                    </div>
-                    <div class="latex-scroll-wrapper text-center">
-                        $$\text{Snapshot: } {{ step.latex }}$$
-                    </div>
-
+        <div class="step-card mb-3 p-3 animate-step" style="animation-delay: {{ forloop.counter0 }}00ms; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border); border-radius: 12px;">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
+                <h5 class="text-white mb-0">
+                    <span class="badge badge-topic me-2">Step {{ forloop.counter }}</span> {{ step.title }}
+                </h5>
+            </div>
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                    <p class="text-muted small mb-0 flex-grow-1 me-2">{{ step.explanation }}</p>
+                    <button onclick="copyToClipboard('{{ step.latex|escapejs }}')" class="btn btn-copy no-print">
+                        <i class="bi bi-clipboard me-1"></i> Copy Step LaTeX
+                    </button>
+                </div>
+                <div class="latex-scroll-wrapper text-center">
+                    $$\text{Snapshot: } {{ step.latex }}$$
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
+
 
     <!-- Final Solution Summary Box -->
     <div class="p-3 p-md-4 rounded-3 border border-purple" style="background: var(--glass-bg); border-color: var(--accent-purple) !important;">

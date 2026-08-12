@@ -130,32 +130,28 @@
     </div>
 
 
-    <!-- Accordion for Axioms -->
-    <div class="accordion accordion-custom" id="gf2AxiomsAccordion">
+    <!-- Container for Axioms -->
+    <div id="gf2AxiomsAccordion">
         {% for axiom in result.axioms %}
-        <div class="accordion-item animate-step" style="animation-delay: {{ forloop.counter0 }}00ms;">
-            <h2 class="accordion-header" id="headingAxiom{{ forloop.counter }}">
-                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAxiom{{ forloop.counter }}">
-                    <div class="d-flex align-items-center justify-content-between w-100 me-3">
-                        <span><span class="badge badge-topic me-2">Axiom {{ forloop.counter }}</span> {{ axiom.name }}</span>
-                        {% if axiom.passed %}
-                        <span class="badge bg-success font-monospace ms-auto me-2">VERIFIED PASSED</span>
-                        {% endif %}
-                    </div>
-                </button>
-            </h2>
-            <div id="collapseAxiom{{ forloop.counter }}" class="accordion-collapse collapse show">
-                <div class="accordion-body">
-                    <div class="latex-scroll-wrapper text-center my-2">
-                        $${{ axiom.symbol }}$$
-                    </div>
-
-                    <p class="text-muted small mb-0"><strong class="text-white">Proof / Verification:</strong> {{ axiom.proof }}</p>
+        <div class="step-card mb-3 p-3 animate-step" style="animation-delay: {{ forloop.counter0 }}00ms; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border); border-radius: 12px;">
+            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
+                <h5 class="text-white mb-0">
+                    <span class="badge badge-topic me-2">Axiom {{ forloop.counter }}</span> {{ axiom.name }}
+                </h5>
+                {% if axiom.passed %}
+                <span class="badge bg-success font-monospace ms-auto">VERIFIED PASSED</span>
+                {% endif %}
+            </div>
+            <div>
+                <div class="latex-scroll-wrapper text-center my-2">
+                    $${{ axiom.symbol }}$$
                 </div>
+                <p class="text-muted small mb-0"><strong class="text-white">Proof / Verification:</strong> {{ axiom.proof }}</p>
             </div>
         </div>
         {% endfor %}
     </div>
+
 </div>
 
 {% endblock %}
