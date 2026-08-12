@@ -183,15 +183,30 @@ def login_view(request):
             request.session['sb_access_token'] = access_token
             request.session['is_authenticated'] = True
             request.session['user_email'] = email
-            request.session['user_id'] = res['user'].get('id', 'demo-user-uuid') if isinstance(res['user'], dict) else getattr(res['user'], 'id', 'demo-user-uuid')
+            user_id = res['user'].get('id', 'demo-user-uuid') if isinstance(res['user'], dict) else getattr(res['user'], 'id', 'demo-user-uuid')
+            request.session['user_id'] = user_id
             request.session['user_name'] = extract_full_name(res['user'], fallback_email=email)
-            request.session['user_avatar'] = extract_avatar_url(res['user'])
+            
+            user_avatar = extract_avatar_url(res['user'])
+            if not user_avatar and user_id:
+                try:
+                    from .supabase_client import get_user_profile
+                    profile = get_user_profile(user_id)
+                    if profile:
+                        user_avatar = profile.get('avatar_url', '')
+                        if profile.get('full_name'):
+                            request.session['user_name'] = profile.get('full_name')
+                except Exception:
+                    pass
+
+            request.session['user_avatar'] = user_avatar
             
             target = next_url if next_url and next_url.startswith('/') else 'linear_algebra:index'
             response = redirect(target)
             # Set HTTP-only secure cookie
             response.set_cookie('sb_access_token', access_token, httponly=True, samesite='Lax', max_age=86400*7)
             return response
+
 
     context = {
         'title': 'Sign In • Linear Algebra Explorer',
@@ -351,11 +366,13 @@ def profile_view(request):
             # Sync with Supabase if connected
             user_id = user.get('id') if isinstance(user, dict) else None
             if user_id and user_id != 'demo-user-uuid-1234':
-                update_res = update_user_profile(user_id, new_name, new_avatar)
+                token = request.COOKIES.get('sb_access_token') or request.session.get('sb_access_token')
+                update_res = update_user_profile(user_id, new_name, new_avatar, access_token=token)
                 if not update_res.get('success') and update_res.get('error'):
                     print(f"[Supabase Profile Sync Note]: {update_res['error']}")
 
             success_msg = "Profile updated successfully! Your changes are saved."
+
 
 
     context = {

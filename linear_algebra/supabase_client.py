@@ -206,7 +206,7 @@ def update_user_password(new_password: str):
     except Exception as e:
         return {"success": False, "error": str(e)}
 
-def update_user_profile(user_id: str, full_name: str, avatar_url: str = ""):
+def update_user_profile(user_id: str, full_name: str, avatar_url: str = "", access_token: str | None = None):
     """
     Updates the authenticated user's profile metadata in Supabase (public.profiles & auth user metadata).
     """
@@ -215,6 +215,12 @@ def update_user_profile(user_id: str, full_name: str, avatar_url: str = ""):
         return {"success": True, "error": None}
     
     errors = []
+    if access_token and access_token != "demo_access_token_1234":
+        try:
+            client.auth.set_session(access_token, "")
+        except Exception:
+            pass
+
     try:
         # Update user metadata
         client.auth.update_user({
@@ -257,9 +263,6 @@ def get_user_profile(user_id: str):
 def get_user_from_token(token: str):
     """
     Validates token and returns user identity with avatar.
-    Note: the "demo_access_token_1234" placeholder (used when no Supabase
-    credentials are configured) is handled directly in SupabaseAuthMiddleware
-    from session data, since a bare token string carries no per-user info.
     """
     client = get_supabase_client()
     if client and token:
@@ -268,20 +271,25 @@ def get_user_from_token(token: str):
             if res and res.user:
                 user_meta = getattr(res.user, "user_metadata", {}) or {}
                 avatar_url = user_meta.get("avatar_url", "")
+                full_name = user_meta.get("full_name", "")
                 
-                # Check profiles table for avatar if not in metadata
-                if not avatar_url:
+                # Check profiles table for avatar or name if missing
+                if not avatar_url or not full_name:
                     profile = get_user_profile(res.user.id)
                     if profile:
-                        avatar_url = profile.get("avatar_url", "")
+                        if not avatar_url:
+                            avatar_url = profile.get("avatar_url", "")
+                        if not full_name:
+                            full_name = profile.get("full_name", "")
 
                 return {
                     "id": res.user.id,
                     "email": res.user.email,
-                    "full_name": user_meta.get("full_name", res.user.email.split("@")[0].title()),
+                    "full_name": full_name or res.user.email.split("@")[0].title(),
                     "avatar_url": avatar_url
                 }
         except Exception:
             pass
     return None
+
 
