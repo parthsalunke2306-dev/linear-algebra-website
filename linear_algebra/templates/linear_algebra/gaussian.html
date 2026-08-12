@@ -78,9 +78,6 @@
             </div>
             <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                 <p class="text-muted small mb-0 flex-grow-1 me-2">{{ step.explanation }}</p>
-                <button onclick="copyToClipboard('{{ step.latex|escapejs }}')" class="btn btn-copy no-print">
-                    <i class="bi bi-clipboard me-1"></i> Copy Step LaTeX
-                </button>
             </div>
             <div class="latex-scroll-wrapper text-center">
                 $$\text{Snapshot: } {{ step.latex }}$$
@@ -95,15 +92,13 @@
     <div class="p-3 p-md-4 rounded-3 border border-purple" style="background: var(--glass-bg); border-color: var(--accent-purple) !important;">
         <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
             <h5 class="mb-0" style="color: var(--accent-purple);"><i class="bi bi-check-circle-fill me-2"></i>Final Solution Vector</h5>
-            <button onclick="copyToClipboard('{{ result.solution_latex|escapejs }}')" class="btn btn-copy no-print">
-                <i class="bi bi-clipboard me-1"></i> Copy Solution LaTeX
-            </button>
         </div>
         <p class="text-muted small mb-3">{{ result.solution_summary }}</p>
         <div class="latex-scroll-wrapper text-center my-2">
             $${{ result.solution_latex }}$$
         </div>
     </div>
+
 </div>
 
 {% endblock %}

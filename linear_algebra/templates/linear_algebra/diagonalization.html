@@ -72,11 +72,6 @@
                 </h5>
             </div>
             <div class="text-center">
-                <div class="d-flex align-items-center justify-content-end mb-2">
-                    <button onclick="copyToClipboard('p(\\lambda) = {{ result.char_poly_latex|escapejs }} = 0')" class="btn btn-copy no-print">
-                        <i class="bi bi-clipboard me-1"></i> Copy Poly LaTeX
-                    </button>
-                </div>
                 <div class="p-3 bg-dark rounded border border-secondary">
                     $$p(\lambda) = {{ result.char_poly_latex }} = 0$$
                 </div>
@@ -97,9 +92,6 @@
                         <div class="p-3 rounded-3 border border-secondary h-100" style="background: var(--bg-main);">
                             <div class="d-flex align-items-center justify-content-between mb-2">
                                 <h5 class="text-warning mb-0">$\lambda_{{ forloop.counter }} = {{ item.eigenvalue_latex }}$</h5>
-                                <button onclick="copyToClipboard('\\lambda = {{ item.eigenvalue_latex|escapejs }}')" class="btn btn-copy no-print">
-                                    <i class="bi bi-clipboard"></i>
-                                </button>
                             </div>
                             <div class="small text-muted mb-2">
                                 <span>Alg Mult: <strong>{{ item.alg_mult }}</strong></span> | 
@@ -129,10 +121,8 @@
                 {% if result.is_diagonalizable %}
                 <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
                     <span class="badge bg-success px-3 py-2 fs-6"><i class="bi bi-check-circle-fill me-1"></i> MATRIX IS DIAGONALIZABLE</span>
-                    <button onclick="copyToClipboard('P = {{ result.P_latex|escapejs }}, D = {{ result.D_latex|escapejs }}')" class="btn btn-copy no-print">
-                        <i class="bi bi-clipboard me-1"></i> Copy PDP⁻¹ LaTeX
-                    </button>
                 </div>
+
 
                 <div class="row g-3 text-center mb-3">
                     <div class="col-md-4">

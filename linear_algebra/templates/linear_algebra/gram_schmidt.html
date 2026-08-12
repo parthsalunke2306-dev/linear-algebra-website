@@ -73,9 +73,6 @@
             <div>
                 <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
                     <span class="text-muted small">Subtracted projection terms:</span>
-                    <button onclick="copyToClipboard('\\mathbf{u}_{{ step.step_num }} = {{ step.u_latex|escapejs }}, \\mathbf{e}_{{ step.step_num }} = {{ step.e_latex|escapejs }}')" class="btn btn-copy no-print">
-                        <i class="bi bi-clipboard me-1"></i> Copy Step LaTeX
-                    </button>
                 </div>
 
                 <div class="row align-items-center mb-3">
@@ -117,11 +114,9 @@
     <div class="p-3 p-md-4 rounded-3 border border-success" style="background: var(--surface-slate);">
         <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
             <h5 class="text-success mb-0"><i class="bi bi-shield-check me-2"></i>Orthonormal Inner Product Verification $\langle \mathbf{e}_i, \mathbf{e}_j \rangle$</h5>
-            <button onclick="copyToClipboard('{{ result.ortho_check_latex|escapejs }}')" class="btn btn-copy no-print">
-                <i class="bi bi-clipboard me-1"></i> Copy Matrix LaTeX
-            </button>
         </div>
         <p class="text-muted small mb-3">Checking dot products of all normalized unit vectors to verify identity matrix $I$ ($\delta_{ij}$):</p>
+
         <div class="latex-scroll-wrapper text-center my-2">
             $${{ result.ortho_check_latex }}$$
         </div>

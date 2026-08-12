@@ -109,9 +109,6 @@
             <div class="p-3 p-md-4 rounded-3 border border-purple h-100" style="background: var(--surface-slate); border-color: var(--accent-purple) !important;">
                 <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
                     <h5 class="mb-0" style="color: var(--accent-purple);"><i class="bi bi-dot me-1"></i>Dot Product & Angle</h5>
-                    <button onclick="copyToClipboard('\\mathbf{v}_1 \\cdot \\mathbf{v}_2 = {{ result.dot_prod }}')" class="btn btn-copy no-print">
-                        <i class="bi bi-clipboard me-1"></i> Copy
-                    </button>
                 </div>
                 <p class="mb-2 text-muted small"><strong>Formula:</strong> $\mathbf{v}_1 \cdot \mathbf{v}_2 = v_{1x}v_{2x} + v_{1y}v_{2y} + v_{1z}v_{2z}$</p>
                 <div class="latex-scroll-wrapper text-center my-2">$$\mathbf{v}_1 \cdot \mathbf{v}_2 = {{ result.dot_prod }}$$</div>
@@ -134,9 +131,6 @@
             <div class="p-3 p-md-4 rounded-3 border border-success h-100" style="background: var(--surface-slate);">
                 <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
                     <h5 class="text-success mb-0"><i class="bi bi-x-lg me-1"></i>Cross Product & Area</h5>
-                    <button onclick="copyToClipboard('\\mathbf{v}_1 \\times \\mathbf{v}_2 = \\begin{bmatrix} {{ result.cross_prod.0 }} \\\\ {{ result.cross_prod.1 }} \\\\ {{ result.cross_prod.2 }} \\end{bmatrix}')" class="btn btn-copy no-print">
-                        <i class="bi bi-clipboard me-1"></i> Copy
-                    </button>
                 </div>
                 <p class="mb-2 text-muted small"><strong>Formula:</strong> $\mathbf{v}_1 \times \mathbf{v}_2 = (v_{1y}v_{2z} - v_{1z}v_{2y})\hat{i} - \dots$</p>
                 <div class="latex-scroll-wrapper text-center my-2">$$\mathbf{v}_1 \times \mathbf{v}_2 = \begin{bmatrix} {{ result.cross_prod.0 }} \\ {{ result.cross_prod.1 }} \\ {{ result.cross_prod.2 }} \end{bmatrix}$$</div>
@@ -154,15 +148,13 @@
             <div class="p-3 p-md-4 rounded-3 border border-warning" style="background: var(--surface-slate);">
                 <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                     <h5 class="text-warning mb-0"><i class="bi bi-arrow-down-right-square me-2"></i>Vector Projection $\text{proj}_{\mathbf{v}_2}(\mathbf{v}_1)$</h5>
-                    <button onclick="copyToClipboard('\\text{proj}_{\\mathbf{v}_2}(\\mathbf{v}_1) = \\begin{bmatrix} {{ result.proj_vector.0 }} \\\\ {{ result.proj_vector.1 }} \\\\ {{ result.proj_vector.2 }} \\end{bmatrix}')" class="btn btn-copy no-print">
-                        <i class="bi bi-clipboard me-1"></i> Copy Projection LaTeX
-                    </button>
                 </div>
                 <p class="text-light small mb-2">The orthogonal projection of vector $\mathbf{v}_1$ onto vector $\mathbf{v}_2$ is given by:</p>
                 <div class="latex-scroll-wrapper text-center my-2">
                     $$\text{proj}_{\mathbf{v}_2}(\mathbf{v}_1) = \left(\frac{\mathbf{v}_1 \cdot \mathbf{v}_2}{\|\mathbf{v}_2\|^2}\right) \mathbf{v}_2 = {{ result.proj_scalar }} \cdot \mathbf{v}_2 = \begin{bmatrix} {{ result.proj_vector.0 }} \\ {{ result.proj_vector.1 }} \\ {{ result.proj_vector.2 }} \end{bmatrix}$$
                 </div>
             </div>
+
         </div>
 
     </div>
