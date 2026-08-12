@@ -62,9 +62,10 @@
 <div class="glass-card p-4 mb-4">
     <h4 class="text-white mb-4"><i class="bi bi-diagram-3 me-2" style="color: var(--accent-purple);"></i>Eigenvalue & Diagonalization Derivation</h4>
 
-    <div id="diagAccordion">
+    <!-- Single Unified Derivation Sections Block -->
+    <div class="p-3 p-md-4 rounded-3" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
         <!-- Section 1: Characteristic Polynomial -->
-        <div class="step-card mb-3 p-3 animate-step" style="animation-delay: 100ms; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border); border-radius: 12px;">
+        <div class="single-section-block animate-step mb-4 pb-4 border-bottom border-secondary" style="animation-delay: 100ms; border-color: rgba(255, 255, 255, 0.1) !important;">
             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
                 <h5 class="text-white mb-0">
                     <span class="badge badge-topic me-2">Section 1</span> Characteristic Polynomial $\det(A - \lambda I) = 0$
@@ -83,7 +84,7 @@
         </div>
 
         <!-- Section 2: Eigenvalues & Eigenspaces -->
-        <div class="step-card mb-3 p-3 animate-step" style="animation-delay: 200ms; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border); border-radius: 12px;">
+        <div class="single-section-block animate-step mb-4 pb-4 border-bottom border-secondary" style="animation-delay: 200ms; border-color: rgba(255, 255, 255, 0.1) !important;">
             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
                 <h5 class="text-white mb-0">
                     <span class="badge badge-topic me-2">Section 2</span> Eigenvalues & Eigenspace Basis Vectors
@@ -118,7 +119,7 @@
         </div>
 
         <!-- Section 3: Decomposition PDP^-1 -->
-        <div class="step-card mb-3 p-3 animate-step" style="animation-delay: 300ms; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border); border-radius: 12px;">
+        <div class="single-section-block animate-step" style="animation-delay: 300ms;">
             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
                 <h5 class="text-white mb-0">
                     <span class="badge badge-topic me-2">Section 3</span> Matrix Decomposition $A = P D P^{-1}$
@@ -167,6 +168,7 @@
             </div>
         </div>
     </div>
+
 
 {% endif %}
 

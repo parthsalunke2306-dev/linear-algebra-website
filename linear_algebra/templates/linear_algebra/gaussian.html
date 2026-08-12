@@ -67,29 +67,28 @@
     </div>
 
 
-    <!-- Container for Derivation Steps -->
-    <div id="gaussianStepsAccordion">
+    <!-- Single Unified Derivation Block -->
+    <div class="p-3 p-md-4 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
         {% for step in result.steps %}
-        <div class="step-card mb-3 p-3 animate-step" style="animation-delay: {{ forloop.counter0 }}00ms; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border); border-radius: 12px;">
-            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
+        <div class="single-step-section animate-step {% if not forloop.last %}mb-4 pb-4 border-bottom border-secondary{% endif %}" style="animation-delay: {{ forloop.counter0 }}00ms; border-color: rgba(255, 255, 255, 0.1) !important;">
+            <div class="d-flex align-items-center justify-content-between mb-2">
                 <h5 class="text-white mb-0">
                     <span class="badge badge-topic me-2">Step {{ forloop.counter }}</span> {{ step.title }}
                 </h5>
             </div>
-            <div>
-                <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
-                    <p class="text-muted small mb-0 flex-grow-1 me-2">{{ step.explanation }}</p>
-                    <button onclick="copyToClipboard('{{ step.latex|escapejs }}')" class="btn btn-copy no-print">
-                        <i class="bi bi-clipboard me-1"></i> Copy Step LaTeX
-                    </button>
-                </div>
-                <div class="latex-scroll-wrapper text-center">
-                    $$\text{Snapshot: } {{ step.latex }}$$
-                </div>
+            <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
+                <p class="text-muted small mb-0 flex-grow-1 me-2">{{ step.explanation }}</p>
+                <button onclick="copyToClipboard('{{ step.latex|escapejs }}')" class="btn btn-copy no-print">
+                    <i class="bi bi-clipboard me-1"></i> Copy Step LaTeX
+                </button>
+            </div>
+            <div class="latex-scroll-wrapper text-center">
+                $$\text{Snapshot: } {{ step.latex }}$$
             </div>
         </div>
         {% endfor %}
     </div>
+
 
 
     <!-- Final Solution Summary Box -->

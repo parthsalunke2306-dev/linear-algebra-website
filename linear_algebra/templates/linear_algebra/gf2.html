@@ -130,11 +130,11 @@
     </div>
 
 
-    <!-- Container for Axioms -->
-    <div id="gf2AxiomsAccordion">
+    <!-- Single Unified Axioms Block -->
+    <div class="p-3 p-md-4 rounded-3" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
         {% for axiom in result.axioms %}
-        <div class="step-card mb-3 p-3 animate-step" style="animation-delay: {{ forloop.counter0 }}00ms; background: rgba(15, 23, 42, 0.5); border: 1px solid var(--glass-border); border-radius: 12px;">
-            <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
+        <div class="single-axiom-section animate-step {% if not forloop.last %}mb-4 pb-4 border-bottom border-secondary{% endif %}" style="animation-delay: {{ forloop.counter0 }}00ms; border-color: rgba(255, 255, 255, 0.1) !important;">
+            <div class="d-flex align-items-center justify-content-between mb-2">
                 <h5 class="text-white mb-0">
                     <span class="badge badge-topic me-2">Axiom {{ forloop.counter }}</span> {{ axiom.name }}
                 </h5>
@@ -142,15 +142,14 @@
                 <span class="badge bg-success font-monospace ms-auto">VERIFIED PASSED</span>
                 {% endif %}
             </div>
-            <div>
-                <div class="latex-scroll-wrapper text-center my-2">
-                    $${{ axiom.symbol }}$$
-                </div>
-                <p class="text-muted small mb-0"><strong class="text-white">Proof / Verification:</strong> {{ axiom.proof }}</p>
+            <div class="latex-scroll-wrapper text-center my-2">
+                $${{ axiom.symbol }}$$
             </div>
+            <p class="text-muted small mb-0"><strong class="text-white">Proof / Verification:</strong> {{ axiom.proof }}</p>
         </div>
         {% endfor %}
     </div>
+
 
 </div>
 
