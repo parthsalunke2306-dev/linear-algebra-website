@@ -2,184 +2,183 @@
 {% load static %}
 
 {% block content %}
-<div class="row g-4 mb-5">
+<div class="row g-3 mb-4">
     <!-- Left Column: User Identity Card -->
     <div class="col-lg-4">
-        <div class="glass-card p-4 text-center h-100 position-relative overflow-hidden">
+        <div class="glass-card p-3 text-center h-100 position-relative overflow-hidden d-flex flex-column justify-content-center">
             <!-- Ambient Glow Background -->
-            <div class="position-absolute top-0 start-50 translate-middle-x" style="width: 200px; height: 200px; background: var(--accent-purple-glow); filter: blur(60px); border-radius: 50%; pointer-events: none; opacity: 0.6;"></div>
+            <div class="position-absolute top-0 start-50 translate-middle-x" style="width: 140px; height: 140px; background: var(--accent-purple-glow); filter: blur(50px); border-radius: 50%; pointer-events: none; opacity: 0.5;"></div>
 
             <!-- Avatar Container -->
-            <div class="position-relative d-inline-block mb-3">
-                <div id="identityAvatarWrapper" class="avatar-ring-container">
+            <div class="position-relative d-inline-block mb-2 mx-auto">
+                <div id="identityAvatarWrapper" class="avatar-ring-container" style="width: 64px; height: 64px; border-radius: 50%; padding: 2px; background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));">
                     {% if current_avatar or session_user_avatar %}
-                    <img id="identityAvatarImg" src="{{ current_avatar|default:session_user_avatar }}" alt="{{ user.full_name|default:'User Avatar' }}" class="avatar-img-lg">
-                    <div id="identityAvatarFallback" class="avatar-fallback-lg d-none">
+                    <img id="identityAvatarImg" src="{{ current_avatar|default:session_user_avatar }}" alt="{{ user.full_name|default:'User Avatar' }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    <div id="identityAvatarFallback" class="avatar-fallback-lg d-none" style="width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; background: linear-gradient(135deg, #7C3AED, #4F46E5);">
                         {{ user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
                     </div>
                     {% else %}
-                    <img id="identityAvatarImg" src="" alt="User Avatar" class="avatar-img-lg d-none">
-                    <div id="identityAvatarFallback" class="avatar-fallback-lg">
+                    <img id="identityAvatarImg" src="" alt="User Avatar" class="d-none" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    <div id="identityAvatarFallback" class="avatar-fallback-lg" style="width: 100%; height: 100%; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; background: linear-gradient(135deg, #7C3AED, #4F46E5);">
                         {{ user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
                     </div>
                     {% endif %}
                 </div>
-                <div class="avatar-status-badge" title="Active Scholar">
-                    <i class="bi bi-patch-check-fill text-emerald"></i>
+                <div class="avatar-status-badge" style="position: absolute; bottom: 0; right: -2px;" title="Active Scholar">
+                    <i class="bi bi-patch-check-fill text-emerald fs-6"></i>
                 </div>
             </div>
 
-            <h3 class="fw-bold mb-1" id="identityDisplayName">{{ user.full_name|default:session_user_name|default:"Data Science Scholar" }}</h3>
-            <p class="text-muted small mb-3"><i class="bi bi-envelope-fill me-1" style="color: var(--accent-cyan);"></i>{{ user.email|default:session_user_email }}</p>
+            <h4 class="fw-bold mb-0 text-truncate" id="identityDisplayName">{{ user.full_name|default:session_user_name|default:"Data Science Scholar" }}</h4>
+            <p class="text-muted small mb-2 text-truncate"><i class="bi bi-envelope-fill me-1" style="color: var(--accent-cyan);"></i>{{ user.email|default:session_user_email }}</p>
             
-            <div class="p-2 rounded-3 bg-dark border font-monospace text-muted small text-break mb-3" style="border-color: var(--glass-border) !important; font-size: 0.75rem;">
+            <div class="p-1 px-2 rounded-3 bg-dark border font-monospace text-muted small text-break mb-2 mx-auto" style="border-color: var(--glass-border) !important; font-size: 0.7rem; max-width: 90%;">
                 <span class="text-purple fw-bold">UUID:</span> {{ user.id|default:"demo-user-uuid-1234" }}
             </div>
             
-            <div class="d-flex justify-content-center gap-2 flex-wrap">
-                <span class="badge px-3 py-2 rounded-pill font-monospace" style="background: rgba(52, 211, 153, 0.18); color: #34D399; border: 1px solid rgba(52, 211, 153, 0.4);">
+            <div class="d-flex justify-content-center gap-1 flex-wrap">
+                <span class="badge px-2 py-1 rounded-pill font-monospace" style="background: rgba(52, 211, 153, 0.15); color: #34D399; border: 1px solid rgba(52, 211, 153, 0.3); font-size: 0.7rem;">
                     <i class="bi bi-shield-check me-1"></i> Authenticated
                 </span>
-                <span class="badge px-3 py-2 rounded-pill font-monospace" style="background: rgba(192, 132, 252, 0.18); color: var(--accent-purple); border: 1px solid var(--accent-purple-glow);">
+                <span class="badge px-2 py-1 rounded-pill font-monospace" style="background: rgba(192, 132, 252, 0.15); color: var(--accent-purple); border: 1px solid var(--accent-purple-glow); font-size: 0.7rem;">
                     <i class="bi bi-cpu me-1"></i> LA Explorer
                 </span>
             </div>
         </div>
     </div>
 
-    <!-- Right Column: Profile & Picture Management Form -->
+    <!-- Right Column: Compact Profile & Picture Form -->
     <div class="col-lg-8">
-        <div class="glass-card p-4 p-md-5 h-100">
-            <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
-                <h4 class="fw-bold mb-0 d-flex align-items-center gap-2">
-                    <i class="bi bi-person-bounding-box" style="color: var(--accent-purple);"></i> Account & Profile Picture
-                </h4>
-                <span class="badge bg-dark border text-muted px-2 py-1 font-monospace" style="border-color: var(--glass-border) !important;">
-                    User Settings
-                </span>
-            </div>
+        <div class="glass-card p-3 p-md-4 h-100 d-flex flex-column justify-content-between">
+            <div>
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h5 class="fw-bold mb-0 d-flex align-items-center gap-2 text-white">
+                        <i class="bi bi-person-bounding-box" style="color: var(--accent-purple);"></i> Account & Profile Picture
+                    </h5>
+                    <span class="badge bg-dark border text-muted px-2 py-1 font-monospace small" style="border-color: var(--glass-border) !important;">
+                        User Settings
+                    </span>
+                </div>
 
-            {% if error %}
-            <div class="alert alert-danger d-flex align-items-center gap-2 mb-4 rounded-3 border-0" role="alert" style="background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3) !important;">
-                <i class="bi bi-exclamation-triangle-fill fs-5"></i>
-                <div class="small">{{ error }}</div>
-            </div>
-            {% endif %}
+                {% if error %}
+                <div class="alert alert-danger d-flex align-items-center gap-2 mb-3 py-2 px-3 rounded-3 border-0 small" role="alert" style="background: rgba(239, 68, 68, 0.15); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.3) !important;">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <div>{{ error }}</div>
+                </div>
+                {% endif %}
 
-            {% if success %}
-            <div class="alert alert-success d-flex align-items-center gap-2 mb-4 rounded-3 border-0" role="alert" style="background: rgba(52, 211, 153, 0.15); color: #6EE7B7; border: 1px solid rgba(52, 211, 153, 0.3) !important;">
-                <i class="bi bi-check-circle-fill fs-5"></i>
-                <div class="small">{{ success }}</div>
-            </div>
-            {% endif %}
+                {% if success %}
+                <div class="alert alert-success d-flex align-items-center gap-2 mb-3 py-2 px-3 rounded-3 border-0 small" role="alert" style="background: rgba(52, 211, 153, 0.15); color: #6EE7B7; border: 1px solid rgba(52, 211, 153, 0.3) !important;">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <div>{{ success }}</div>
+                </div>
+                {% endif %}
 
-            <form method="post" action="{% url 'linear_algebra:profile' %}" enctype="multipart/form-data" id="profileForm">
-                {% csrf_token %}
-                {{ form.avatar_preset }}
-                {{ form.avatar_url }}
-                {{ form.remove_avatar }}
-                {{ form.avatar_file }}
+                <form method="post" action="{% url 'linear_algebra:profile' %}" enctype="multipart/form-data" id="profileForm">
+                    {% csrf_token %}
+                    {{ form.avatar_preset }}
+                    {{ form.avatar_url }}
+                    {{ form.remove_avatar }}
+                    {{ form.avatar_file }}
 
-                <!-- 1. Profile Picture Management Section -->
-                <div class="mb-5 p-4 rounded-3" style="background: rgba(15, 23, 42, 0.45); border: 1px solid var(--glass-border);">
-                    <div class="d-flex align-items-center justify-content-between mb-3">
-                        <label class="form-label text-white fw-bold mb-0">
-                            <i class="bi bi-camera-fill me-1" style="color: var(--accent-purple);"></i> Profile Picture
-                        </label>
-                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2" id="removeAvatarBtn" onclick="handleRemoveAvatar()" {% if not current_avatar and not session_user_avatar %}style="display: none;"{% endif %}>
-                            <i class="bi bi-trash3 me-1"></i> Remove Photo
+                    <!-- 1. Ultra-Compact Profile Picture Bar -->
+                    <div class="p-3 mb-3 rounded-3" style="background: rgba(15, 23, 42, 0.45); border: 1px solid var(--glass-border);">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <label class="form-label text-white fw-semibold small mb-0">
+                                <i class="bi bi-camera-fill me-1" style="color: var(--accent-purple);"></i> Profile Avatar
+                            </label>
+                            <button type="button" class="btn btn-sm btn-link text-danger p-0 text-decoration-none small" id="removeAvatarBtn" onclick="handleRemoveAvatar()" {% if not current_avatar and not session_user_avatar %}style="display: none;"{% endif %}>
+                                <i class="bi bi-trash3 me-1"></i> Remove Photo
+                            </button>
+                        </div>
+
+                        <div class="row g-2 align-items-center">
+                            <!-- Live Avatar Box & Drag-Drop Trigger -->
+                            <div class="col-auto">
+                                <div id="dropZone" class="position-relative rounded-circle overflow-hidden border border-purple" style="width: 52px; height: 52px; cursor: pointer; background: var(--surface-slate);" onclick="document.getElementById('avatarFileInput').click()" title="Click or Drag & Drop image here">
+                                    {% if current_avatar or session_user_avatar %}
+                                    <img id="avatarPreviewImg" src="{{ current_avatar|default:session_user_avatar }}" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <div id="avatarPreviewFallback" class="d-none w-100 h-100 d-flex align-items-center justify-content-center font-monospace fw-bold text-white" style="background: linear-gradient(135deg, #7C3AED, #4F46E5);">
+                                        {{ user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
+                                    </div>
+                                    {% else %}
+                                    <img id="avatarPreviewImg" src="" alt="Preview" class="d-none" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <div id="avatarPreviewFallback" class="w-100 h-100 d-flex align-items-center justify-content-center font-monospace fw-bold text-white" style="background: linear-gradient(135deg, #7C3AED, #4F46E5);">
+                                        {{ user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
+                                    </div>
+                                    {% endif %}
+                                    <div class="position-absolute bottom-0 start-0 w-100 text-center py-0" style="background: rgba(0,0,0,0.5); font-size: 0.6rem; color: #fff;">
+                                        <i class="bi bi-camera"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Upload Action Buttons -->
+                            <div class="col-auto me-md-2">
+                                <div class="d-flex align-items-center gap-1">
+                                    <button type="button" class="btn btn-gradient btn-sm py-1 px-2 small" style="min-height: 32px; font-size: 0.78rem;" onclick="document.getElementById('avatarFileInput').click()">
+                                        <i class="bi bi-upload me-1"></i> Upload
+                                    </button>
+                                    <button type="button" class="btn btn-outline-light btn-sm py-1 px-2 small" id="cancelUploadBtn" style="display: none; min-height: 32px; font-size: 0.78rem;" onclick="resetAvatarSelection()">
+                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                    </button>
+                                </div>
+                                <div id="uploadFileStatus" class="small text-cyan mt-1 fw-semibold font-monospace" style="display: none; font-size: 0.7rem;"></div>
+                            </div>
+
+                            <!-- Single-Row Inline Curated Avatars -->
+                            <div class="col">
+                                <div class="d-flex align-items-center gap-2 overflow-x-auto pb-1" id="presetAvatarGrid" style="scrollbar-width: thin;">
+                                    <span class="text-muted small fw-semibold d-none d-xl-inline me-1" style="font-size: 0.72rem; white-space: nowrap;">Or Presets:</span>
+                                    {% for preset in preset_avatars %}
+                                    <div class="preset-avatar-card text-center rounded-circle p-0 flex-shrink-0 position-relative {% if current_avatar == preset.url or current_avatar == preset.id %}active{% endif %}" 
+                                         data-preset-url="{{ preset.url }}" 
+                                         data-preset-id="{{ preset.id }}" 
+                                         onclick="selectPresetAvatar('{{ preset.url }}', this)" 
+                                         title="{{ preset.title }}"
+                                         style="width: 38px; height: 38px;">
+                                        <img src="{{ preset.url }}" alt="{{ preset.title }}" class="preset-avatar-img" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                                        <div class="preset-avatar-check" style="position: absolute; top: -3px; right: -3px; font-size: 0.75rem;"><i class="bi bi-check-circle-fill"></i></div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Account Details Form Inputs (2-Column Grid) -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-semibold mb-1">Display Full Name</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-dark text-muted border-end-0" style="border-color: var(--glass-border);"><i class="bi bi-person"></i></span>
+                                {{ form.full_name }}
+                            </div>
+                            {% if form.full_name.errors %}
+                            <div class="text-danger small mt-1" style="font-size: 0.75rem;">{{ form.full_name.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-semibold mb-1">Registered Email (Read-only)</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-dark text-muted border-end-0" style="border-color: var(--glass-border);"><i class="bi bi-envelope"></i></span>
+                                <input type="email" class="form-control font-monospace" value="{{ user.email|default:session_user_email }}" readonly disabled style="opacity: 0.7;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 3. Action Buttons -->
+                    <div class="d-flex align-items-center justify-content-between gap-2 pt-2 border-top" style="border-color: var(--glass-border) !important;">
+                        <button type="submit" class="btn btn-gradient btn-sm px-3 py-1 fw-bold" id="saveProfileBtn" style="min-height: 38px;">
+                            Save Profile Changes <i class="bi bi-check2-circle ms-1"></i>
                         </button>
+                        <a href="{% url 'linear_algebra:forgot_password' %}" class="btn btn-preset btn-sm py-1 px-3" style="min-height: 38px;">
+                            <i class="bi bi-key me-1"></i> Change Password
+                        </a>
                     </div>
-
-                    <!-- Live Avatar Preview & Upload Action Controls -->
-                    <div class="d-flex flex-wrap align-items-center gap-4 mb-4">
-                        <div class="position-relative">
-                            <div class="avatar-preview-box" id="avatarPreviewContainer">
-                                {% if current_avatar or session_user_avatar %}
-                                <img id="avatarPreviewImg" src="{{ current_avatar|default:session_user_avatar }}" alt="Preview" class="avatar-preview-img">
-                                <div id="avatarPreviewFallback" class="avatar-preview-fallback d-none">
-                                    {{ user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
-                                </div>
-                                {% else %}
-                                <img id="avatarPreviewImg" src="" alt="Preview" class="avatar-preview-img d-none">
-                                <div id="avatarPreviewFallback" class="avatar-preview-fallback">
-                                    {{ user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
-                                </div>
-                                {% endif %}
-                            </div>
-                        </div>
-
-                        <div class="flex-grow-1">
-                            <div class="d-flex flex-wrap gap-2 mb-2">
-                                <button type="button" class="btn btn-gradient btn-sm px-3" onclick="document.getElementById('avatarFileInput').click()">
-                                    <i class="bi bi-upload me-1"></i> Upload Image
-                                </button>
-                                <button type="button" class="btn btn-outline-light btn-sm px-3" id="cancelUploadBtn" style="display: none;" onclick="resetAvatarSelection()">
-                                    <i class="bi bi-arrow-counterclockwise me-1"></i> Revert
-                                </button>
-                            </div>
-                            <small class="text-muted d-block">Supports PNG, JPG, JPEG, WEBP, SVG, or GIF (Max 5MB).</small>
-                            <div id="uploadFileStatus" class="small text-cyan mt-1 fw-semibold font-monospace" style="display: none;"></div>
-                        </div>
-                    </div>
-
-                    <!-- Drag & Drop Zone Area -->
-                    <div id="dropZone" class="avatar-dropzone mb-4 text-center p-3 rounded-3" onclick="document.getElementById('avatarFileInput').click()">
-                        <i class="bi bi-cloud-arrow-up fs-2 text-purple mb-1 d-block"></i>
-                        <span class="text-main fw-semibold small">Drag & drop your new avatar here</span>
-                        <small class="text-muted d-block">or click to browse files from your computer</small>
-                    </div>
-
-                    <!-- Curated Preset Avatars Grid -->
-                    <label class="form-label text-muted small fw-semibold d-block mb-2">Or Choose from Curated Mathematician Avatars:</label>
-                    <div class="row g-3" id="presetAvatarGrid">
-                        {% for preset in preset_avatars %}
-                        <div class="col-4 col-sm-2">
-                            <div class="preset-avatar-card text-center p-2 rounded-3 {% if current_avatar == preset.url or current_avatar == preset.id %}active{% endif %}" 
-                                 data-preset-url="{{ preset.url }}" 
-                                 data-preset-id="{{ preset.id }}" 
-                                 onclick="selectPresetAvatar('{{ preset.url }}', this)" 
-                                 title="{{ preset.title }}">
-                                <img src="{{ preset.url }}" alt="{{ preset.title }}" class="preset-avatar-img mb-1">
-                                <div class="preset-avatar-title">{{ preset.title }}</div>
-                                <div class="preset-avatar-check"><i class="bi bi-check-circle-fill"></i></div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-                </div>
-
-                <!-- 2. Personal Information Section -->
-                <div class="mb-4">
-                    <label class="form-label text-muted small fw-semibold">Display Full Name</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-dark text-muted border-end-0" style="border-color: var(--glass-border);"><i class="bi bi-person"></i></span>
-                        {{ form.full_name }}
-                    </div>
-                    {% if form.full_name.errors %}
-                    <div class="text-danger small mt-1">{{ form.full_name.errors }}</div>
-                    {% endif %}
-                </div>
-
-                <div class="mb-4">
-                    <label class="form-label text-muted small fw-semibold">Registered Email Address (Read-only)</label>
-                    <div class="input-group">
-                        <span class="input-group-text bg-dark text-muted border-end-0" style="border-color: var(--glass-border);"><i class="bi bi-envelope"></i></span>
-                        <input type="email" class="form-control font-monospace" value="{{ user.email|default:session_user_email }}" readonly disabled style="opacity: 0.7;">
-                    </div>
-                    <small class="text-muted">Email is linked to your Supabase Auth account.</small>
-                </div>
-
-                <!-- 3. Form Submit and Secondary Actions -->
-                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 pt-3 border-top" style="border-color: var(--glass-border) !important;">
-                    <button type="submit" class="btn btn-gradient px-4 py-2 fw-bold" id="saveProfileBtn">
-                        Save Profile Changes <i class="bi bi-check2-circle ms-1"></i>
-                    </button>
-                    <a href="{% url 'linear_algebra:forgot_password' %}" class="btn btn-preset py-2">
-                        <i class="bi bi-key me-1"></i> Change Password
-                    </a>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -231,7 +230,7 @@
         });
     }
 
-    // Drag and Drop support
+    // Drag and Drop support on Avatar DropZone
     if (dropZone) {
         ['dragenter', 'dragover'].forEach(eventName => {
             dropZone.addEventListener(eventName, (e) => {
