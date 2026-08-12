@@ -186,9 +186,11 @@
 
 {% block extra_js %}
 <script>
-    const fileInput = document.getElementById('avatarFileInput');
-    const presetInput = document.getElementById('avatarPresetInput');
-    const removeInput = document.getElementById('removeAvatarInput');
+    const fileInput = document.getElementById('id_avatar_file') || document.getElementById('avatarFileInput');
+    const presetInput = document.getElementById('id_avatar_preset') || document.getElementById('avatarPresetInput');
+    const removeInput = document.getElementById('id_remove_avatar') || document.getElementById('removeAvatarInput');
+    const urlInput = document.getElementById('id_avatar_url') || document.getElementById('avatarUrlInput');
+
     const previewImg = document.getElementById('avatarPreviewImg');
     const previewFallback = document.getElementById('avatarPreviewFallback');
     const identityImg = document.getElementById('identityAvatarImg');
@@ -239,14 +241,13 @@
 
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    compressAvatarImage(event.target.result, 128, 128, 0.85, function(compressedUrl) {
+                    compressAvatarImage(event.target.result, 200, 200, 0.88, function(compressedUrl) {
                         setAvatarPreview(compressedUrl);
-                        const avatarUrlInput = document.getElementById('avatarUrlInput');
-                        if (avatarUrlInput) {
-                            avatarUrlInput.value = compressedUrl;
+                        if (urlInput) {
+                            urlInput.value = compressedUrl;
                         }
-                        presetInput.value = "";
-                        removeInput.value = "false";
+                        if (presetInput) presetInput.value = "";
+                        if (removeInput) removeInput.value = "false";
                         
                         // Clear preset active cards
                         document.querySelectorAll('.preset-avatar-card').forEach(c => c.classList.remove('active'));
@@ -261,6 +262,7 @@
             }
         });
     }
+
 
 
     // Drag and Drop support on Avatar DropZone

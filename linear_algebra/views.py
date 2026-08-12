@@ -119,11 +119,31 @@ def save_uploaded_avatar(user_id, uploaded_file):
             print(f"[Local filesystem write skipped due to read-only environment]: {fs_err}")
 
     # 3. Universal serverless & read-only fallback: Base64 Data URL (100% serverless safe)
-    if len(file_bytes) > 150000:
-        file_bytes = file_bytes[:150000]
+    try:
+        from PIL import Image
+        import io
+        img = Image.open(io.BytesIO(file_bytes))
+        img = img.convert('RGB')
+        
+        # Center square crop
+        min_dim = min(img.width, img.height)
+        left = (img.width - min_dim) / 2
+        top = (img.height - min_dim) / 2
+        right = (img.width + min_dim) / 2
+        bottom = (img.height + min_dim) / 2
+        img = img.crop((left, top, right, bottom))
+        img.thumbnail((200, 200), Image.Resampling.LANCZOS)
+        
+        out_buffer = io.BytesIO()
+        img.save(out_buffer, format='JPEG', quality=85)
+        file_bytes = out_buffer.getvalue()
+        content_type = 'image/jpeg'
+    except Exception as pil_err:
+        print(f"[Pillow Thumbnail Resizing Note]: {pil_err}")
 
     encoded_b64 = base64.b64encode(file_bytes).decode('utf-8')
     return f"data:{content_type};base64,{encoded_b64}"
+
 
 
 
