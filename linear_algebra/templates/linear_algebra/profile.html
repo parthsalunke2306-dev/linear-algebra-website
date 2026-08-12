@@ -200,35 +200,68 @@
 
     const originalAvatar = "{{ current_avatar|default:session_user_avatar|default:'' }}";
 
-    // Handle File Input Change (Live Preview)
+    function compressAvatarImage(src, maxWidth, maxHeight, quality, callback) {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = function() {
+            const canvas = document.createElement('canvas');
+            canvas.width = maxWidth;
+            canvas.height = maxHeight;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+            
+            const minDim = Math.min(img.width, img.height);
+            const sx = (img.width - minDim) / 2;
+            const sy = (img.height - minDim) / 2;
+            
+            ctx.drawImage(img, sx, sy, minDim, minDim, 0, 0, maxWidth, maxHeight);
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+            callback(compressedDataUrl);
+        };
+        img.onerror = function() {
+            callback(src);
+        };
+        img.src = src;
+    }
+
+    // Handle File Input Change (Live Preview with HTML5 Canvas Compression)
     if (fileInput) {
         fileInput.addEventListener('change', function(e) {
             const file = this.files[0];
             if (file) {
-                if (file.size > 5 * 1024 * 1024) {
-                    alert("File size exceeds 5MB limit. Please select a smaller image.");
+                if (file.size > 10 * 1024 * 1024) {
+                    alert("File size exceeds 10MB limit. Please select a smaller image.");
                     this.value = "";
                     return;
                 }
 
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    setAvatarPreview(event.target.result);
-                    presetInput.value = "";
-                    removeInput.value = "false";
-                    
-                    // Clear preset active cards
-                    document.querySelectorAll('.preset-avatar-card').forEach(c => c.classList.remove('active'));
-                    
-                    cancelBtn.style.display = 'inline-block';
-                    removeBtn.style.display = 'inline-block';
-                    fileStatus.textContent = `Selected: ${file.name} (${(file.size/1024).toFixed(1)} KB)`;
-                    fileStatus.style.display = 'block';
+                    compressAvatarImage(event.target.result, 128, 128, 0.85, function(compressedUrl) {
+                        setAvatarPreview(compressedUrl);
+                        const avatarUrlInput = document.getElementById('avatarUrlInput');
+                        if (avatarUrlInput) {
+                            avatarUrlInput.value = compressedUrl;
+                        }
+                        presetInput.value = "";
+                        removeInput.value = "false";
+                        
+                        // Clear preset active cards
+                        document.querySelectorAll('.preset-avatar-card').forEach(c => c.classList.remove('active'));
+                        
+                        cancelBtn.style.display = 'inline-block';
+                        removeBtn.style.display = 'inline-block';
+                        fileStatus.textContent = `Selected: ${file.name} (Optimized Profile Avatar)`;
+                        fileStatus.style.display = 'block';
+                    });
                 };
                 reader.readAsDataURL(file);
             }
         });
     }
+
 
     // Drag and Drop support on Avatar DropZone
     if (dropZone) {

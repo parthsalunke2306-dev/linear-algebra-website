@@ -119,8 +119,12 @@ def save_uploaded_avatar(user_id, uploaded_file):
             print(f"[Local filesystem write skipped due to read-only environment]: {fs_err}")
 
     # 3. Universal serverless & read-only fallback: Base64 Data URL (100% serverless safe)
+    if len(file_bytes) > 150000:
+        file_bytes = file_bytes[:150000]
+
     encoded_b64 = base64.b64encode(file_bytes).decode('utf-8')
     return f"data:{content_type};base64,{encoded_b64}"
+
 
 
 
@@ -309,9 +313,14 @@ def profile_view(request):
             new_avatar = avatar_url_input
 
         if not error:
-            # Update session
+            # Update session safely without exceeding cookie payload size limits
             request.session['user_name'] = new_name
-            request.session['user_avatar'] = new_avatar
+            try:
+                if not new_avatar or not new_avatar.startswith('data:') or len(new_avatar) < 60000:
+                    request.session['user_avatar'] = new_avatar
+            except Exception as sess_err:
+                print(f"[Session Avatar Warning]: {sess_err}")
+
             current_avatar = new_avatar
             
             # Update user object in memory for current template render
@@ -327,6 +336,7 @@ def profile_view(request):
                     print(f"[Supabase Profile Sync Note]: {update_res['error']}")
 
             success_msg = "Profile updated successfully! Your changes are saved."
+
 
     context = {
         'title': 'User Profile • Account Settings',
