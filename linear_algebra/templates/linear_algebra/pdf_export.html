@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ pdf_title }} - Linear Algebra Explorer</title>
+    <style>
+        @page {
+            size: a4 portrait;
+            margin: 1.5cm;
+        }
+
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #0f172a;
+            background-color: #ffffff;
+            font-size: 10pt;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header Header Section */
+        .header-bar {
+            border-bottom: 2.5px solid #4f46e5;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header-title {
+            font-size: 18pt;
+            font-weight: bold;
+            color: #1e1b4b;
+            margin: 0 0 4px 0;
+        }
+
+        .header-subtitle {
+            font-size: 11pt;
+            color: #4f46e5;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .meta-info {
+            font-size: 8.5pt;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* Problem Inputs Section */
+        .section-box {
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #334155;
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 6px;
+            margin-bottom: 10px;
+        }
+
+        /* Steps Block */
+        .steps-container {
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            background-color: #ffffff;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+        }
+
+        .step-item {
+            padding-bottom: 14px;
+            margin-bottom: 14px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .step-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .step-badge {
+            background-color: #4f46e5;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 8.5pt;
+            padding: 3px 8px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .step-title {
+            font-size: 11pt;
+            font-weight: bold;
+            color: #1e293b;
+            margin: 0 0 6px 0;
+        }
+
+        .step-explanation {
+            font-size: 9.5pt;
+            color: #475569;
+            margin: 0 0 10px 0;
+        }
+
+        .math-wrapper {
+            text-align: center;
+            margin: 8px 0;
+            padding: 8px;
+            background-color: #f1f5f9;
+            border-radius: 4px;
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Solution Summary Box */
+        .solution-box {
+            background-color: #f0fdf4;
+            border: 1.5px solid #22c55e;
+            border-radius: 6px;
+            padding: 14px 18px;
+            margin-top: 20px;
+        }
+
+        .solution-title {
+            font-size: 12pt;
+            font-weight: bold;
+            color: #15803d;
+            margin: 0 0 6px 0;
+        }
+
+        .badge-verified {
+            background-color: #16a34a;
+            color: #ffffff;
+            font-size: 8pt;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        /* Matrix Table Styles for PDF */
+        table.matrix-table {
+            display: inline-table;
+            vertical-align: middle;
+            border-left: 2.5px solid #0f172a;
+            border-right: 2.5px solid #0f172a;
+            border-collapse: collapse;
+            margin: 4px auto;
+            background-color: #ffffff;
+        }
+        table.matrix-table td {
+            padding: 4px 10px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 10pt;
+            font-weight: bold;
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Section -->
+    <div class="header-bar">
+        <h1 class="header-title">Linear Algebra & Data Science Explorer</h1>
+        <div class="header-subtitle">{{ pdf_subtitle }}</div>
+        <div class="meta-info">Export Generated: {{ export_timestamp }} • User: {{ user_email|default:"Authenticated Scholar" }}</div>
+    </div>
+
+    <!-- Inputs & Problem Setup -->
+    {% if problem_summary %}
+    <div class="section-box">
+        <div class="section-header">Problem Overview & System Input</div>
+        <div>{{ problem_summary|safe }}</div>
+    </div>
+    {% endif %}
+
+    <!-- Step-by-Step Derivation Block -->
+    <div class="section-box">
+        <div class="section-header">Step-by-Step Complete Derivation</div>
+        <div class="steps-container">
+            {% for step in pdf_steps %}
+            <div class="step-item">
+                <div class="step-title">
+                    <span class="step-badge">Step {{ forloop.counter }}</span> {{ step.title }}
+                </div>
+                {% if step.explanation %}
+                <div class="step-explanation">{{ step.explanation }}</div>
+                {% endif %}
+                
+                {% if step.rendered_math %}
+                <div class="math-wrapper">
+                    {{ step.rendered_math|safe }}
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <p>No derivation steps to display.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Final Solution Summary Box -->
+    {% if final_solution %}
+    <div class="solution-box">
+        <div class="solution-title">Final Solution Summary</div>
+        {% if final_solution.summary %}
+        <p style="margin: 0 0 8px 0; color: #166534; font-size: 9.5pt;">{{ final_solution.summary }}</p>
+        {% endif %}
+
+        {% if final_solution.rendered_math %}
+        <div class="math-wrapper" style="background-color: #ffffff; border-color: #86efac;">
+            {{ final_solution.rendered_math|safe }}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+</body>
+</html>

@@ -566,3 +566,234 @@ def diagonalization_view(request):
         'python_code': code_snippet
     }
     return render(request, 'linear_algebra/diagonalization.html', context)
+
+
+# ------------------------------------------------------------------------------
+# UNIVERSAL PDF EXPORT VIEW (Secured by Supabase Auth)
+# ------------------------------------------------------------------------------
+
+@supabase_login_required
+def export_pdf_view(request, solver_type):
+    """Generates and downloads a clean PDF solution document for any of the 6 solvers."""
+    from datetime import datetime
+    from django.template.loader import render_to_string
+    from .pdf_utils import prepare_latex_for_pdf, generate_pdf_response
+
+    user = getattr(request, 'supabase_user', None) or {}
+    user_email = user.get('email', '') if isinstance(user, dict) else getattr(user, 'email', '')
+    
+    pdf_steps = []
+    final_solution = None
+    problem_summary = ""
+    pdf_title = "Linear Algebra Solution"
+    pdf_subtitle = "Step-by-Step Mathematical Derivation"
+    filename = f"{solver_type}_solution.pdf"
+
+    if solver_type == 'gaussian':
+        form = GaussianForm(request.POST or request.GET or None)
+        matrix_text = form.cleaned_data['matrix_text'] if form.is_valid() else form.fields['matrix_text'].initial
+        try:
+            matrix_data = parse_matrix_input(matrix_text)
+            result = math_engine.solve_gaussian_elimination(matrix_data)
+            pdf_title = "Gaussian Elimination & Row Echelon Form"
+            pdf_subtitle = "Topic 1.1 • Systems of Linear Equations & Row Operations"
+            filename = "Gaussian_Elimination_Solution.pdf"
+            
+            problem_summary = f"<strong>Input Matrix (Augmented):</strong><br>{prepare_latex_for_pdf(result.get('initial_matrix_latex', ''))}"
+            
+            for step in result.get('steps', []):
+                pdf_steps.append({
+                    'title': step.get('title', ''),
+                    'explanation': step.get('explanation', ''),
+                    'rendered_math': prepare_latex_for_pdf(step.get('latex', ''))
+                })
+            
+            final_solution = {
+                'summary': result.get('solution_summary', ''),
+                'rendered_math': prepare_latex_for_pdf(result.get('solution_latex', ''))
+            }
+        except Exception as e:
+            return HttpResponse(f"Error building PDF for Gaussian Elimination: {e}", status=400)
+
+    elif solver_type == 'gf2':
+        result = math_engine.analyze_gf2_field()
+        pdf_title = "Field Axioms Verification via GF(2)"
+        pdf_subtitle = "Topic 1.2 • Binary Galois Field GF(2) Axioms"
+        filename = "GF2_Field_Axioms_Solution.pdf"
+        problem_summary = "<strong>Galois Field GF(2) Definition:</strong><br>Elements {0, 1} under Modulo-2 XOR Addition (+) and AND Multiplication (•)"
+        
+        for axiom in result.get('axioms', []):
+            pdf_steps.append({
+                'title': f"{axiom.get('name', '')} ({axiom.get('symbol', '')})",
+                'explanation': axiom.get('description', ''),
+                'rendered_math': prepare_latex_for_pdf(axiom.get('proof_latex', ''))
+            })
+            
+        final_solution = {
+            'summary': "All 11 Field Axioms hold true for GF(2). GF(2) is a valid mathematical field.",
+            'rendered_math': prepare_latex_for_pdf(r"\mathbb{F}_2 = (\{0, 1\}, +, \cdot) \text{ is a Field}")
+        }
+
+    elif solver_type == 'vectors':
+        form = VectorsForm(request.POST or request.GET or None)
+        if form.is_valid():
+            v1 = [form.cleaned_data['v1_x'], form.cleaned_data['v1_y'], form.cleaned_data['v1_z']]
+            v2 = [form.cleaned_data['v2_x'], form.cleaned_data['v2_y'], form.cleaned_data['v2_z']]
+        else:
+            v1 = [form.fields['v1_x'].initial, form.fields['v1_y'].initial, form.fields['v1_z'].initial]
+            v2 = [form.fields['v2_x'].initial, form.fields['v2_y'].initial, form.fields['v2_z'].initial]
+        
+        try:
+            result = math_engine.compute_vector_operations(v1, v2)
+            pdf_title = "3D Vector Dot Product, Cross Product & Projections"
+            pdf_subtitle = "Topic 1.3 • Vector Operations & Geometry"
+            filename = "Vector_Operations_Solution.pdf"
+            problem_summary = f"<strong>Input Vectors:</strong><br>v1 = [{v1[0]}, {v1[1]}, {v1[2]}]<br>v2 = [{v2[0]}, {v2[1]}, {v2[2]}]"
+
+            pdf_steps = [
+                {
+                    'title': 'Dot Product & Angle Calculation',
+                    'explanation': f"Magnitudes: ||v1|| = {result['mag1']}, ||v2|| = {result['mag2']} | Angle: {result['angle_deg']}° ({result['angle_rad']} rad)",
+                    'rendered_math': prepare_latex_for_pdf(f"\\mathbf{{v}}_1 \\cdot \\mathbf{{v}}_2 = {result['dot_prod']}")
+                },
+                {
+                    'title': 'Cross Product Vector & Areas',
+                    'explanation': f"Cross Magnitude: {result['cross_mag']} | Parallelepiped Area: {result['parallelepiped_area']} sq units",
+                    'rendered_math': prepare_latex_for_pdf(f"\\mathbf{{v}}_1 \\times \\mathbf{{v}}_2 = \\begin{{bmatrix}} {result['cross_prod'][0]} \\\\ {result['cross_prod'][1]} \\\\ {result['cross_prod'][2]} \\end{{bmatrix}}")
+                },
+                {
+                    'title': 'Vector Projection proj_v2(v1)',
+                    'explanation': "Orthogonal projection of v1 onto v2",
+                    'rendered_math': prepare_latex_for_pdf(f"\\text{{proj}}_{{\\mathbf{{v}}_2}}(\\mathbf{{v}}_1) = \\begin{{bmatrix}} {result['proj_vector'][0]} \\\\ {result['proj_vector'][1]} \\\\ {result['proj_vector'][2]} \\end{{bmatrix}}")
+                }
+            ]
+            
+            final_solution = {
+                'summary': f"Orthogonal Check: {'YES (v1 ⊥ v2)' if result['is_orthogonal'] else 'NO'}",
+                'rendered_math': prepare_latex_for_pdf(f"\\mathbf{{v}}_1 \\cdot \\mathbf{{v}}_2 = {result['dot_prod']}")
+            }
+        except Exception as e:
+            return HttpResponse(f"Error building PDF for Vectors: {e}", status=400)
+
+    elif solver_type == 'gram_schmidt':
+        form = GramSchmidtForm(request.POST or request.GET or None)
+        vectors_text = form.cleaned_data['vectors_text'] if form.is_valid() else form.fields['vectors_text'].initial
+        try:
+            vectors_data = parse_matrix_input(vectors_text)
+            result = math_engine.solve_gram_schmidt(vectors_data)
+            pdf_title = "Gram–Schmidt Orthogonalization Process"
+            pdf_subtitle = "Topic 2.1 • Vector Space Inner Products & Orthonormal Bases"
+            filename = "Gram_Schmidt_Orthogonalization_Solution.pdf"
+            problem_summary = f"<strong>Input Basis Vectors:</strong><br>{len(vectors_data)} Linearly Independent Basis Vectors"
+
+            for step in result.get('steps', []):
+                pdf_steps.append({
+                    'title': f"Vector Step {step.get('step_num', 1)}",
+                    'explanation': f"Orthogonalizing input vector v_{step.get('step_num', 1)}",
+                    'rendered_math': f"Orthogonal Vector u_{step.get('step_num', 1)}: <br>{prepare_latex_for_pdf(step.get('u_latex', ''))}<br><br>Normalized Unit Vector e_{step.get('step_num', 1)}:<br>{prepare_latex_for_pdf(step.get('e_latex', ''))}"
+                })
+
+            final_solution = {
+                'summary': "Orthonormal Basis Verification Matrix (Inner Product Matrix <e_i, e_j>):",
+                'rendered_math': prepare_latex_for_pdf(result.get('ortho_check_latex', ''))
+            }
+        except Exception as e:
+            return HttpResponse(f"Error building PDF for Gram-Schmidt: {e}", status=400)
+
+    elif solver_type == 'cofactor':
+        form = CofactorForm(request.POST or request.GET or None)
+        if form.is_valid():
+            matrix_text = form.cleaned_data['matrix_text']
+            expand_by = form.cleaned_data['expand_by']
+            idx = form.cleaned_data['index'] - 1
+        else:
+            matrix_text = form.fields['matrix_text'].initial
+            expand_by = form.fields['expand_by'].initial
+            idx = form.fields['index'].initial - 1
+
+        try:
+            matrix_data = parse_matrix_input(matrix_text)
+            result = math_engine.solve_cofactor_expansion(matrix_data, expand_by, idx)
+            pdf_title = "Cofactor Expansion for Determinants"
+            pdf_subtitle = "Topic 2.2 • Matrix Determinants & Submatrix Minors"
+            filename = "Cofactor_Expansion_Determinant_Solution.pdf"
+            problem_summary = f"<strong>Expanded Matrix ({len(matrix_data)}x{len(matrix_data[0])}):</strong><br>Expansion along {expand_by.capitalize()} {idx + 1}"
+
+            for term in result.get('terms', []):
+                pdf_steps.append({
+                    'title': f"Term {term.get('row', 1)},{term.get('col', 1)}: Entry a = {term.get('entry', 0)}",
+                    'explanation': f"Submatrix Minor det(M) = {term.get('minor_det', 0)} | Cofactor C = {term.get('cofactor', 0)}",
+                    'rendered_math': f"Minor Matrix M:<br>{prepare_latex_for_pdf(term.get('minor_matrix_latex', ''))}<br><br>Cofactor Calculation:<br>{prepare_latex_for_pdf(term.get('cofactor_latex', ''))}"
+                })
+
+            final_solution = {
+                'summary': "Total Matrix Determinant det(A):",
+                'rendered_math': prepare_latex_for_pdf(f"\\det(A) = {result.get('total_det_latex', '')}")
+            }
+        except Exception as e:
+            return HttpResponse(f"Error building PDF for Cofactor Expansion: {e}", status=400)
+
+    elif solver_type == 'diagonalization':
+        form = DiagonalizationForm(request.POST or request.GET or None)
+        matrix_text = form.cleaned_data['matrix_text'] if form.is_valid() else form.fields['matrix_text'].initial
+        try:
+            matrix_data = parse_matrix_input(matrix_text)
+            result = math_engine.solve_diagonalization(matrix_data)
+            pdf_title = "Eigenvalues, Eigenvectors & Diagonalization"
+            pdf_subtitle = "Topic 2.3 • Spectral Theory & Matrix Decomposition"
+            filename = "Matrix_Diagonalization_Solution.pdf"
+            problem_summary = f"<strong>Input Square Matrix A ({len(matrix_data)}x{len(matrix_data[0])})</strong>"
+
+            # Section 1
+            pdf_steps.append({
+                'title': 'Section 1: Characteristic Polynomial det(A - λI) = 0',
+                'explanation': 'Roots of characteristic polynomial yield matrix eigenvalues',
+                'rendered_math': prepare_latex_for_pdf(f"p(\\lambda) = {result.get('char_poly_latex', '')} = 0")
+            })
+
+            # Section 2
+            eig_details = []
+            for item in result.get('eigenvalues_summary', []):
+                eig_details.append(f"Eigenvalue λ = {item.get('eigenvalue_latex', '')} (Alg Mult: {item.get('alg_mult', 1)}, Geom Mult: {item.get('geom_mult', 1)})")
+            
+            pdf_steps.append({
+                'title': 'Section 2: Eigenvalues & Eigenspaces',
+                'explanation': "<br>".join(eig_details),
+                'rendered_math': prepare_latex_for_pdf(f"P = {result.get('P_latex', '')}")
+            })
+
+            # Section 3
+            if result.get('is_diagonalizable'):
+                pdf_steps.append({
+                    'title': 'Section 3: Matrix Decomposition A = P D P⁻¹',
+                    'explanation': 'Modal Matrix P and Diagonal Matrix D',
+                    'rendered_math': f"Modal Matrix P:<br>{prepare_latex_for_pdf(result.get('P_latex', ''))}<br><br>Diagonal Matrix D:<br>{prepare_latex_for_pdf(result.get('D_latex', ''))}"
+                })
+                final_solution = {
+                    'summary': "MATRIX IS DIAGONALIZABLE (A = P D P⁻¹)",
+                    'rendered_math': prepare_latex_for_pdf(f"P = {result.get('P_latex', '')}, D = {result.get('D_latex', '')}")
+                }
+            else:
+                final_solution = {
+                    'summary': "MATRIX IS NOT DIAGONALIZABLE (Geometric multiplicity is less than algebraic multiplicity)",
+                    'rendered_math': ""
+                }
+        except Exception as e:
+            return HttpResponse(f"Error building PDF for Diagonalization: {e}", status=400)
+
+    else:
+        from django.http import Http404
+        raise Http404("Invalid solver type specified.")
+
+    context = {
+        'pdf_title': pdf_title,
+        'pdf_subtitle': pdf_subtitle,
+        'export_timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC"),
+        'user_email': user_email,
+        'problem_summary': problem_summary,
+        'pdf_steps': pdf_steps,
+        'final_solution': final_solution,
+    }
+
+    rendered_html = render_to_string('linear_algebra/pdf_export.html', context)
+    return generate_pdf_response(rendered_html, filename=filename)

@@ -22,4 +22,8 @@ urlpatterns = [
     path('gram-schmidt/', views.gram_schmidt_view, name='gram_schmidt'),
     path('cofactor/', views.cofactor_view, name='cofactor'),
     path('diagonalization/', views.diagonalization_view, name='diagonalization'),
+
+    # Universal PDF Export Route
+    path('export-pdf/<str:solver_type>/', views.export_pdf_view, name='export_pdf'),
 ]
+
