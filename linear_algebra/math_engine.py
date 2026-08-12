@@ -220,7 +220,13 @@ def compute_gf2_calc(a, b, op, modulus=2):
         'explanation': explanation
     }
 
+def analyze_gf2_field():
+    """Returns field analysis for GF(2)."""
+    return analyze_galois_field(modulus=2)
+
 def analyze_galois_field(modulus=2, task='verify_field_axioms', custom_question=None):
+
+
     """
     Generates Galois / Finite Field F_p addition and multiplication tables dynamically,
     evaluates all 11 field axioms, calculates additive/multiplicative inverses,

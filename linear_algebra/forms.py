@@ -54,62 +54,22 @@ class CofactorForm(forms.Form):
         help_text='1-indexed Row or Column to expand along.'
     )
 
-class GaloisFieldForm(forms.Form):
-    question_text = forms.CharField(
-        required=False,
-        widget=forms.Textarea(attrs={
-            'class': 'form-control font-monospace',
-            'rows': 3,
-            'placeholder': 'Type or paste your math question here (e.g., "Verify that F_3 = {0,1,2} forms a field under addition and multiplication modulo 3.")'
-        }),
-        initial='Verify that F₂ = {0,1} forms a field under addition and multiplication modulo 2.',
-        help_text='Type your question, select a preset, or upload an image.'
-    )
-    image_file = forms.FileField(
-        required=False,
-        widget=forms.FileInput(attrs={
-            'class': 'form-control',
-            'accept': 'image/*,.pdf'
-        })
-    )
-    modulus = forms.IntegerField(
-        initial=2,
-        min_value=2,
-        max_value=29,
-        widget=forms.NumberInput(attrs={'class': 'form-control'})
-    )
-    task = forms.ChoiceField(
-        choices=[
-            ('verify_field_axioms', 'Verify All 11 Field Axioms'),
-            ('find_inverses', 'Determine Additive & Multiplicative Inverses'),
-            ('construct_tables', 'Construct Addition & Multiplication Tables'),
-            ('check_field', 'Determine Whether Set Forms a Field')
-        ],
-        initial='verify_field_axioms',
-        widget=forms.Select(attrs={'class': 'form-select'})
-    )
-    confirm_action = forms.CharField(required=False, widget=forms.HiddenInput(), initial='detect')
-
+class GF2Form(forms.Form):
     element_a = forms.IntegerField(
         initial=1,
-        widget=forms.NumberInput(attrs={'class': 'form-control'})
+        widget=forms.Select(attrs={'class': 'form-select'}, choices=[(0, '0'), (1, '1')])
     )
     element_b = forms.IntegerField(
         initial=1,
-        widget=forms.NumberInput(attrs={'class': 'form-control'})
+        widget=forms.Select(attrs={'class': 'form-select'}, choices=[(0, '0'), (1, '1')])
     )
     operation = forms.ChoiceField(
-        choices=[('add', 'Addition (+ mod p)'), ('mul', 'Multiplication (· mod p)')],
+        choices=[('add', 'Addition (+ mod 2 / XOR)'), ('mul', 'Multiplication (· mod 2 / AND)')],
         initial='add',
         widget=forms.Select(attrs={'class': 'form-select'})
     )
 
-class GF2Form(GaloisFieldForm):
-    """Alias for backwards compatibility."""
-    pass
-
 class DiagonalizationForm(forms.Form):
-
 
     matrix_text = forms.CharField(
         widget=forms.Textarea(attrs={
@@ -126,8 +86,6 @@ class DiagonalizationForm(forms.Form):
 # AUTHENTICATION FORMS (Supabase Auth Integration)
 # ------------------------------------------------------------------------------
 
-from .supabase_client import is_email_authorized
-
 class LoginForm(forms.Form):
     email = forms.EmailField(
         widget=forms.EmailInput(attrs={
@@ -143,12 +101,6 @@ class LoginForm(forms.Form):
             'required': True
         })
     )
-
-    def clean_email(self):
-        email = self.cleaned_data.get('email', '').strip().lower()
-        if not is_email_authorized(email):
-            raise forms.ValidationError(f"Access Denied: '{email}' is not an authorized email address for this application.")
-        return email
 
 class SignUpForm(forms.Form):
     full_name = forms.CharField(
@@ -182,17 +134,10 @@ class SignUpForm(forms.Form):
         })
     )
 
-    def clean_email(self):
-        email = self.cleaned_data.get('email', '').strip().lower()
-        if not is_email_authorized(email):
-            raise forms.ValidationError(f"Access Denied: '{email}' is not authorized to register. Please use an authorized email address.")
-        return email
-
     def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get("password")
         confirm_password = cleaned_data.get("confirm_password")
-
         if password and confirm_password and password != confirm_password:
             raise forms.ValidationError("Passwords do not match. Please re-enter passwords.")
         return cleaned_data
