@@ -327,7 +327,6 @@ def profile_view(request):
 
     if request.method == 'POST' and form.is_valid():
         new_name = form.cleaned_data['full_name']
-        avatar_file = form.cleaned_data.get('avatar_file')
         avatar_preset = form.cleaned_data.get('avatar_preset')
         avatar_url_input = form.cleaned_data.get('avatar_url')
         remove_avatar = form.cleaned_data.get('remove_avatar')
@@ -336,16 +335,11 @@ def profile_view(request):
 
         if remove_avatar:
             new_avatar = ""
-        elif avatar_file:
-            user_id = user.get('id', 'demo-user-uuid') if isinstance(user, dict) else 'demo-user-uuid'
-            try:
-                new_avatar = save_uploaded_avatar(user_id, avatar_file)
-            except Exception as upload_err:
-                error = f"Failed to save profile picture: {upload_err}"
         elif avatar_preset:
             new_avatar = avatar_preset
         elif avatar_url_input:
             new_avatar = avatar_url_input
+
 
         if not error:
             # Update session safely without exceeding cookie payload size limits

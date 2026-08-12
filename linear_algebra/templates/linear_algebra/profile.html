@@ -74,28 +74,27 @@
                 </div>
                 {% endif %}
 
-                <form method="post" action="{% url 'linear_algebra:profile' %}" enctype="multipart/form-data" id="profileForm">
+                <form method="post" action="{% url 'linear_algebra:profile' %}" id="profileForm">
                     {% csrf_token %}
                     {{ form.avatar_preset }}
                     {{ form.avatar_url }}
                     {{ form.remove_avatar }}
-                    {{ form.avatar_file }}
 
-                    <!-- 1. Ultra-Compact Profile Picture Bar -->
+                    <!-- 1. Ultra-Compact Preset Avatar Selection Bar -->
                     <div class="p-3 mb-3 rounded-3" style="background: rgba(15, 23, 42, 0.45); border: 1px solid var(--glass-border);">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <label class="form-label text-white fw-semibold small mb-0">
-                                <i class="bi bi-camera-fill me-1" style="color: var(--accent-purple);"></i> Profile Avatar
+                                <i class="bi bi-person-circle me-1" style="color: var(--accent-purple);"></i> Choose Profile Avatar
                             </label>
                             <button type="button" class="btn btn-sm btn-link text-danger p-0 text-decoration-none small" id="removeAvatarBtn" onclick="handleRemoveAvatar()" {% if not current_avatar and not session_user_avatar %}style="display: none;"{% endif %}>
-                                <i class="bi bi-trash3 me-1"></i> Remove Photo
+                                <i class="bi bi-trash3 me-1"></i> Reset Avatar
                             </button>
                         </div>
 
                         <div class="row g-2 align-items-center">
-                            <!-- Live Avatar Box & Drag-Drop Trigger -->
+                            <!-- Live Avatar Preview Box -->
                             <div class="col-auto">
-                                <div id="dropZone" class="position-relative rounded-circle overflow-hidden border border-purple" style="width: 52px; height: 52px; cursor: pointer; background: var(--surface-slate);" onclick="document.getElementById('avatarFileInput').click()" title="Click or Drag & Drop image here">
+                                <div class="position-relative rounded-circle overflow-hidden border border-purple" style="width: 44px; height: 44px; background: var(--surface-slate);">
                                     {% if current_avatar or session_user_avatar %}
                                     <img id="avatarPreviewImg" src="{{ current_avatar|default:session_user_avatar }}" alt="Preview" style="width: 100%; height: 100%; object-fit: cover;">
                                     <div id="avatarPreviewFallback" class="d-none w-100 h-100 d-flex align-items-center justify-content-center font-monospace fw-bold text-white" style="background: linear-gradient(135deg, #7C3AED, #4F46E5);">
@@ -107,36 +106,19 @@
                                         {{ user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
                                     </div>
                                     {% endif %}
-                                    <div class="position-absolute bottom-0 start-0 w-100 text-center py-0" style="background: rgba(0,0,0,0.5); font-size: 0.6rem; color: #fff;">
-                                        <i class="bi bi-camera"></i>
-                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Upload Action Buttons -->
-                            <div class="col-auto me-md-2">
-                                <div class="d-flex align-items-center gap-1">
-                                    <button type="button" class="btn btn-gradient btn-sm py-1 px-2 small" style="min-height: 32px; font-size: 0.78rem;" onclick="document.getElementById('avatarFileInput').click()">
-                                        <i class="bi bi-upload me-1"></i> Upload
-                                    </button>
-                                    <button type="button" class="btn btn-outline-light btn-sm py-1 px-2 small" id="cancelUploadBtn" style="display: none; min-height: 32px; font-size: 0.78rem;" onclick="resetAvatarSelection()">
-                                        <i class="bi bi-arrow-counterclockwise"></i>
-                                    </button>
-                                </div>
-                                <div id="uploadFileStatus" class="small text-cyan mt-1 fw-semibold font-monospace" style="display: none; font-size: 0.7rem;"></div>
-                            </div>
-
-                            <!-- Single-Row Inline Curated Avatars -->
+                            <!-- Single-Row Inline Curated Presets -->
                             <div class="col">
                                 <div class="d-flex align-items-center gap-2 overflow-x-auto pb-1" id="presetAvatarGrid" style="scrollbar-width: thin;">
-                                    <span class="text-muted small fw-semibold d-none d-xl-inline me-1" style="font-size: 0.72rem; white-space: nowrap;">Or Presets:</span>
                                     {% for preset in preset_avatars %}
                                     <div class="preset-avatar-card text-center rounded-circle p-0 flex-shrink-0 position-relative {% if current_avatar == preset.url or current_avatar == preset.id %}active{% endif %}" 
                                          data-preset-url="{{ preset.url }}" 
                                          data-preset-id="{{ preset.id }}" 
                                          onclick="selectPresetAvatar('{{ preset.url }}', this)" 
                                          title="{{ preset.title }}"
-                                         style="width: 38px; height: 38px;">
+                                         style="width: 40px; height: 40px;">
                                         <img src="{{ preset.url }}" alt="{{ preset.title }}" class="preset-avatar-img" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
                                         <div class="preset-avatar-check" style="position: absolute; top: -3px; right: -3px; font-size: 0.75rem;"><i class="bi bi-check-circle-fill"></i></div>
                                     </div>
@@ -145,6 +127,7 @@
                             </div>
                         </div>
                     </div>
+
 
                     <!-- 2. Account Details Form Inputs (2-Column Grid) -->
                     <div class="row g-3 mb-3">
