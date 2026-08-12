@@ -34,19 +34,19 @@ def latex_matrix_to_html(latex_str):
         td_htmls = []
         for c in cells:
             if c == '|' or c == r'\mid':
-                td_htmls.append('<td style="border-right: 1.5px solid #475569; padding: 0 4px;"></td>')
+                td_htmls.append('<td style="border-right: 2px solid #000000; padding: 0 5px;"></td>')
             else:
-                td_htmls.append(f'<td style="padding: 5px 12px; text-align: center; font-weight: bold; font-family: monospace; font-size: 13px; color: #0f172a;">{c}</td>')
+                td_htmls.append(f'<td style="padding: 6px 12px; text-align: center; font-weight: bold; font-family: monospace; font-size: 13px; color: #000000; border: 1px solid #000000;">{c}</td>')
         table_rows.append(f'<tr>{"".join(td_htmls)}</tr>')
 
     html_table = f'''
-    <table style="display: inline-table; vertical-align: middle; border-left: 2.5px solid #1e293b; border-right: 2.5px solid #1e293b; border-collapse: collapse; margin: 6px auto; background-color: #f8fafc; border-radius: 4px;">
+    <table style="display: inline-table; vertical-align: middle; border-left: 3px solid #000000; border-right: 3px solid #000000; border-top: 1px solid #000000; border-bottom: 1px solid #000000; border-collapse: collapse; margin: 6px auto; background-color: #ffffff;">
         {"".join(table_rows)}
     </table>
     '''
     return html_table
 
-def render_latex_to_base64_png(latex_str, fontsize=13, color='#0f172a', dpi=200):
+def render_latex_to_base64_png(latex_str, fontsize=13, color='#000000', dpi=200):
     """
     Converts a LaTeX math string into a Base64-encoded PNG Data URI.
     Uses Matplotlib's pure-Python mathtext engine (serverless safe).
@@ -90,7 +90,8 @@ def render_latex_to_base64_png(latex_str, fontsize=13, color='#0f172a', dpi=200)
         print(f"[Matplotlib LaTeX render note]: {e}")
         return ""
 
-def prepare_latex_for_pdf(latex_str, default_color='#0f172a'):
+def prepare_latex_for_pdf(latex_str, default_color='#000000'):
+
     """
     Intelligently converts a LaTeX string into an HTML table (if matrix)
     or a Base64 PNG image tag (if equation).
