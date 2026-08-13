@@ -68,30 +68,26 @@
 </div>
 
 {% if result %}
-<!-- Stacked Card 2: Collapsible Term Accordions -->
-<div class="glass-card p-4 mb-4">
+<!-- Stacked Card 2: Step-by-Step Cofactor Terms -->
+<div class="glass-card p-4 mb-4" id="solutionSection">
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <h4 class="text-white mb-0"><i class="bi bi-diagram-2 me-2" style="color: var(--accent-purple);"></i>Cofactor Expansion along {{ result.expand_by|capfirst }} {{ result.index }}</h4>
         <div class="d-flex align-items-center gap-3 flex-wrap">
+            <span class="badge bg-success px-3 py-2 fs-6 font-monospace"><i class="bi bi-check-circle-fill me-1"></i> Determinant Computed</span>
             <button type="button" onclick="window.print()" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
-            <div class="text-center">
-                <span class="text-muted small d-block">Input Matrix $A$:</span>
-                $${{ result.matrix_latex }}$$
-            </div>
         </div>
     </div>
 
-
     <!-- Checkerboard Signs Info -->
     <div class="p-3 rounded border border-secondary mb-4" style="background: rgba(15, 23, 42, 0.45); border-color: var(--glass-border) !important;">
-        <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
             <span class="fw-bold small" style="color: var(--accent-purple);"><i class="bi bi-grid-3x3 me-1"></i> Checkerboard Sign Matrix $(-1)^{i+j}$:</span>
             $${{ result.sign_matrix_latex }}$$
         </div>
     </div>
 
     <!-- Single Unified Cofactor Terms Block -->
-    <div class="p-3 p-md-4 rounded-3" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
+    <div class="p-3 p-md-4 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
         {% for term in result.terms %}
         <div class="single-term-section animate-step {% if not forloop.last %}mb-4 pb-4 border-bottom border-secondary{% endif %}" style="animation-delay: {{ forloop.counter0 }}00ms; border-color: rgba(255, 255, 255, 0.1) !important;">
             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
@@ -103,7 +99,7 @@
                 <div class="row align-items-center">
                     <div class="col-md-4 text-center">
                         <span class="text-muted small d-block mb-1">Submatrix Minor $M_{{ term.row }}{{ term.col }}$:</span>
-                        <div class="latex-scroll-wrapper text-center">
+                        <div class="latex-scroll-wrapper text-center p-2 rounded" style="background: var(--surface-slate);">
                             $${{ term.minor_matrix_latex }}$$
                         </div>
                         <span class="small text-muted">$\det(M_{{ term.row }}{{ term.col }}) = {{ term.minor_det }}$</span>
@@ -122,29 +118,35 @@
         {% endfor %}
     </div>
 
-
     <!-- Total Determinant Result Box -->
     <div class="p-3 p-md-4 rounded-3 border border-purple" style="background: var(--surface-slate); border-color: var(--accent-purple) !important;">
         <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
             <h5 class="mb-0" style="color: var(--accent-purple);"><i class="bi bi-check-circle-fill me-2"></i>Total Determinant $\det(A)$</h5>
         </div>
-        <div class="latex-scroll-wrapper text-center my-2">
+        <div class="latex-scroll-wrapper text-center my-2 p-3 rounded" style="background: rgba(15, 23, 42, 0.6);">
             $$\det(A) = {{ result.total_det_latex }}$$
         </div>
     </div>
 
 </div>
-
 {% endif %}
 
-
 {% endblock %}
-
 
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         initMatrixGrid('id_matrix_text', 'cofactorGrid', false);
+
+        // Smooth scroll to solution on compute
+        {% if request.method == 'POST' and result %}
+        setTimeout(() => {
+            const solEl = document.getElementById('solutionSection');
+            if (solEl) {
+                solEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 150);
+        {% endif %}
     });
 
     function loadCofactorPreset(type) {

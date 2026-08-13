@@ -107,14 +107,15 @@
     </form>
 
     {% if calc_res %}
-    <div class="p-3 rounded-3 border border-purple" style="background: var(--surface-slate);">
-        <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
-            <span class="badge bg-primary px-3 py-2 font-monospace" style="background: var(--accent-purple) !important;">GF(2) Calculation Result</span>
+    <div class="p-4 rounded-3 border border-purple mt-3" id="solutionSection" style="background: var(--surface-slate); border-color: var(--accent-purple) !important;">
+        <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+            <span class="badge bg-success px-3 py-2 font-monospace fs-6"><i class="bi bi-check-circle-fill me-1"></i> GF(2) Step-by-Step Result</span>
             <span class="text-muted small">{{ calc_res.explanation }}</span>
         </div>
-        <div class="latex-scroll-wrapper text-center my-2">
-            $${{ calc_res.latex }}$$
+        <div class="latex-scroll-wrapper text-center my-3 p-3 rounded" style="background: rgba(15, 23, 42, 0.6);">
+            $${{ calc_res.formula_latex|default:calc_res.latex }}$$
         </div>
+        <p class="text-muted small mb-0"><strong class="text-white">Axiomatic Verification:</strong> In Galois Field $\mathbb{F}_2$, all operations are evaluated modulo 2. Additive inverse satisfies $x + x \equiv 0 \pmod 2$.</p>
     </div>
     {% endif %}
 </div>
@@ -128,9 +129,7 @@
             <span class="badge bg-success px-3 py-2 fs-6"><i class="bi bi-shield-check me-1"></i> GF(2) IS A VALID FIELD</span>
             {% endif %}
         </div>
-
     </div>
-
 
     <!-- Single Unified Axioms Block -->
     <div class="p-3 p-md-4 rounded-3" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
@@ -152,8 +151,22 @@
         {% endfor %}
     </div>
 
-
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        {% if request.method == 'POST' and calc_res %}
+        setTimeout(() => {
+            const solEl = document.getElementById('solutionSection');
+            if (solEl) {
+                solEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 150);
+        {% endif %}
+    });
+</script>
 {% endblock %}
 

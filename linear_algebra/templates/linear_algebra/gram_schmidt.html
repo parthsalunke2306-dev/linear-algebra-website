@@ -58,14 +58,17 @@
 </div>
 
 {% if result %}
-<div class="glass-card p-4 mb-4">
+<div class="glass-card p-4 mb-4" id="solutionSection">
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <h4 class="text-white mb-0"><i class="bi bi-diagram-3 me-2" style="color: var(--accent-purple);"></i>Step-by-Step Vector Orthogonalization</h4>
-        <button type="button" onclick="window.print()" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="badge bg-success px-3 py-2 fs-6 font-monospace"><i class="bi bi-check-circle-fill me-1"></i> Orthogonal Basis Derived</span>
+            <button type="button" onclick="window.print()" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
+        </div>
     </div>
 
     <!-- Single Unified Vector Steps Block -->
-    <div class="p-3 p-md-4 rounded-3" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
+    <div class="p-3 p-md-4 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
         {% for step in result.steps %}
         <div class="single-vector-step animate-step {% if not forloop.last %}mb-4 pb-4 border-bottom border-secondary{% endif %}" style="animation-delay: {{ forloop.counter0 }}00ms; border-color: rgba(255, 255, 255, 0.1) !important;">
             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-secondary">
@@ -81,19 +84,19 @@
                 <div class="row align-items-center mb-3">
                     <div class="col-md-4 text-center">
                         <span class="text-muted small d-block mb-1">Input Vector $\mathbf{v}_{{ step.step_num }}$:</span>
-                        <div class="latex-scroll-wrapper text-center">
+                        <div class="latex-scroll-wrapper text-center p-2 rounded" style="background: var(--surface-slate);">
                             $${{ step.v_latex }}$$
                         </div>
                     </div>
                     <div class="col-md-4 text-center">
                         <span class="text-muted small d-block mb-1">Orthogonal Vector $\mathbf{u}_{{ step.step_num }}$:</span>
-                        <div class="latex-scroll-wrapper text-center text-warning">
+                        <div class="latex-scroll-wrapper text-center text-warning p-2 rounded" style="background: var(--surface-slate);">
                             $${{ step.u_latex }}$$
                         </div>
                     </div>
                     <div class="col-md-4 text-center">
                         <span class="text-muted small d-block mb-1">Normalized Unit Vector $\mathbf{e}_{{ step.step_num }}$:</span>
-                        <div class="latex-scroll-wrapper text-center text-cyan">
+                        <div class="latex-scroll-wrapper text-center text-cyan p-2 rounded" style="background: var(--surface-slate);">
                             $${{ step.e_latex }}$$
                         </div>
                     </div>
@@ -112,7 +115,6 @@
         {% endfor %}
     </div>
 
-
     <!-- Inner Product Matrix Check Box -->
     <div class="p-3 p-md-4 rounded-3 border border-success" style="background: var(--surface-slate);">
         <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
@@ -120,22 +122,29 @@
         </div>
         <p class="text-muted small mb-3">Checking dot products of all normalized unit vectors to verify identity matrix $I$ ($\delta_{ij}$):</p>
 
-        <div class="latex-scroll-wrapper text-center my-2">
+        <div class="latex-scroll-wrapper text-center my-2 p-3 rounded" style="background: rgba(15, 23, 42, 0.6);">
             $${{ result.ortho_check_latex }}$$
         </div>
     </div>
 </div>
-
 {% endif %}
 
-
 {% endblock %}
-
 
 {% block extra_js %}
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         initMatrixGrid('id_vectors_text', 'gsGrid', false);
+
+        // Smooth scroll to solution on compute
+        {% if request.method == 'POST' and result %}
+        setTimeout(() => {
+            const solEl = document.getElementById('solutionSection');
+            if (solEl) {
+                solEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 150);
+        {% endif %}
     });
 
     function loadGSPreset(type) {

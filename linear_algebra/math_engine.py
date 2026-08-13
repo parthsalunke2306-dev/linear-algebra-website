@@ -454,8 +454,11 @@ def solve_gf2_arithmetic(a_val, b_val, op='add'):
         'op': op,
         'res': res,
         'formula_latex': formula_latex,
+        'latex': formula_latex,
         'explanation': explanation
     }
+
+compute_gf2_calc = solve_gf2_arithmetic
 
 # ==========================================
 # UNIT 1 - TOPIC 3: Vectors (Dot & Cross Product)

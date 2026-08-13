@@ -327,6 +327,7 @@ def profile_view(request):
 
     if request.method == 'POST' and form.is_valid():
         new_name = form.cleaned_data['full_name']
+        avatar_file = form.cleaned_data.get('avatar_file')
         avatar_preset = form.cleaned_data.get('avatar_preset')
         avatar_url_input = form.cleaned_data.get('avatar_url')
         remove_avatar = form.cleaned_data.get('remove_avatar')
@@ -335,11 +336,16 @@ def profile_view(request):
 
         if remove_avatar:
             new_avatar = ""
+        elif avatar_file:
+            user_id = user.get('id', 'demo-user-uuid') if isinstance(user, dict) else 'demo-user-uuid'
+            try:
+                new_avatar = save_uploaded_avatar(user_id, avatar_file)
+            except Exception as upload_err:
+                error = f"Failed to save profile picture: {upload_err}"
         elif avatar_preset:
             new_avatar = avatar_preset
         elif avatar_url_input:
             new_avatar = avatar_url_input
-
 
         if not error:
             # Update session safely without exceeding cookie payload size limits
@@ -399,9 +405,6 @@ def gaussian_view(request):
             result = math_engine.solve_gaussian_elimination(matrix_data)
         except Exception as e:
             error = f"Error processing matrix input: {str(e)}"
-    else:
-        matrix_data = parse_matrix_input(form.fields['matrix_text'].initial)
-        result = math_engine.solve_gaussian_elimination(matrix_data)
 
     code_snippet = inspect.getsource(math_engine.solve_gaussian_elimination)
 
@@ -427,8 +430,6 @@ def gf2_view(request):
         b = form.cleaned_data['element_b']
         op = form.cleaned_data['operation']
         calc_res = math_engine.compute_gf2_calc(a, b, op)
-    else:
-        calc_res = math_engine.compute_gf2_calc(1, 1, 'add')
 
     context = {
         'title': 'Field Axioms via GF(2)',
@@ -456,10 +457,6 @@ def vectors_view(request):
             result = math_engine.compute_vector_operations(v1, v2)
         except Exception as e:
             error = f"Error computing vector operations: {str(e)}"
-    else:
-        v1 = [form.fields['v1_x'].initial, form.fields['v1_y'].initial, form.fields['v1_z'].initial]
-        v2 = [form.fields['v2_x'].initial, form.fields['v2_y'].initial, form.fields['v2_z'].initial]
-        result = math_engine.compute_vector_operations(v1, v2)
 
     code_snippet = inspect.getsource(math_engine.compute_vector_operations)
 
@@ -487,9 +484,6 @@ def gram_schmidt_view(request):
             result = math_engine.solve_gram_schmidt(vectors_data)
         except Exception as e:
             error = f"Error processing Gram-Schmidt vectors: {str(e)}"
-    else:
-        vectors_data = parse_matrix_input(form.fields['vectors_text'].initial)
-        result = math_engine.solve_gram_schmidt(vectors_data)
 
     code_snippet = inspect.getsource(math_engine.solve_gram_schmidt)
 
@@ -519,11 +513,6 @@ def cofactor_view(request):
             result = math_engine.solve_cofactor_expansion(matrix_data, expand_by, idx)
         except Exception as e:
             error = f"Error calculating Cofactor Expansion: {str(e)}"
-    else:
-        matrix_data = parse_matrix_input(form.fields['matrix_text'].initial)
-        expand_by = form.fields['expand_by'].initial
-        idx = form.fields['index'].initial - 1
-        result = math_engine.solve_cofactor_expansion(matrix_data, expand_by, idx)
 
     code_snippet = inspect.getsource(math_engine.solve_cofactor_expansion)
 
@@ -551,9 +540,6 @@ def diagonalization_view(request):
             result = math_engine.solve_diagonalization(matrix_data)
         except Exception as e:
             error = f"Error in Diagonalization computation: {str(e)}"
-    else:
-        matrix_data = parse_matrix_input(form.fields['matrix_text'].initial)
-        result = math_engine.solve_diagonalization(matrix_data)
 
     code_snippet = inspect.getsource(math_engine.solve_diagonalization)
 

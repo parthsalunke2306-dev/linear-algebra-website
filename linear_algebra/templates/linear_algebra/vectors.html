@@ -103,26 +103,92 @@
     </div>
 </div>
 
-<div class="glass-card p-4 mb-4">
+{% if result %}
+<!-- Step-by-Step Derivation & Computed Results -->
+<div class="glass-card p-4 mb-4" id="solutionSection">
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
-        <h4 class="text-white mb-0"><i class="bi bi-bar-chart-steps me-2" style="color: var(--accent-purple);"></i>Computed Vector Results & Geometric Properties</h4>
-        <button type="button" onclick="window.print()" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
+        <h4 class="text-white mb-0"><i class="bi bi-list-ol text-purple me-2" style="color: var(--accent-purple);"></i>Step-by-Step Mathematical Derivations</h4>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="badge bg-success px-3 py-2 fs-6 font-monospace"><i class="bi bi-check-circle-fill me-1"></i> Vectors Computed</span>
+            <button type="button" onclick="window.print()" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
+        </div>
     </div>
 
-    
+    <!-- Step 1: Dot Product & Magnitudes -->
+    <div class="p-3 p-md-4 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <h5 class="text-white mb-0">
+                <span class="badge badge-topic me-2">Step 1</span> Dot Product & Vector Norms
+            </h5>
+        </div>
+        <p class="text-muted small mb-2">Evaluate algebraic summation of component-wise products and Euclidean magnitudes:</p>
+        <div class="latex-scroll-wrapper text-center my-2 p-2 rounded" style="background: var(--surface-slate);">
+            $${{ result.step_dot_latex }}$$
+        </div>
+        <div class="row g-2 mt-2">
+            <div class="col-md-6">
+                <div class="latex-scroll-wrapper text-center p-2 rounded" style="background: var(--surface-slate);">
+                    $${{ result.step_mag1_latex }}$$
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="latex-scroll-wrapper text-center p-2 rounded" style="background: var(--surface-slate);">
+                    $${{ result.step_mag2_latex }}$$
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: Angle Between Vectors -->
+    <div class="p-3 p-md-4 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <h5 class="text-white mb-0">
+                <span class="badge badge-topic me-2">Step 2</span> Angle Between Vectors ($\theta$)
+            </h5>
+        </div>
+        <p class="text-muted small mb-2">Derive the angle using the cosine formula $\cos(\theta) = \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\| \|\mathbf{v}\|}$:</p>
+        <div class="latex-scroll-wrapper text-center my-2 p-2 rounded" style="background: var(--surface-slate);">
+            $${{ result.step_angle_latex }}$$
+        </div>
+    </div>
+
+    <!-- Step 3: 3D Cross Product Expansion -->
+    <div class="p-3 p-md-4 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <h5 class="text-white mb-0">
+                <span class="badge badge-topic me-2">Step 3</span> 3D Cross Product Determinant Expansion
+            </h5>
+        </div>
+        <p class="text-muted small mb-2">Expand the $3 \times 3$ formal determinant along the first row $[\mathbf{i}, \mathbf{j}, \mathbf{k}]$:</p>
+        <div class="latex-scroll-wrapper text-center my-2 p-2 rounded" style="background: var(--surface-slate);">
+            $${{ result.step_cross_latex }}$$
+        </div>
+    </div>
+
+    <!-- Step 4: Orthogonal Vector Projection -->
+    <div class="p-3 p-md-4 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+            <h5 class="text-white mb-0">
+                <span class="badge badge-topic me-2">Step 4</span> Orthogonal Vector Projection
+            </h5>
+        </div>
+        <p class="text-muted small mb-2">Calculate the scalar projection multiplier and parallel projection vector:</p>
+        <div class="latex-scroll-wrapper text-center my-2 p-2 rounded" style="background: var(--surface-slate);">
+            $${{ result.step_proj_latex }}$$
+        </div>
+    </div>
+
+    <!-- Summary Grid -->
     <div class="row g-4">
         <!-- Dot Product Box -->
         <div class="col-md-6">
             <div class="p-3 p-md-4 rounded-3 border border-purple h-100" style="background: var(--surface-slate); border-color: var(--accent-purple) !important;">
-                <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-                    <h5 class="mb-0" style="color: var(--accent-purple);"><i class="bi bi-dot me-1"></i>Dot Product & Angle</h5>
-                </div>
-                <p class="mb-2 text-muted small"><strong>Formula:</strong> $\mathbf{v}_1 \cdot \mathbf{v}_2 = v_{1x}v_{2x} + v_{1y}v_{2y} + v_{1z}v_{2z}$</p>
+                <h5 class="mb-2" style="color: var(--accent-purple);"><i class="bi bi-dot me-1"></i>Summary: Dot Product & Angle</h5>
                 <div class="latex-scroll-wrapper text-center my-2">$$\mathbf{v}_1 \cdot \mathbf{v}_2 = {{ result.dot_prod }}$$</div>
                 <ul class="text-light mb-0 ps-3 small">
                     <li>Magnitudes: $\|\mathbf{v}_1\| = {{ result.mag1 }}$, $\|\mathbf{v}_2\| = {{ result.mag2 }}$</li>
                     <li>Angle $\theta$: <strong>{{ result.angle_deg }}°</strong> ({{ result.angle_rad }} rad)</li>
-                    <li>Orthogonal Check: 
+                    <li>Orthogonal: 
                         {% if result.is_orthogonal %}
                         <span class="badge bg-success">YES ($\mathbf{v}_1 \perp \mathbf{v}_2$)</span>
                         {% else %}
@@ -136,10 +202,7 @@
         <!-- Cross Product Box -->
         <div class="col-md-6">
             <div class="p-3 p-md-4 rounded-3 border border-success h-100" style="background: var(--surface-slate);">
-                <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-                    <h5 class="text-success mb-0"><i class="bi bi-x-lg me-1"></i>Cross Product & Area</h5>
-                </div>
-                <p class="mb-2 text-muted small"><strong>Formula:</strong> $\mathbf{v}_1 \times \mathbf{v}_2 = (v_{1y}v_{2z} - v_{1z}v_{2y})\hat{i} - \dots$</p>
+                <h5 class="text-success mb-2"><i class="bi bi-x-lg me-1"></i>Summary: Cross Product & Areas</h5>
                 <div class="latex-scroll-wrapper text-center my-2">$$\mathbf{v}_1 \times \mathbf{v}_2 = \begin{bmatrix} {{ result.cross_prod.0 }} \\ {{ result.cross_prod.1 }} \\ {{ result.cross_prod.2 }} \end{bmatrix}$$</div>
                 <ul class="text-light mb-0 ps-3 small">
                     <li>Cross Magnitude $\|\mathbf{v}_1 \times \mathbf{v}_2\|$: {{ result.cross_mag }}</li>
@@ -148,38 +211,32 @@
                 </ul>
             </div>
         </div>
-
-
-        <!-- Projection Box -->
-        <div class="col-12">
-            <div class="p-3 p-md-4 rounded-3 border border-warning" style="background: var(--surface-slate);">
-                <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
-                    <h5 class="text-warning mb-0"><i class="bi bi-arrow-down-right-square me-2"></i>Vector Projection $\text{proj}_{\mathbf{v}_2}(\mathbf{v}_1)$</h5>
-                </div>
-                <p class="text-light small mb-2">The orthogonal projection of vector $\mathbf{v}_1$ onto vector $\mathbf{v}_2$ is given by:</p>
-                <div class="latex-scroll-wrapper text-center my-2">
-                    $$\text{proj}_{\mathbf{v}_2}(\mathbf{v}_1) = \left(\frac{\mathbf{v}_1 \cdot \mathbf{v}_2}{\|\mathbf{v}_2\|^2}\right) \mathbf{v}_2 = {{ result.proj_scalar }} \cdot \mathbf{v}_2 = \begin{bmatrix} {{ result.proj_vector.0 }} \\ {{ result.proj_vector.1 }} \\ {{ result.proj_vector.2 }} \end{bmatrix}$$
-                </div>
-            </div>
-
-        </div>
-
     </div>
 </div>
+{% endif %}
 
 {% endblock %}
-
 
 {% block extra_js %}
 <script src="{% static 'linear_algebra/js/vectors3d.js' %}"></script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        const v1 = [{{ result.v1.0 }}, {{ result.v1.1 }}, {{ result.v1.2 }}];
-        const v2 = [{{ result.v2.0 }}, {{ result.v2.1 }}, {{ result.v2.2 }}];
-        const cross = [{{ result.cross_prod.0 }}, {{ result.cross_prod.1 }}, {{ result.cross_prod.2 }}];
-        const proj = [{{ result.proj_vector.0 }}, {{ result.proj_vector.1 }}, {{ result.proj_vector.2 }}];
+        const v1 = [{{ result.v1.0|default:3 }}, {{ result.v1.1|default:4 }}, {{ result.v1.2|default:0 }}];
+        const v2 = [{{ result.v2.0|default:0 }}, {{ result.v2.1|default:2 }}, {{ result.v2.2|default:5 }}];
+        const cross = [{{ result.cross_prod.0|default:20 }}, {{ result.cross_prod.1|default:-15 }}, {{ result.cross_prod.2|default:6 }}];
+        const proj = [{{ result.proj_vector.0|default:0 }}, {{ result.proj_vector.1|default:0.55 }}, {{ result.proj_vector.2|default:1.38 }}];
         
         initVectorCanvas('vectorCanvas', v1, v2, cross, proj);
+
+        // Smooth scroll to solution on compute
+        {% if request.method == 'POST' and result %}
+        setTimeout(() => {
+            const solEl = document.getElementById('solutionSection');
+            if (solEl) {
+                solEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }, 150);
+        {% endif %}
     });
 
     function loadVectorPreset(type) {
