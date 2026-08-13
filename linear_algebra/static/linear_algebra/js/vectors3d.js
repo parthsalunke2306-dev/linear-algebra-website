@@ -16,10 +16,13 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
     let lastMouseX = 0;
     let lastMouseY = 0;
 
+    let zoomLevel = 1.0;
+
     function project(x, y, z) {
         const originX = width / 2;
         const originY = height / 2;
-        const scale = Math.max(Math.min(width, height) / 12, 22);
+        const baseScale = Math.max(Math.min(width, height) / 12, 22);
+        const scale = baseScale * zoomLevel;
 
         // Rotate around Y
         let radY = angleY;
@@ -36,6 +39,19 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
             py: originY - y2 * scale
         };
     }
+
+    // Expose Zoom & Reset Control Functions Globally
+    window.zoomVectorCanvas = function(factor) {
+        zoomLevel = Math.max(0.3, Math.min(4.0, zoomLevel * factor));
+        render();
+    };
+
+    window.resetVectorCanvasView = function() {
+        zoomLevel = 1.0;
+        angleX = 0.5;
+        angleY = 0.6;
+        render();
+    };
 
     function formatCoord(val) {
         if (typeof val === 'number') {
@@ -185,6 +201,14 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
     window.addEventListener('mousemove', handleMove);
     window.addEventListener('mouseup', handleEnd);
 
+    // Mouse Wheel Zooming
+    canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const factor = e.deltaY < 0 ? 1.15 : 0.85;
+        zoomLevel = Math.max(0.3, Math.min(4.0, zoomLevel * factor));
+        render();
+    }, { passive: false });
+
     // Touch Event Listeners for Mobile & Tablet 3D Orbiting
     canvas.addEventListener('touchstart', handleStart, { passive: false });
     window.addEventListener('touchmove', handleMove, { passive: false });
@@ -198,5 +222,6 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
     resizeCanvas();
     setTimeout(resizeCanvas, 100);
 }
+
 
 
