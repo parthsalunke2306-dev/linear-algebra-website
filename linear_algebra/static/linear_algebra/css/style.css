@@ -1090,10 +1090,24 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
     h1, h2, h3, h4, h5, h6 {
         color: #0F172A !important;
         font-family: 'Outfit', sans-serif !important;
+        font-weight: 800 !important;
     }
 
-    .text-muted, .text-secondary {
-        color: #475569 !important;
+    .text-muted,
+    .text-secondary,
+    .text-white-50,
+    p.text-muted,
+    span.text-muted,
+    div.text-muted,
+    small,
+    .small,
+    .step-explanation,
+    .form-text,
+    .input-help-text,
+    .doc-desc {
+        color: #1E293B !important;
+        opacity: 1 !important;
+        font-weight: 600 !important;
     }
 
     /* Step Badges & Unit Badges */
