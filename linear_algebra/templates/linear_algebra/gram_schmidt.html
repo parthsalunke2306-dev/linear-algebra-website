@@ -63,7 +63,8 @@
         <h4 class="text-white mb-0"><i class="bi bi-diagram-3 me-2" style="color: var(--accent-purple);"></i>Step-by-Step Vector Orthogonalization</h4>
         <div class="d-flex align-items-center gap-2 flex-wrap">
             <span class="badge bg-success px-3 py-2 fs-6 font-monospace"><i class="bi bi-check-circle-fill me-1"></i> Orthogonal Basis Derived</span>
-            <button type="button" onclick="window.print()" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
+            <button type="button" onclick="exportPageToWord('Gram_Schmidt_Orthogonalization_Derivation')" class="btn btn-outline-primary btn-sm rounded-pill px-3 no-print" title="Export as Microsoft Word Document"><i class="bi bi-file-earmark-word-fill me-1"></i> Export Word</button>
+            <button type="button" onclick="window.print()" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print" title="Print or Save as PDF"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
         </div>
     </div>
 
@@ -84,19 +85,19 @@
                 <div class="row align-items-center mb-3">
                     <div class="col-md-4 text-center">
                         <span class="text-muted small d-block mb-1">Input Vector $\mathbf{v}_{{ step.step_num }}$:</span>
-                        <div class="latex-scroll-wrapper text-center p-2 rounded" style="background: var(--surface-slate);">
+                        <div class="latex-scroll-wrapper text-center p-2 rounded" data-latex="{{ step.v_latex }}" style="background: var(--surface-slate);">
                             $${{ step.v_latex }}$$
                         </div>
                     </div>
                     <div class="col-md-4 text-center">
                         <span class="text-muted small d-block mb-1">Orthogonal Vector $\mathbf{u}_{{ step.step_num }}$:</span>
-                        <div class="latex-scroll-wrapper text-center text-warning p-2 rounded" style="background: var(--surface-slate);">
+                        <div class="latex-scroll-wrapper text-center text-warning p-2 rounded" data-latex="{{ step.u_latex }}" style="background: var(--surface-slate);">
                             $${{ step.u_latex }}$$
                         </div>
                     </div>
                     <div class="col-md-4 text-center">
                         <span class="text-muted small d-block mb-1">Normalized Unit Vector $\mathbf{e}_{{ step.step_num }}$:</span>
-                        <div class="latex-scroll-wrapper text-center text-cyan p-2 rounded" style="background: var(--surface-slate);">
+                        <div class="latex-scroll-wrapper text-center text-cyan p-2 rounded" data-latex="{{ step.e_latex }}" style="background: var(--surface-slate);">
                             $${{ step.e_latex }}$$
                         </div>
                     </div>
@@ -106,7 +107,7 @@
                 <div class="p-3 bg-dark rounded border border-secondary">
                     <span class="text-muted small d-block mb-2">Projection calculations:</span>
                     {% for proj in step.projections %}
-                    <div class="small mb-1">$$\text{Proj}_{\mathbf{u}_{{ proj.idx }}}(\mathbf{v}_{{ step.step_num }}) = {{ proj.latex }}$$</div>
+                    <div class="small mb-1" data-latex="\text{Proj}_{\mathbf{u}_{{ proj.idx }}}(\mathbf{v}_{{ step.step_num }}) = {{ proj.latex }}">$$\text{Proj}_{\mathbf{u}_{{ proj.idx }}}(\mathbf{v}_{{ step.step_num }}) = {{ proj.latex }}$$</div>
                     {% endfor %}
                 </div>
                 {% endif %}
@@ -122,7 +123,7 @@
         </div>
         <p class="text-muted small mb-3">Checking dot products of all normalized unit vectors to verify identity matrix $I$ ($\delta_{ij}$):</p>
 
-        <div class="latex-scroll-wrapper text-center my-2 p-3 rounded" style="background: rgba(15, 23, 42, 0.6);">
+        <div class="latex-scroll-wrapper text-center my-2 p-3 rounded" data-latex="{{ result.ortho_check_latex }}" style="background: rgba(15, 23, 42, 0.6);">
             $${{ result.ortho_check_latex }}$$
         </div>
     </div>

@@ -64,7 +64,8 @@
         <h4 class="text-white mb-0"><i class="bi bi-list-ol text-purple me-2" style="color: var(--accent-purple);"></i>Step-by-Step Matrix Derivation</h4>
         <div class="d-flex align-items-center gap-2 flex-wrap">
             <span class="badge bg-success px-3 py-2 fs-6 font-monospace"><i class="bi bi-check-circle-fill me-1"></i> {{ result.solution_type }}</span>
-            <button type="button" onclick="window.print()" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
+            <button type="button" onclick="exportPageToWord('Gaussian_Elimination_Derivation')" class="btn btn-outline-primary btn-sm rounded-pill px-3 no-print" title="Export as Microsoft Word Document"><i class="bi bi-file-earmark-word-fill me-1"></i> Export Word</button>
+            <button type="button" onclick="window.print()" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print" title="Print or Save as PDF"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
         </div>
     </div>
 
@@ -80,7 +81,7 @@
             <div class="d-flex align-items-center justify-content-between mb-2 flex-wrap gap-2">
                 <p class="text-muted small mb-0 flex-grow-1 me-2">{{ step.explanation }}</p>
             </div>
-            <div class="latex-scroll-wrapper text-center my-2 p-2 rounded" style="background: var(--surface-slate);">
+            <div class="latex-scroll-wrapper text-center my-2 p-2 rounded" data-latex="{{ step.latex }}" style="background: var(--surface-slate);">
                 $$\text{Snapshot: } {{ step.latex }}$$
             </div>
         </div>
@@ -93,7 +94,7 @@
             <h5 class="mb-0" style="color: var(--accent-purple);"><i class="bi bi-check-circle-fill me-2"></i>Final Solution Vector</h5>
         </div>
         <p class="text-muted small mb-3">{{ result.solution_summary }}</p>
-        <div class="latex-scroll-wrapper text-center my-2 p-3 rounded" style="background: var(--surface-slate);">
+        <div class="latex-scroll-wrapper text-center my-2 p-3 rounded" data-latex="{{ result.solution_latex }}" style="background: var(--surface-slate);">
             $${{ result.solution_latex }}$$
         </div>
     </div>

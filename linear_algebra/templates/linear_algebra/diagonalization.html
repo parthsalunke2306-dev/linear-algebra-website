@@ -63,7 +63,8 @@
         <h4 class="text-white mb-0"><i class="bi bi-diagram-3 me-2" style="color: var(--accent-purple);"></i>Eigenvalue & Diagonalization Derivation</h4>
         <div class="d-flex align-items-center gap-2 flex-wrap">
             <span class="badge bg-success px-3 py-2 fs-6 font-monospace"><i class="bi bi-check-circle-fill me-1"></i> Diagonalization Computed</span>
-            <button type="button" onclick="window.print()" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
+            <button type="button" onclick="exportPageToWord('Diagonalization_Derivation')" class="btn btn-outline-primary btn-sm rounded-pill px-3 no-print" title="Export as Microsoft Word Document"><i class="bi bi-file-earmark-word-fill me-1"></i> Export Word</button>
+            <button type="button" onclick="window.print()" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print" title="Print or Save as PDF"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
         </div>
     </div>
 
@@ -77,7 +78,7 @@
                 </h5>
             </div>
             <div class="text-center">
-                <div class="p-3 bg-dark rounded border border-secondary">
+                <div class="p-3 bg-dark rounded border border-secondary" data-latex="p(\lambda) = {{ result.char_poly_latex }} = 0">
                     $$p(\lambda) = {{ result.char_poly_latex }} = 0$$
                 </div>
             </div>
@@ -105,7 +106,7 @@
                             <span class="small fw-semibold d-block mb-1" style="color: var(--accent-purple);">Eigenspace Basis Vector(s):</span>
                             <div class="d-flex flex-wrap justify-content-center gap-2 bg-dark p-2 rounded border border-secondary">
                                 {% for vec in item.eigenvectors_latex %}
-                                $${{ vec }}$$
+                                <div data-latex="{{ vec }}">$${{ vec }}$$</div>
                                 {% endfor %}
                             </div>
                         </div>
@@ -131,25 +132,25 @@
                 <div class="row g-3 text-center mb-3">
                     <div class="col-md-4">
                         <span class="fw-bold d-block mb-1" style="color: var(--accent-purple);">Modal Matrix $P$:</span>
-                        <div class="latex-scroll-wrapper text-center p-2 rounded" style="background: var(--surface-slate);">
+                        <div class="latex-scroll-wrapper text-center p-2 rounded" data-latex="{{ result.P_latex }}" style="background: var(--surface-slate);">
                             $${{ result.P_latex }}$$
                         </div>
                     </div>
                     <div class="col-md-4">
                         <span class="text-warning fw-bold d-block mb-1">Diagonal Matrix $D$:</span>
-                        <div class="latex-scroll-wrapper text-center p-2 rounded" style="background: var(--surface-slate);">
+                        <div class="latex-scroll-wrapper text-center p-2 rounded" data-latex="{{ result.D_latex }}" style="background: var(--surface-slate);">
                             $${{ result.D_latex }}$$
                         </div>
                     </div>
                     <div class="col-md-4">
                         <span class="text-success fw-bold d-block mb-1">Inverse Matrix $P^{-1}$:</span>
-                        <div class="latex-scroll-wrapper text-center p-2 rounded" style="background: var(--surface-slate);">
+                        <div class="latex-scroll-wrapper text-center p-2 rounded" data-latex="{{ result.P_inv_latex }}" style="background: var(--surface-slate);">
                             $${{ result.P_inv_latex }}$$
                         </div>
                     </div>
                 </div>
 
-                <div class="latex-scroll-wrapper text-center p-3 rounded" style="background: rgba(15, 23, 42, 0.6);">
+                <div class="latex-scroll-wrapper text-center p-3 rounded" data-latex="{{ result.verification_latex }} = {{ result.matrix_latex }}" style="background: rgba(15, 23, 42, 0.6);">
                     <span class="text-muted small d-block mb-1">Verification Check ($P D P^{-1} \stackrel{?}{=} A$):</span>
                     $${{ result.verification_latex }} = {{ result.matrix_latex }}$$
                 </div>

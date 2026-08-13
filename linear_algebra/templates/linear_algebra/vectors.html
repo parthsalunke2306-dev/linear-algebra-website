@@ -110,7 +110,8 @@
         <h4 class="text-white mb-0"><i class="bi bi-list-ol text-purple me-2" style="color: var(--accent-purple);"></i>Step-by-Step Mathematical Derivations</h4>
         <div class="d-flex align-items-center gap-2 flex-wrap">
             <span class="badge bg-success px-3 py-2 fs-6 font-monospace"><i class="bi bi-check-circle-fill me-1"></i> Vectors Computed</span>
-            <button type="button" onclick="window.print()" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
+            <button type="button" onclick="exportPageToWord('Vector_Operations_Derivation')" class="btn btn-outline-primary btn-sm rounded-pill px-3 no-print" title="Export as Microsoft Word Document"><i class="bi bi-file-earmark-word-fill me-1"></i> Export Word</button>
+            <button type="button" onclick="window.print()" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print" title="Print or Save as PDF"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
         </div>
     </div>
 
@@ -122,17 +123,17 @@
             </h5>
         </div>
         <p class="text-muted small mb-2">Evaluate algebraic summation of component-wise products and Euclidean magnitudes:</p>
-        <div class="latex-scroll-wrapper text-center my-2 p-2 rounded" style="background: var(--surface-slate);">
+        <div class="latex-scroll-wrapper text-center my-2 p-2 rounded" data-latex="{{ result.step_dot_latex }}" style="background: var(--surface-slate);">
             $${{ result.step_dot_latex }}$$
         </div>
         <div class="row g-2 mt-2">
             <div class="col-md-6">
-                <div class="latex-scroll-wrapper text-center p-2 rounded" style="background: var(--surface-slate);">
+                <div class="latex-scroll-wrapper text-center p-2 rounded" data-latex="{{ result.step_mag1_latex }}" style="background: var(--surface-slate);">
                     $${{ result.step_mag1_latex }}$$
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="latex-scroll-wrapper text-center p-2 rounded" style="background: var(--surface-slate);">
+                <div class="latex-scroll-wrapper text-center p-2 rounded" data-latex="{{ result.step_mag2_latex }}" style="background: var(--surface-slate);">
                     $${{ result.step_mag2_latex }}$$
                 </div>
             </div>
@@ -147,7 +148,7 @@
             </h5>
         </div>
         <p class="text-muted small mb-2">Derive the angle using the cosine formula $\cos(\theta) = \frac{\mathbf{u} \cdot \mathbf{v}}{\|\mathbf{u}\| \|\mathbf{v}\|}$:</p>
-        <div class="latex-scroll-wrapper text-center my-2 p-2 rounded" style="background: var(--surface-slate);">
+        <div class="latex-scroll-wrapper text-center my-2 p-2 rounded" data-latex="{{ result.step_angle_latex }}" style="background: var(--surface-slate);">
             $${{ result.step_angle_latex }}$$
         </div>
     </div>
@@ -160,7 +161,7 @@
             </h5>
         </div>
         <p class="text-muted small mb-2">Expand the $3 \times 3$ formal determinant along the first row $[\mathbf{i}, \mathbf{j}, \mathbf{k}]$:</p>
-        <div class="latex-scroll-wrapper text-center my-2 p-2 rounded" style="background: var(--surface-slate);">
+        <div class="latex-scroll-wrapper text-center my-2 p-2 rounded" data-latex="{{ result.step_cross_latex }}" style="background: var(--surface-slate);">
             $${{ result.step_cross_latex }}$$
         </div>
     </div>
@@ -173,7 +174,7 @@
             </h5>
         </div>
         <p class="text-muted small mb-2">Calculate the scalar projection multiplier and parallel projection vector:</p>
-        <div class="latex-scroll-wrapper text-center my-2 p-2 rounded" style="background: var(--surface-slate);">
+        <div class="latex-scroll-wrapper text-center my-2 p-2 rounded" data-latex="{{ result.step_proj_latex }}" style="background: var(--surface-slate);">
             $${{ result.step_proj_latex }}$$
         </div>
     </div>
