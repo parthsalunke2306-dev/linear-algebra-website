@@ -642,6 +642,7 @@ def solve_cofactor_expansion(matrix_data, expand_by='row', idx=0):
             terms.append({
                 'row': r + 1,
                 'col': c + 1,
+                'sum_row_col': (r + 1) + (c + 1),
                 'entry': sp.latex(clean_val_2dp(val)),
                 'sign': f"(-1)^{{{r+1}+{c+1}}} = {sign}",
                 'submatrix_latex': matrix_to_latex(sub_mat),
@@ -663,6 +664,7 @@ def solve_cofactor_expansion(matrix_data, expand_by='row', idx=0):
             terms.append({
                 'row': r + 1,
                 'col': c + 1,
+                'sum_row_col': (r + 1) + (c + 1),
                 'entry': sp.latex(clean_val_2dp(val)),
                 'sign': f"(-1)^{{{r+1}+{c+1}}} = {sign}",
                 'submatrix_latex': matrix_to_latex(sub_mat),
