@@ -1094,6 +1094,16 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
         box-shadow: none !important;
         padding: 1.25rem !important;
         margin-bottom: 1.5rem !important;
+        break-inside: auto !important;
+        page-break-inside: auto !important;
+    }
+
+    .step-inner-box,
+    .math-snapshot-box,
+    .border-purple,
+    .card-box,
+    .table-responsive,
+    .solution-summary-box {
         break-inside: avoid !important;
         page-break-inside: avoid !important;
     }
