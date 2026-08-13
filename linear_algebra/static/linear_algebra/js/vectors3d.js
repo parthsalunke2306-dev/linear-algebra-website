@@ -37,7 +37,19 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
         };
     }
 
-    function drawArrow(ctx, fromX, fromY, toX, toY, color, label, strokeWidth = 3) {
+    function formatCoord(val) {
+        if (typeof val === 'number') {
+            return Number.isInteger(val) ? val.toString() : val.toFixed(2);
+        }
+        return val;
+    }
+
+    function formatLabel(name, coords) {
+        if (!coords || coords.length < 3) return name;
+        return `${name} (${formatCoord(coords[0])}, ${formatCoord(coords[1])}, ${formatCoord(coords[2])})`;
+    }
+
+    function drawArrow(ctx, fromX, fromY, toX, toY, color, label, strokeWidth = 3, pointRadius = 4) {
         ctx.beginPath();
         ctx.strokeStyle = color;
         ctx.fillStyle = color;
@@ -55,10 +67,25 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
         ctx.lineTo(toX - headLen * Math.cos(angle + Math.PI / 6), toY - headLen * Math.sin(angle + Math.PI / 6));
         ctx.fill();
 
-        // Label
+        // Plotted Point Coordinate Dot at Tip
+        if (strokeWidth > 1.5) {
+            ctx.beginPath();
+            ctx.arc(toX, toY, pointRadius, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.lineWidth = 1.5;
+            ctx.strokeStyle = '#FFFFFF';
+            ctx.stroke();
+        }
+
+        // Label with Coordinates
         if (label) {
-            ctx.font = 'bold 12px Inter, sans-serif';
-            ctx.fillText(label, toX + 8, toY - 8);
+            ctx.font = 'bold 11px Inter, sans-serif';
+            ctx.fillStyle = color;
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+            ctx.shadowBlur = 4;
+            ctx.fillText(label, toX + 8, toY - 6);
+            ctx.shadowBlur = 0;
         }
     }
 
@@ -76,23 +103,23 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
         drawArrow(ctx, o.px, o.py, yAxis.px, yAxis.py, '#94a3b8', 'Y', 1.5);
         drawArrow(ctx, o.px, o.py, zAxis.px, zAxis.py, '#94a3b8', 'Z', 1.5);
 
-        // Draw Vector v1
+        // Draw Vector v1 with Coordinates
         if (v1) {
             const p1 = project(v1[0], v1[1], v1[2]);
-            drawArrow(ctx, o.px, o.py, p1.px, p1.py, '#06b6d4', 'v1', 3.5);
+            drawArrow(ctx, o.px, o.py, p1.px, p1.py, '#06b6d4', formatLabel('v1', v1), 3.5);
         }
 
-        // Draw Vector v2
+        // Draw Vector v2 with Coordinates
         if (v2) {
             const p2 = project(v2[0], v2[1], v2[2]);
-            drawArrow(ctx, o.px, o.py, p2.px, p2.py, '#6366f1', 'v2', 3.5);
+            drawArrow(ctx, o.px, o.py, p2.px, p2.py, '#6366f1', formatLabel('v2', v2), 3.5);
         }
 
-        // Draw Projection Vector
+        // Draw Projection Vector with Coordinates
         if (projVec && v1) {
             const p1 = project(v1[0], v1[1], v1[2]);
             const pProj = project(projVec[0], projVec[1], projVec[2]);
-            drawArrow(ctx, o.px, o.py, pProj.px, pProj.py, '#f59e0b', 'proj', 2.5);
+            drawArrow(ctx, o.px, o.py, pProj.px, pProj.py, '#f59e0b', formatLabel('proj', projVec), 2.5);
 
             // Dotted line from v1 tip to proj tip
             ctx.beginPath();
@@ -105,10 +132,10 @@ function initVectorCanvas(canvasId, v1, v2, crossProd, projVec) {
             ctx.setLineDash([]);
         }
 
-        // Draw Cross Product Vector
+        // Draw Cross Product Vector with Coordinates
         if (crossProd && (crossProd[0] !== 0 || crossProd[1] !== 0 || crossProd[2] !== 0)) {
             const pCross = project(crossProd[0], crossProd[1], crossProd[2]);
-            drawArrow(ctx, o.px, o.py, pCross.px, pCross.py, '#10b981', 'v1 × v2', 3);
+            drawArrow(ctx, o.px, o.py, pCross.px, pCross.py, '#10b981', formatLabel('v1 × v2', crossProd), 3);
         }
     }
 
