@@ -997,6 +997,18 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
     color: #334155 !important;
 }
 
+[data-theme="light"] .badge.bg-dark {
+    background-color: #E2E8F0 !important;
+    color: #0F172A !important;
+    border-color: #CBD5E1 !important;
+}
+
+[data-theme="light"] div[style*="background: rgba(15, 23, 42"],
+[data-theme="light"] div[style*="background:rgba(15, 23, 42"] {
+    background: #F1F5F9 !important;
+    border-color: #CBD5E1 !important;
+}
+
 /* 7. Code Inspector & Pre Blocks in Light Theme */
 [data-theme="light"] .code-inspector {
     background: #F8FAFC !important;
