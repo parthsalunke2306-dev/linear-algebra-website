@@ -118,26 +118,57 @@ def render_latex_to_base64_png(latex_str, fontsize=13, color='#0f172a', dpi=200)
         print(f"[Matplotlib LaTeX render note]: {e}")
         return ""
 
+def latex_vector_solution_to_html(latex_str):
+    r"""
+    Converts solution vector LaTeX equations like \mathbf{x} = \begin{bmatrix} 0.82 \\ 1.94 \\ -3.29 \end{bmatrix}
+    into clean, crisp HTML text with NO overlapping text artifacts.
+    """
+    if not latex_str or not isinstance(latex_str, str):
+        return None
+    
+    clean_str = latex_str.strip()
+    if clean_str.startswith("$$") and clean_str.endswith("$$"):
+        clean_str = clean_str[2:-2].strip()
+
+    if r'\begin{bmatrix}' in clean_str or r'\begin{array}' in clean_str:
+        parts = clean_str.split('=')
+        if len(parts) == 2:
+            right_part = parts[1].strip()
+            vals_match = re.search(r'\\begin\{(?:bmatrix|matrix|array)\}(?:\{.*?\})?(.*?)\\end\{(?:bmatrix|matrix|array)\}', right_part, re.DOTALL)
+            if vals_match:
+                raw_rows = [r.strip() for r in vals_match.group(1).split(r'\\') if r.strip()]
+                vals = [r.replace('&', '').strip() for r in raw_rows]
+                sol_items = [f"<i>x</i><sub>{i+1}</sub> = <b>{v}</b>" for i, v in enumerate(vals)]
+                return f'<div style="font-size: 13pt; font-family: sans-serif; color: #15803d; text-align: center; margin: 6px 0; font-weight: bold;">{", &nbsp;&nbsp;&nbsp;".join(sol_items)}</div>'
+
+    return None
+
 def prepare_latex_for_pdf(latex_str, default_color='#0f172a'):
     """
-    Intelligently converts a LaTeX string into an HTML table (if matrix)
-    or a Base64 PNG image tag (if equation).
+    Intelligently converts a LaTeX string into an HTML table (if matrix),
+    HTML solution vector text (if vector solution), or a Base64 PNG image tag (if equation).
     """
     if not latex_str:
         return ""
 
-    # 1. Try HTML matrix table conversion first
+    # 1. Try vector solution equation conversion first
+    html_sol = latex_vector_solution_to_html(latex_str)
+    if html_sol:
+        return html_sol
+
+    # 2. Try HTML matrix table conversion second
     html_matrix = latex_matrix_to_html(latex_str)
     if html_matrix:
         return html_matrix
 
-    # 2. Convert to Base64 PNG Image
+    # 3. Convert to Base64 PNG Image
     b64_img = render_latex_to_base64_png(latex_str, color=default_color)
     if b64_img:
         return f'<img src="{b64_img}" style="vertical-align: middle; max-height: 48px;" />'
     
     # Fallback to plain text if rendering failed
     return f'<span style="font-family: monospace;">{latex_str}</span>'
+
 
 def generate_pdf_response(rendered_html, filename="Linear_Algebra_Solution.pdf"):
     """

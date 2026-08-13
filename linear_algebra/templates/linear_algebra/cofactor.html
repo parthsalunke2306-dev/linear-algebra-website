@@ -73,7 +73,7 @@
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <h4 class="text-white mb-0"><i class="bi bi-diagram-2 me-2" style="color: var(--accent-purple);"></i>Cofactor Expansion along {{ result.expand_by|capfirst }} {{ result.index }}</h4>
         <div class="d-flex align-items-center gap-3 flex-wrap">
-            <a href="{% url 'linear_algebra:export_pdf' 'cofactor' %}" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</a>
+            <button type="button" onclick="window.print()" class="btn btn-outline-danger btn-sm rounded-pill px-3 no-print"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
             <div class="text-center">
                 <span class="text-muted small d-block">Input Matrix $A$:</span>
                 $${{ result.matrix_latex }}$$

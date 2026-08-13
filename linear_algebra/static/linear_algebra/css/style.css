@@ -1035,19 +1035,37 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
 }
 
 
-/* Print CSS Support */
+/* ==========================================================================
+   PIXEL-PERFECT PRINT & PDF EXPORT ENGINE (@media print)
+   Replicates live web app design: cards, step badges, matrix boxes, colors & zero text overlap
+   ========================================================================== */
 @media print {
-    body {
-        background: #ffffff !important;
-        color: #000000 !important;
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
     }
 
+    @page {
+        size: a4 portrait;
+        margin: 1.2cm;
+    }
+
+    body {
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+    }
+
+    /* Hide Navigation, Taskbars, Buttons & Interactive Tools */
     .sidebar-custom,
-    .btn,
+    .mobile-header,
     .no-print,
+    .btn-preset,
+    .matrix-resizer-controls,
     .code-inspector,
-    footer,
-    .accordion-button::after {
+    .toast-copy,
+    footer {
         display: none !important;
     }
 
@@ -1056,27 +1074,135 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
         padding: 0 !important;
     }
 
-    .glass-card,
-    .accordion-item,
-    .accordion-button,
-    .accordion-body {
-        background: #ffffff !important;
-        border: 1px solid #ccc !important;
-        color: #000000 !important;
+    /* Glass Cards & Containers */
+    .glass-card {
+        background: #FFFFFF !important;
+        border: 1.5px solid #CBD5E1 !important;
+        border-radius: 14px !important;
+        box-shadow: none !important;
+        padding: 1.25rem !important;
+        margin-bottom: 1.5rem !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    /* Typography & Headers */
+    h1, h2, h3, h4, h5, h6 {
+        color: #0F172A !important;
+        font-family: 'Outfit', sans-serif !important;
+    }
+
+    .text-muted, .text-secondary {
+        color: #475569 !important;
+    }
+
+    /* Step Badges & Unit Badges */
+    .badge-topic, .step-pill {
+        background: #F3E8FF !important;
+        color: #7C3AED !important;
+        border: 1px solid #DDD6FE !important;
+        font-weight: 800 !important;
+        border-radius: 8px !important;
+        padding: 4px 10px !important;
+        display: inline-block !important;
+    }
+
+    .badge-unit {
+        background: #F1F5F9 !important;
+        color: #475569 !important;
+        font-weight: 800 !important;
+        border-radius: 12px !important;
+        padding: 4px 10px !important;
+        display: inline-block !important;
+    }
+
+    /* Unified Derivation Step Container Block */
+    div[style*="background: rgba(15, 23, 42"],
+    div[style*="background:rgba(15, 23, 42"],
+    div[style*="background: var(--surface-slate)"] {
+        background: #FFFFFF !important;
+        border: 1.5px solid #E2E8F0 !important;
+        border-radius: 12px !important;
+    }
+
+    .single-step-section,
+    .single-axiom-section {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+    }
+
+    /* Math Snapshot Box */
+    .latex-scroll-wrapper {
+        background: #F8FAFC !important;
+        border: 1.5px solid #CBD5E1 !important;
+        border-radius: 8px !important;
+        color: #0F172A !important;
+        padding: 10px 14px !important;
+        margin: 10px 0 !important;
+    }
+
+    .latex-scroll-wrapper MathJax,
+    .latex-scroll-wrapper .MathJax,
+    .latex-scroll-wrapper .MathJax_Display,
+    .latex-scroll-wrapper mjx-container,
+    .latex-scroll-wrapper svg {
+        color: #0F172A !important;
+        fill: #0F172A !important;
+    }
+
+    /* Matrix Table Input Grid */
+    .matrix-input-table {
+        border-collapse: separate !important;
+        border-spacing: 6px !important;
+        margin: 10px auto !important;
+    }
+
+    .matrix-cell-input {
+        background: #FFFFFF !important;
+        border: 1.5px solid #CBD5E1 !important;
+        color: #0F172A !important;
+        font-weight: bold !important;
+        border-radius: 6px !important;
         box-shadow: none !important;
     }
 
-    .text-white,
-    .text-light,
-    .text-muted,
-    .text-info,
-    .text-warning,
-    .text-success {
-        color: #000000 !important;
+    .matrix-input-table td.augmented-col-cell {
+        border-left: 2px dashed #9333ea !important;
+        padding-left: 8px !important;
     }
 
-    .bg-dark {
-        background: #F8FAFC !important;
-        border: 1px solid #ddd !important;
+    /* Final Solution Summary Box */
+    div.border-purple[style*="background: var(--glass-bg)"],
+    div.border-purple[style*="background:var(--glass-bg)"],
+    .solution-box-custom {
+        background: #F0FDF4 !important;
+        border: 2px solid #22C55E !important;
+        border-radius: 12px !important;
+        padding: 14px 18px !important;
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
     }
-}
+
+    .solution-box-custom h5,
+    div.border-purple h5 {
+        color: #15803D !important;
+    }
+
+    /* Truth Tables */
+    .table-dark {
+        --bs-table-bg: #FFFFFF !important;
+        --bs-table-color: #0F172A !important;
+        border-color: #CBD5E1 !important;
+        color: #0F172A !important;
+    }
+
+    .table-dark th, .table-dark td {
+        color: #0F172A !important;
+        border-color: #CBD5E1 !important;
+    }
+
+    .table-secondary {
+        background-color: #F1F5F9 !important;
+        color: #0F172A !important;
+    }
+}
