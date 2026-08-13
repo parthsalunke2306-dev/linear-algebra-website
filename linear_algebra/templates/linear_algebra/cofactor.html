@@ -110,7 +110,7 @@
                     </div>
 
                     <div class="col-md-8">
-                        <p class="small text-muted mb-1">Cofactor calculation with sign $(-1)^{{ term.row } + {{ term.col }}$:</p>
+                        <p class="small text-muted mb-1">Cofactor calculation with sign $(-1)^{ {{ term.row }} + {{ term.col }} }$:</p>
                         <div class="latex-scroll-wrapper text-center my-2 p-2 bg-dark rounded border border-secondary">
                             $$C_{{ term.row }}{{ term.col }} = (-1)^{{ term.sum_row_col }} \cdot \det(M_{{ term.row }}{{ term.col }}) = {{ term.sign }} \cdot ({{ term.minor_det }}) = {{ term.cofactor }}$$
                         </div>
