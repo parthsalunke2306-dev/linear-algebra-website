@@ -905,6 +905,136 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
     background: rgba(109, 40, 217, 0.1);
 }
 
+/* ==========================================================================
+   COMPREHENSIVE LIGHT THEME ENGINE OVERRIDES
+   ========================================================================== */
+
+/* 1. Global Typography & Bootstrap Utilities in Light Theme */
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5,
+[data-theme="light"] h6,
+[data-theme="light"] .text-white,
+[data-theme="light"] .text-light,
+[data-theme="light"] .sidebar-brand {
+    color: #0F172A !important;
+}
+
+[data-theme="light"] .text-muted,
+[data-theme="light"] .text-secondary,
+[data-theme="light"] .text-white-50 {
+    color: #475569 !important;
+}
+
+[data-theme="light"] strong,
+[data-theme="light"] b {
+    color: #0F172A !important;
+}
+
+/* 2. Glassmorphic Card & Container Overrides */
+[data-theme="light"] .glass-card {
+    background: #FFFFFF !important;
+    border: 1px solid #CBD5E1 !important;
+    box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06) !important;
+}
+
+/* 3. Derivation Step Unified Container Blocks */
+[data-theme="light"] div[style*="background: rgba(15, 23, 42"],
+[data-theme="light"] div[style*="background:rgba(15, 23, 42"],
+[data-theme="light"] div[style*="background: var(--surface-slate)"] {
+    background: #F8FAFC !important;
+    border: 1px solid #E2E8F0 !important;
+}
+
+/* 4. LaTeX Scroll Wrapper & MathJax Snapshot Box Overrides */
+[data-theme="light"] .latex-scroll-wrapper {
+    background: #F1F5F9 !important;
+    border: 1px solid #CBD5E1 !important;
+    color: #0F172A !important;
+}
+
+[data-theme="light"] .latex-scroll-wrapper MathJax,
+[data-theme="light"] .latex-scroll-wrapper .MathJax,
+[data-theme="light"] .latex-scroll-wrapper .MathJax_Display,
+[data-theme="light"] .latex-scroll-wrapper mjx-container,
+[data-theme="light"] .latex-scroll-wrapper svg {
+    color: #0F172A !important;
+    fill: #0F172A !important;
+}
+
+/* 5. Tables & Truth Tables Overrides */
+[data-theme="light"] .table-dark {
+    --bs-table-bg: #FFFFFF !important;
+    --bs-table-color: #0F172A !important;
+    --bs-table-border-color: #E2E8F0 !important;
+    color: #0F172A !important;
+    background-color: #FFFFFF !important;
+    border-color: #E2E8F0 !important;
+}
+
+[data-theme="light"] .table-dark th,
+[data-theme="light"] .table-dark td {
+    color: #0F172A !important;
+    border-color: #E2E8F0 !important;
+}
+
+[data-theme="light"] .table-secondary {
+    background-color: #F1F5F9 !important;
+    color: #0F172A !important;
+}
+
+/* 6. Badges & Pill Overrides */
+[data-theme="light"] .badge-topic {
+    background: #F3E8FF !important;
+    color: #7C3AED !important;
+    border: 1px solid #DDD6FE !important;
+}
+
+[data-theme="light"] .badge-unit {
+    background: #E2E8F0 !important;
+    color: #334155 !important;
+}
+
+/* 7. Code Inspector & Pre Blocks in Light Theme */
+[data-theme="light"] .code-inspector {
+    background: #F8FAFC !important;
+    border: 1px solid #CBD5E1 !important;
+}
+
+[data-theme="light"] .code-inspector-header {
+    background: #F1F5F9 !important;
+    color: #0F172A !important;
+    border-bottom: 1px solid #CBD5E1 !important;
+}
+
+[data-theme="light"] .code-inspector pre {
+    color: #0F172A !important;
+}
+
+/* 8. Solution Vector Box & Border Purple Cards */
+[data-theme="light"] div.border-purple[style*="background: var(--glass-bg)"],
+[data-theme="light"] div.border-purple[style*="background:var(--glass-bg)"] {
+    background: #F0FDF4 !important;
+    border-color: #22C55E !important;
+}
+
+[data-theme="light"] .mobile-header {
+    background: #F1F5F9 !important;
+    border-bottom-color: #CBD5E1 !important;
+}
+
+[data-theme="light"] .offcanvas {
+    background: #FFFFFF !important;
+    color: #0F172A !important;
+}
+
+[data-theme="light"] .btn-close-white {
+    filter: invert(1) !important;
+}
+
+
 /* Print CSS Support */
 @media print {
     body {
