@@ -980,9 +980,23 @@ h5, .h5 { font-size: clamp(0.92rem, 2.5vw, 1.25rem); }
     border-color: #E2E8F0 !important;
 }
 
-[data-theme="light"] .table-secondary {
-    background-color: #F1F5F9 !important;
+/* Table Secondary Custom Theme Support */
+.table-secondary,
+.table-dark .table-secondary,
+th.table-secondary,
+tr.table-secondary {
+    background-color: #334155 !important;
+    color: #F8FAFC !important;
+    border-color: #475569 !important;
+}
+
+[data-theme="light"] .table-secondary,
+[data-theme="light"] .table-dark .table-secondary,
+[data-theme="light"] th.table-secondary,
+[data-theme="light"] tr.table-secondary {
+    background-color: #E2E8F0 !important;
     color: #0F172A !important;
+    border-color: #CBD5E1 !important;
 }
 
 /* 6. Badges & Pill Overrides */
