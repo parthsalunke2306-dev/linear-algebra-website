@@ -574,10 +574,10 @@ def diagonalization_view(request):
 
 @supabase_login_required
 def export_pdf_view(request, solver_type):
-    """Generates and downloads a clean PDF solution document for any of the 6 solvers."""
+    """Generates and downloads a clean PDF solution document matching web screenshot layout."""
     from datetime import datetime
     from django.template.loader import render_to_string
-    from .pdf_utils import prepare_latex_for_pdf, generate_pdf_response
+    from .pdf_utils import prepare_latex_for_pdf, build_matrix_grid_html, generate_pdf_response
 
     user = getattr(request, 'supabase_user', None) or {}
     user_email = user.get('email', '') if isinstance(user, dict) else getattr(user, 'email', '')
@@ -585,8 +585,15 @@ def export_pdf_view(request, solver_type):
     pdf_steps = []
     final_solution = None
     problem_summary = ""
+    unit_badge = "UNIT 1"
+    topic_badge = "TOPIC 1.1"
     pdf_title = "Linear Algebra Solution"
     pdf_subtitle = "Step-by-Step Mathematical Derivation"
+    pdf_desc = ""
+    input_matrix_title = ""
+    matrix_grid_html = ""
+    input_help_text = ""
+    solution_badge = ""
     filename = f"{solver_type}_solution.pdf"
 
     if solver_type == 'gaussian':
@@ -595,11 +602,16 @@ def export_pdf_view(request, solver_type):
         try:
             matrix_data = parse_matrix_input(matrix_text)
             result = math_engine.solve_gaussian_elimination(matrix_data)
-            pdf_title = "Gaussian Elimination & Row Echelon Form"
-            pdf_subtitle = "Topic 1.1 • Systems of Linear Equations & Row Operations"
+            unit_badge = "UNIT 1"
+            topic_badge = "TOPIC 1.1"
+            pdf_title = "Systems of Linear Equations — Gaussian Elimination"
+            pdf_subtitle = "Gaussian Elimination & Row Operations"
+            pdf_desc = "Row-reduce an augmented matrix step-by-step into Row Echelon Form (REF) & Reduced Row Echelon Form (RREF)."
+            input_matrix_title = "Augmented Matrix [A | b]"
+            matrix_grid_html = build_matrix_grid_html(matrix_data, is_augmented=True)
+            input_help_text = "Enter augmented matrix [A|b] row by row. Separate numbers with spaces."
+            solution_badge = result.get('solution_type', 'Unique Solution')
             filename = "Gaussian_Elimination_Solution.pdf"
-            
-            problem_summary = f"<strong>Input Matrix (Augmented):</strong><br>{prepare_latex_for_pdf(result.get('initial_matrix_latex', ''))}"
             
             for step in result.get('steps', []):
                 pdf_steps.append({
@@ -617,10 +629,16 @@ def export_pdf_view(request, solver_type):
 
     elif solver_type == 'gf2':
         result = math_engine.analyze_gf2_field()
+        unit_badge = "UNIT 1"
+        topic_badge = "TOPIC 1.2"
         pdf_title = "Field Axioms Verification via GF(2)"
-        pdf_subtitle = "Topic 1.2 • Binary Galois Field GF(2) Axioms"
+        pdf_subtitle = "Binary Galois Field GF(2) Axioms"
+        pdf_desc = "Verify the 11 fundamental field axioms for the Galois Binary Field GF(2) = ({0, 1}, +, •)."
+        input_matrix_title = "Galois Field GF(2) Elements {0, 1}"
+        matrix_grid_html = build_matrix_grid_html([[0, 1], [1, 0]], is_augmented=False)
+        input_help_text = "Binary field operations: XOR Addition (+) and AND Multiplication (•)."
+        solution_badge = "GF(2) IS A VALID FIELD"
         filename = "GF2_Field_Axioms_Solution.pdf"
-        problem_summary = "<strong>Galois Field GF(2) Definition:</strong><br>Elements {0, 1} under Modulo-2 XOR Addition (+) and AND Multiplication (•)"
         
         for axiom in result.get('axioms', []):
             pdf_steps.append({
@@ -645,10 +663,16 @@ def export_pdf_view(request, solver_type):
         
         try:
             result = math_engine.compute_vector_operations(v1, v2)
+            unit_badge = "UNIT 1"
+            topic_badge = "TOPIC 1.3"
             pdf_title = "3D Vector Dot Product, Cross Product & Projections"
-            pdf_subtitle = "Topic 1.3 • Vector Operations & Geometry"
+            pdf_subtitle = "Vector Operations & Geometry"
+            pdf_desc = "Compute 3D vector dot product, cross product, magnitudes, angles, and orthogonal projections."
+            input_matrix_title = "Input Vectors v1 and v2"
+            matrix_grid_html = build_matrix_grid_html([v1, v2], is_augmented=False)
+            input_help_text = "3D vectors v1 = [x1, y1, z1] and v2 = [x2, y2, z2]."
+            solution_badge = "Orthogonal (v1 ⊥ v2)" if result.get('is_orthogonal') else "Not Orthogonal"
             filename = "Vector_Operations_Solution.pdf"
-            problem_summary = f"<strong>Input Vectors:</strong><br>v1 = [{v1[0]}, {v1[1]}, {v1[2]}]<br>v2 = [{v2[0]}, {v2[1]}, {v2[2]}]"
 
             pdf_steps = [
                 {
@@ -681,15 +705,21 @@ def export_pdf_view(request, solver_type):
         try:
             vectors_data = parse_matrix_input(vectors_text)
             result = math_engine.solve_gram_schmidt(vectors_data)
+            unit_badge = "UNIT 2"
+            topic_badge = "TOPIC 2.1"
             pdf_title = "Gram–Schmidt Orthogonalization Process"
-            pdf_subtitle = "Topic 2.1 • Vector Space Inner Products & Orthonormal Bases"
+            pdf_subtitle = "Vector Space Inner Products & Orthonormal Bases"
+            pdf_desc = "Transform a set of linearly independent vectors into an orthonormal basis."
+            input_matrix_title = "Input Basis Vectors"
+            matrix_grid_html = build_matrix_grid_html(vectors_data, is_augmented=False)
+            input_help_text = "Enter linearly independent basis vectors row by row."
+            solution_badge = "Orthonormal Basis Verified"
             filename = "Gram_Schmidt_Orthogonalization_Solution.pdf"
-            problem_summary = f"<strong>Input Basis Vectors:</strong><br>{len(vectors_data)} Linearly Independent Basis Vectors"
 
             for step in result.get('steps', []):
                 pdf_steps.append({
-                    'title': f"Vector Step {step.get('step_num', 1)}",
-                    'explanation': f"Orthogonalizing input vector v_{step.get('step_num', 1)}",
+                    'title': f"Vector Step {step.get('step_num', 1)}: Orthogonalizing v_{step.get('step_num', 1)}",
+                    'explanation': f"Subtracted projection terms to create orthogonal vector u_{step.get('step_num', 1)}",
                     'rendered_math': f"Orthogonal Vector u_{step.get('step_num', 1)}: <br>{prepare_latex_for_pdf(step.get('u_latex', ''))}<br><br>Normalized Unit Vector e_{step.get('step_num', 1)}:<br>{prepare_latex_for_pdf(step.get('e_latex', ''))}"
                 })
 
@@ -714,10 +744,16 @@ def export_pdf_view(request, solver_type):
         try:
             matrix_data = parse_matrix_input(matrix_text)
             result = math_engine.solve_cofactor_expansion(matrix_data, expand_by, idx)
+            unit_badge = "UNIT 2"
+            topic_badge = "TOPIC 2.2"
             pdf_title = "Cofactor Expansion for Determinants"
-            pdf_subtitle = "Topic 2.2 • Matrix Determinants & Submatrix Minors"
+            pdf_subtitle = "Matrix Determinants & Submatrix Minors"
+            pdf_desc = "Compute matrix determinant via Laplace cofactor expansion along any row or column."
+            input_matrix_title = f"Input Square Matrix [A] ({len(matrix_data)}x{len(matrix_data[0])})"
+            matrix_grid_html = build_matrix_grid_html(matrix_data, is_augmented=False)
+            input_help_text = f"Expansion along {expand_by.capitalize()} {idx + 1}."
+            solution_badge = "Determinant Calculated"
             filename = "Cofactor_Expansion_Determinant_Solution.pdf"
-            problem_summary = f"<strong>Expanded Matrix ({len(matrix_data)}x{len(matrix_data[0])}):</strong><br>Expansion along {expand_by.capitalize()} {idx + 1}"
 
             for term in result.get('terms', []):
                 pdf_steps.append({
@@ -739,10 +775,16 @@ def export_pdf_view(request, solver_type):
         try:
             matrix_data = parse_matrix_input(matrix_text)
             result = math_engine.solve_diagonalization(matrix_data)
+            unit_badge = "UNIT 2"
+            topic_badge = "TOPIC 2.3"
             pdf_title = "Eigenvalues, Eigenvectors & Diagonalization"
-            pdf_subtitle = "Topic 2.3 • Spectral Theory & Matrix Decomposition"
+            pdf_subtitle = "Spectral Theory & Matrix Decomposition"
+            pdf_desc = "Compute matrix eigenvalues, eigenspace basis vectors, and spectral decomposition A = P D P⁻¹."
+            input_matrix_title = f"Input Square Matrix [A] ({len(matrix_data)}x{len(matrix_data[0])})"
+            matrix_grid_html = build_matrix_grid_html(matrix_data, is_augmented=False)
+            input_help_text = "Enter square matrix [A] row by row. Separate numbers with spaces."
+            solution_badge = "MATRIX IS DIAGONALIZABLE" if result.get('is_diagonalizable') else "NOT DIAGONALIZABLE"
             filename = "Matrix_Diagonalization_Solution.pdf"
-            problem_summary = f"<strong>Input Square Matrix A ({len(matrix_data)}x{len(matrix_data[0])})</strong>"
 
             # Section 1
             pdf_steps.append({
@@ -786,9 +828,16 @@ def export_pdf_view(request, solver_type):
         raise Http404("Invalid solver type specified.")
 
     context = {
+        'unit_badge': unit_badge,
+        'topic_badge': topic_badge,
         'pdf_title': pdf_title,
         'pdf_subtitle': pdf_subtitle,
-        'export_timestamp': datetime.now().strftime("%Y-%m-%d %H:%M:%S UTC"),
+        'pdf_desc': pdf_desc,
+        'input_matrix_title': input_matrix_title,
+        'matrix_grid_html': matrix_grid_html,
+        'input_help_text': input_help_text,
+        'solution_badge': solution_badge,
+        'export_timestamp': datetime.now().strftime("%m/%d/%y, %I:%M %p"),
         'user_email': user_email,
         'problem_summary': problem_summary,
         'pdf_steps': pdf_steps,
@@ -797,3 +846,4 @@ def export_pdf_view(request, solver_type):
 
     rendered_html = render_to_string('linear_algebra/pdf_export.html', context)
     return generate_pdf_response(rendered_html, filename=filename)
+

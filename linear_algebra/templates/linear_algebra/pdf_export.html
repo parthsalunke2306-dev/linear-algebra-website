@@ -6,12 +6,12 @@
     <style>
         @page {
             size: a4 portrait;
-            margin: 1.5cm;
+            margin: 1.2cm;
         }
 
 
         body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             color: #0f172a;
             background-color: #ffffff;
             font-size: 10pt;
@@ -20,128 +20,168 @@
             padding: 0;
         }
 
-        /* Header Header Section */
-        .header-bar {
-            border-bottom: 2.5px solid #000000;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+        /* Top Header Line metadata */
+        .pdf-top-bar {
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 6px;
+            margin-bottom: 16px;
         }
-
-        .header-title {
-            font-size: 18pt;
-            font-weight: bold;
-            color: #1e1b4b;
-            margin: 0 0 4px 0;
+        .pdf-top-bar table {
+            width: 100%;
         }
-
-        .header-subtitle {
-            font-size: 11pt;
-            color: #4f46e5;
-            font-weight: 600;
-            margin: 0;
-        }
-
-        .meta-info {
+        .pdf-top-bar td {
             font-size: 8.5pt;
             color: #64748b;
-            margin-top: 4px;
         }
 
-        /* Problem Inputs Section */
-        .section-box {
-            background-color: #f8fafc;
-            border: 1.5px solid #000000;
-            border-radius: 4px;
-            padding: 12px 16px;
-            margin-bottom: 20px;
-        }
-
-        .section-header {
-            font-size: 11pt;
-            font-weight: bold;
-            color: #334155;
-            border-bottom: 1.5px solid #000000;
-            padding-bottom: 6px;
-            margin-bottom: 10px;
-        }
-
-        /* Steps Block */
-        .steps-container {
-            border: 1.5px solid #000000;
-            border-radius: 4px;
-            background-color: #ffffff;
-            padding: 14px 18px;
-            margin-bottom: 20px;
-        }
-
-        .step-item {
-            padding-bottom: 14px;
-            margin-bottom: 14px;
-            border-bottom: 1.5px solid #000000;
-        }
-
-        .step-item:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-            margin-bottom: 0;
-        }
-
-        .step-badge {
-            background-color: #4f46e5;
-            color: #ffffff;
-            font-weight: bold;
+        /* Unit & Topic Badges */
+        .badge-unit {
+            background-color: #f1f5f9;
+            color: #475569;
+            font-weight: 800;
             font-size: 8.5pt;
-            padding: 3px 8px;
-            border-radius: 3px;
+            padding: 4px 10px;
+            border-radius: 12px;
             display: inline-block;
             margin-right: 6px;
         }
 
-        .step-title {
+        .badge-topic {
+            background-color: #f3e8ff;
+            color: #7c3aed;
+            font-weight: 800;
+            font-size: 8.5pt;
+            padding: 4px 12px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+
+        /* Main Topic Header */
+        .doc-title {
+            font-size: 20pt;
+            font-weight: 800;
+            color: #000000;
+            margin: 10px 0 6px 0;
+            letter-spacing: -0.5px;
+        }
+
+        .doc-desc {
+            font-size: 10pt;
+            color: #475569;
+            margin: 0 0 20px 0;
+        }
+
+        /* Input Controls Card Box */
+        .card-box {
+            border: 1.5px solid #cbd5e1;
+            border-radius: 14px;
+            background-color: #ffffff;
+            padding: 18px;
+            margin-bottom: 22px;
+        }
+
+        .card-header-title {
+            font-size: 12pt;
+            font-weight: 800;
+            color: #000000;
+            margin: 0 0 4px 0;
+        }
+
+        .card-presets-label {
+            font-size: 8.5pt;
+            font-weight: 800;
+            color: #475569;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .matrix-input-title {
             font-size: 11pt;
-            font-weight: bold;
-            color: #1e293b;
-            margin: 0 0 6px 0;
+            font-weight: 700;
+            color: #000000;
+            margin-bottom: 8px;
+        }
+
+        .input-help-text {
+            font-size: 8.5pt;
+            color: #64748b;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Derivation Steps Section */
+        .derivation-card-header {
+            width: 100%;
+            margin-bottom: 12px;
+        }
+        .derivation-title {
+            font-size: 14pt;
+            font-weight: 800;
+            color: #000000;
+        }
+        .derivation-solution-badge {
+            font-size: 11pt;
+            font-weight: 700;
+            color: #94a3b8;
+            text-align: right;
+        }
+
+        /* Inner Step Item Box */
+        .step-inner-box {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            background-color: #ffffff;
+            padding: 14px;
+            margin-top: 14px;
+        }
+
+        .step-pill {
+            background-color: #f3e8ff;
+            color: #7c3aed;
+            font-weight: 800;
+            font-size: 9pt;
+            padding: 3px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .step-title-text {
+            font-size: 11.5pt;
+            font-weight: 700;
+            color: #000000;
+            display: inline-block;
         }
 
         .step-explanation {
             font-size: 9.5pt;
             color: #475569;
-            margin: 0 0 10px 0;
+            margin: 8px 0 10px 0;
         }
 
-        .math-wrapper {
+        .math-snapshot-box {
+            border: 1.5px solid #e2e8f0;
+            border-radius: 8px;
+            background-color: #ffffff;
+            padding: 12px;
             text-align: center;
-            margin: 8px 0;
-            padding: 8px;
-            background-color: #f1f5f9;
-            border-radius: 4px;
-            border: 1.5px solid #000000;
+            margin-top: 8px;
         }
 
-        /* Solution Summary Box */
+        /* Final Solution Box */
         .solution-box {
             background-color: #f0fdf4;
-            border: 2px solid #000000;
-            border-radius: 4px;
-            padding: 14px 18px;
-            margin-top: 20px;
+            border: 2px solid #22c55e;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 22px;
         }
 
         .solution-title {
-            font-size: 12pt;
-            font-weight: bold;
+            font-size: 13pt;
+            font-weight: 800;
             color: #15803d;
             margin: 0 0 6px 0;
-        }
-
-        .badge-verified {
-            background-color: #16a34a;
-            color: #ffffff;
-            font-size: 8pt;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 3px;
         }
 
         /* Matrix Table Styles for PDF */
@@ -165,50 +205,80 @@
             color: #0f172a;
             border: 1px solid #000000;
         }
-
-
     </style>
 </head>
 <body>
 
-    <!-- Header Section -->
-    <div class="header-bar">
-        <h1 class="header-title">Linear Algebra & Data Science Explorer</h1>
-        <div class="header-subtitle">{{ pdf_subtitle }}</div>
-        <div class="meta-info">Export Generated: {{ export_timestamp }} • User: {{ user_email|default:"Authenticated Scholar" }}</div>
+    <!-- Document Top Bar -->
+    <div class="pdf-top-bar">
+        <table>
+            <tr>
+                <td>{{ export_timestamp }}</td>
+                <td style="text-align: right;">{{ pdf_subtitle }} | Data Science Linear Algebra</td>
+            </tr>
+        </table>
     </div>
 
-    <!-- Inputs & Problem Setup -->
-    {% if problem_summary %}
-    <div class="section-box">
-        <div class="section-header">Problem Overview & System Input</div>
-        <div>{{ problem_summary|safe }}</div>
+    <!-- Unit & Topic Header -->
+    <div>
+        <span class="badge-unit">{{ unit_badge|default:"UNIT 1" }}</span>
+        <span class="badge-topic">{{ topic_badge|default:"TOPIC 1.1" }}</span>
     </div>
-    {% endif %}
 
-    <!-- Step-by-Step Derivation Block -->
-    <div class="section-box">
-        <div class="section-header">Step-by-Step Complete Derivation</div>
-        <div class="steps-container">
-            {% for step in pdf_steps %}
-            <div class="step-item">
-                <div class="step-title">
-                    <span class="step-badge">Step {{ forloop.counter }}</span> {{ step.title }}
-                </div>
-                {% if step.explanation %}
-                <div class="step-explanation">{{ step.explanation }}</div>
-                {% endif %}
-                
-                {% if step.rendered_math %}
-                <div class="math-wrapper">
-                    {{ step.rendered_math|safe }}
-                </div>
-                {% endif %}
+    <!-- Main Title -->
+    <h1 class="doc-title">{{ pdf_title }}</h1>
+    <div class="doc-desc">{{ pdf_desc }}</div>
+
+    <!-- Matrix Input & Controls Section Card -->
+    <div class="card-box">
+        <div class="card-header-title">⚡ Matrix Input & Dynamic Controls</div>
+        <div class="card-presets-label">⚡ PRESETS:</div>
+        {% if input_matrix_title %}
+        <div class="matrix-input-title">{{ input_matrix_title|safe }}</div>
+        {% endif %}
+
+        {% if matrix_grid_html %}
+        <div>{{ matrix_grid_html|safe }}</div>
+        {% endif %}
+
+        {% if problem_summary %}
+        <div style="font-size: 9.5pt; color: #334155; margin-top: 6px;">{{ problem_summary|safe }}</div>
+        {% endif %}
+
+        {% if input_help_text %}
+        <div class="input-help-text">{{ input_help_text }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Step-by-Step Derivation Container Card -->
+    <div class="card-box">
+        <table class="derivation-card-header">
+            <tr>
+                <td class="derivation-title">≡ Step-by-Step Matrix Derivation</td>
+                <td class="derivation-solution-badge">{{ solution_badge|default:"Unique Solution" }}</td>
+            </tr>
+        </table>
+
+        {% for step in pdf_steps %}
+        <div class="step-inner-box">
+            <div>
+                <span class="step-pill">Step {{ forloop.counter }}</span>
+                <span class="step-title-text">{{ step.title }}</span>
             </div>
-            {% empty %}
-            <p>No derivation steps to display.</p>
-            {% endfor %}
+            
+            {% if step.explanation %}
+            <div class="step-explanation">{{ step.explanation }}</div>
+            {% endif %}
+
+            {% if step.rendered_math %}
+            <div class="math-snapshot-box">
+                {{ step.rendered_math|safe }}
+            </div>
+            {% endif %}
         </div>
+        {% empty %}
+        <p style="color: #64748b;">No derivation steps available.</p>
+        {% endfor %}
     </div>
 
     <!-- Final Solution Summary Box -->
@@ -216,11 +286,11 @@
     <div class="solution-box">
         <div class="solution-title">Final Solution Summary</div>
         {% if final_solution.summary %}
-        <p style="margin: 0 0 8px 0; color: #166534; font-size: 9.5pt;">{{ final_solution.summary }}</p>
+        <p style="margin: 0 0 8px 0; color: #166534; font-size: 9.5pt; font-weight: 600;">{{ final_solution.summary }}</p>
         {% endif %}
 
         {% if final_solution.rendered_math %}
-        <div class="math-wrapper" style="background-color: #ffffff; border-color: #86efac;">
+        <div class="math-snapshot-box" style="background-color: #ffffff; border-color: #86efac;">
             {{ final_solution.rendered_math|safe }}
         </div>
         {% endif %}

@@ -7,12 +7,40 @@ import matplotlib.pyplot as plt
 from django.http import HttpResponse
 from xhtml2pdf import pisa
 
+def build_matrix_grid_html(matrix, is_augmented=True):
+    """
+    Renders input matrix data into an interactive grid of rounded square boxes
+    with a purple dashed vertical line divider for augmented matrices (matching web UI).
+    """
+    if not matrix or not isinstance(matrix, list):
+        return ""
+    
+    num_cols = len(matrix[0]) if isinstance(matrix[0], list) else 0
+    aug_col_idx = num_cols - 2 if is_augmented and num_cols > 1 else -1
+
+    rows_html = []
+    for row in matrix:
+        if not isinstance(row, list):
+            continue
+        cell_tds = []
+        for j, val in enumerate(row):
+            # Display integer if whole float
+            disp_val = int(val) if isinstance(val, (int, float)) and float(val).is_integer() else val
+            dash_style = "border-right: 2px dashed #9333ea; padding-right: 8px; margin-right: 4px;" if j == aug_col_idx else ""
+            cell_tds.append(f'<td style="width: 38px; height: 38px; border: 1.5px solid #cbd5e1; border-radius: 6px; text-align: center; vertical-align: middle; font-weight: bold; font-family: sans-serif; font-size: 11pt; color: #0f172a; background-color: #ffffff; {dash_style}">{disp_val}</td>')
+        rows_html.append(f'<tr>{"".join(cell_tds)}</tr>')
+
+    return f'''
+    <table style="border-collapse: separate; border-spacing: 5px; margin: 10px auto;">
+        {"".join(rows_html)}
+    </table>
+    '''
+
 def latex_matrix_to_html(latex_str):
     r"""
     Parses LaTeX matrix strings (bmatrix, matrix, array) into clean, styled HTML tables for PDF generation.
     Handles augmented matrices with '|' or '\mid'.
     """
-
     if not latex_str or not isinstance(latex_str, str):
         return str(latex_str or '')
 
@@ -91,8 +119,6 @@ def render_latex_to_base64_png(latex_str, fontsize=13, color='#0f172a', dpi=200)
         return ""
 
 def prepare_latex_for_pdf(latex_str, default_color='#0f172a'):
-
-
     """
     Intelligently converts a LaTeX string into an HTML table (if matrix)
     or a Base64 PNG image tag (if equation).
