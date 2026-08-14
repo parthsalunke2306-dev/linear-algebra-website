@@ -666,6 +666,79 @@ h5, .h5 { font-size: clamp(1.05rem, 3vw, 1.35rem); }
     color: var(--text-main) !important;
 }
 
+/* High-Contrast Glassmorphic Export Buttons */
+.btn-export-word {
+    background: rgba(59, 130, 246, 0.22) !important;
+    border: 1px solid rgba(96, 165, 250, 0.6) !important;
+    color: #93C5FD !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    padding: 0.4rem 1rem !important;
+    border-radius: 50rem !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.2) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+.btn-export-word:hover {
+    background: rgba(59, 130, 246, 0.45) !important;
+    border-color: #BFDBFE !important;
+    color: #FFFFFF !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+}
+
+.btn-export-pdf {
+    background: rgba(239, 68, 68, 0.22) !important;
+    border: 1px solid rgba(248, 113, 113, 0.6) !important;
+    color: #FCA5A5 !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    padding: 0.4rem 1rem !important;
+    border-radius: 50rem !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.2) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+}
+
+.btn-export-pdf:hover {
+    background: rgba(239, 68, 68, 0.45) !important;
+    border-color: #FECACA !important;
+    color: #FFFFFF !important;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+}
+
+[data-theme="light"] .btn-export-word {
+    background: rgba(37, 99, 235, 0.12) !important;
+    border: 1px solid rgba(37, 99, 235, 0.5) !important;
+    color: #1D4ED8 !important;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12) !important;
+}
+
+[data-theme="light"] .btn-export-word:hover {
+    background: #2563EB !important;
+    color: #FFFFFF !important;
+}
+
+[data-theme="light"] .btn-export-pdf {
+    background: rgba(220, 38, 38, 0.12) !important;
+    border: 1px solid rgba(220, 38, 38, 0.5) !important;
+    color: #DC2626 !important;
+    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.12) !important;
+}
+
+[data-theme="light"] .btn-export-pdf:hover {
+    background: #DC2626 !important;
+    color: #FFFFFF !important;
+}
+
 .btn-copy {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);

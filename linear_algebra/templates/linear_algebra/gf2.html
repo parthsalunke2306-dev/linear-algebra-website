@@ -124,11 +124,11 @@
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <h4 class="text-white mb-0"><i class="bi bi-check2-all me-2 text-success"></i>Explicit 11 Field Axiom Verification</h4>
         <div class="d-flex align-items-center gap-2 flex-wrap">
+            <button type="button" onclick="exportPageToWord('GF2_Field_Axioms_Report')" class="btn btn-export-word btn-sm no-print" title="Export as Microsoft Word Document"><i class="bi bi-file-earmark-word-fill me-1"></i> Export Word</button>
+            <button type="button" onclick="window.print()" class="btn btn-export-pdf btn-sm no-print" title="Print or Save as PDF"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
             {% if result.is_field %}
-            <span class="status-badge-emerald"><i class="bi bi-shield-check me-1"></i> GF(2) IS A VALID FIELD</span>
+            <span class="badge bg-success px-3 py-2 fs-6"><i class="bi bi-shield-check me-1"></i> GF(2) IS A VALID FIELD</span>
             {% endif %}
-            <button type="button" onclick="exportPageToWord('GF2_Field_Axioms_Report')" class="btn btn-export-word no-print" title="Export as Microsoft Word Document"><i class="bi bi-file-earmark-word-fill me-1"></i> Export Word</button>
-            <button type="button" onclick="window.print()" class="btn btn-export-pdf no-print" title="Print or Save as PDF"><i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF</button>
         </div>
     </div>
 
