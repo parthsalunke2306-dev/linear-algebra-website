@@ -1263,4 +1263,111 @@ tr.table-secondary {
         background-color: #F1F5F9 !important;
         color: #0F172A !important;
     }
+}
+
+/* =========================================================
+   STATUS BADGE & EXPORT ACTION BUTTON SYSTEM
+   ========================================================= */
+.status-badge-emerald {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1.1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border-radius: 50rem;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.18) 0%, rgba(5, 150, 105, 0.28) 100%);
+    border: 1px solid rgba(52, 211, 153, 0.4);
+    color: #34D399;
+    box-shadow: 0 2px 10px rgba(16, 185, 129, 0.12);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-bs-theme="light"] .status-badge-emerald {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(5, 150, 105, 0.22) 100%);
+    border: 1px solid rgba(5, 150, 105, 0.35);
+    color: #047857;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1);
+}
+
+/* Modern Soft Glass Export Action Buttons */
+.btn-export-word {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1.15rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 50rem;
+    background: rgba(37, 99, 235, 0.14);
+    border: 1px solid rgba(59, 130, 246, 0.32);
+    color: #60A5FA;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-export-word:hover {
+    background: rgba(37, 99, 235, 0.28);
+    border-color: rgba(96, 165, 250, 0.55);
+    color: #93C5FD;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.25);
+}
+
+[data-bs-theme="light"] .btn-export-word {
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    color: #1D4ED8;
+}
+
+[data-bs-theme="light"] .btn-export-word:hover {
+    background: #DBEAFE;
+    border-color: #93C5FD;
+    color: #1E40AF;
+    box-shadow: 0 4px 12px rgba(29, 78, 216, 0.15);
+}
+
+.btn-export-pdf {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1.15rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 50rem;
+    background: rgba(225, 29, 72, 0.14);
+    border: 1px solid rgba(244, 63, 94, 0.32);
+    color: #FB7185;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-export-pdf:hover {
+    background: rgba(225, 29, 72, 0.28);
+    border-color: rgba(251, 113, 133, 0.55);
+    color: #FDA4AF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(225, 29, 72, 0.25);
+}
+
+[data-bs-theme="light"] .btn-export-pdf {
+    background: #FFF1F2;
+    border: 1px solid #FECDD3;
+    color: #BE123C;
+}
+
+[data-bs-theme="light"] .btn-export-pdf:hover {
+    background: #FFE4E6;
+    border-color: #FCA5A5;
+    color: #9F1239;
+    box-shadow: 0 4px 12px rgba(190, 18, 60, 0.15);
 }
