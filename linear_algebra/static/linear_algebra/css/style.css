@@ -827,6 +827,33 @@ h5, .h5 { font-size: clamp(1.05rem, 3vw, 1.35rem); }
     color: #FFFFFF !important;
 }
 
+/* Glassmorphic GF(2) Field Status Badge */
+.badge-gf2-field {
+    background: rgba(16, 185, 129, 0.22) !important;
+    border: 1px solid rgba(52, 211, 153, 0.6) !important;
+    color: #6EE7B7 !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.02em !important;
+    padding: 0.45rem 1.1rem !important;
+    min-height: 38px !important;
+    border-radius: 10px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.4rem !important;
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.15) !important;
+}
+
+[data-theme="light"] .badge-gf2-field {
+    background: rgba(5, 150, 105, 0.12) !important;
+    border: 1px solid rgba(5, 150, 105, 0.4) !important;
+    color: #047857 !important;
+    box-shadow: 0 2px 8px rgba(5, 150, 105, 0.1) !important;
+}
+
 .btn-copy {
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
