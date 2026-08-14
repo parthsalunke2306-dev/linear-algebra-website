@@ -666,76 +666,164 @@ h5, .h5 { font-size: clamp(1.05rem, 3vw, 1.35rem); }
     color: var(--text-main) !important;
 }
 
-/* High-Contrast Glassmorphic Export Buttons */
-.btn-export-word {
-    background: rgba(59, 130, 246, 0.22) !important;
-    border: 1px solid rgba(96, 165, 250, 0.6) !important;
-    color: #93C5FD !important;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    font-weight: 700 !important;
-    font-size: 0.85rem !important;
-    padding: 0.4rem 1rem !important;
-    border-radius: 50rem !important;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    box-shadow: 0 4px 14px rgba(59, 130, 246, 0.2) !important;
+/* ==========================================
+   SUBTLE PREMIUM GLASSMORPHIC EXPORT BUTTONS
+   ========================================== */
+.btn-export-word,
+.btn-export-pdf {
     display: inline-flex !important;
     align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+    padding: 0.45rem 1.1rem !important;
+    min-height: 38px !important;
+    font-family: inherit !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.01em !important;
+    line-height: 1 !important;
+    border-radius: 10px !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    cursor: pointer !important;
+    text-decoration: none !important;
+    user-select: none !important;
 }
 
-.btn-export-word:hover {
-    background: rgba(59, 130, 246, 0.45) !important;
-    border-color: #BFDBFE !important;
-    color: #FFFFFF !important;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4) !important;
+/* --- Dark Theme Default Styles --- */
+.btn-export-word {
+    background: rgba(30, 41, 59, 0.75) !important;
+    border: 1px solid rgba(56, 189, 248, 0.4) !important;
+    color: #F8FAFC !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.btn-export-word i,
+.btn-export-word span {
+    color: #F8FAFC !important;
+}
+
+.btn-export-word i {
+    color: #38BDF8 !important;
+    font-size: 1rem !important;
+    transition: transform 0.2s ease !important;
 }
 
 .btn-export-pdf {
-    background: rgba(239, 68, 68, 0.22) !important;
-    border: 1px solid rgba(248, 113, 113, 0.6) !important;
-    color: #FCA5A5 !important;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    font-weight: 700 !important;
-    font-size: 0.85rem !important;
-    padding: 0.4rem 1rem !important;
-    border-radius: 50rem !important;
-    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
-    box-shadow: 0 4px 14px rgba(239, 68, 68, 0.2) !important;
-    display: inline-flex !important;
-    align-items: center !important;
+    background: rgba(30, 41, 59, 0.75) !important;
+    border: 1px solid rgba(248, 113, 113, 0.4) !important;
+    color: #F8FAFC !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.btn-export-pdf i,
+.btn-export-pdf span {
+    color: #F8FAFC !important;
+}
+
+.btn-export-pdf i {
+    color: #F87171 !important;
+    font-size: 1rem !important;
+    transition: transform 0.2s ease !important;
+}
+
+/* Hover States (Subtle Lift & Refined Glow) */
+.btn-export-word:hover {
+    background: rgba(30, 58, 95, 0.9) !important;
+    border-color: rgba(56, 189, 248, 0.7) !important;
+    color: #FFFFFF !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 14px rgba(56, 189, 248, 0.25) !important;
+}
+
+.btn-export-word:hover i {
+    color: #7DD3FC !important;
+    transform: scale(1.1) !important;
 }
 
 .btn-export-pdf:hover {
-    background: rgba(239, 68, 68, 0.45) !important;
-    border-color: #FECACA !important;
+    background: rgba(79, 26, 36, 0.9) !important;
+    border-color: rgba(248, 113, 113, 0.7) !important;
     color: #FFFFFF !important;
-    transform: translateY(-1px);
-    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4) !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 14px rgba(248, 113, 113, 0.25) !important;
 }
 
+.btn-export-pdf:hover i {
+    color: #FCA5A5 !important;
+    transform: scale(1.1) !important;
+}
+
+/* Active / Pressed States */
+.btn-export-word:active,
+.btn-export-pdf:active {
+    transform: translateY(0px) !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Focus State for Keyboard Accessibility */
+.btn-export-word:focus-visible,
+.btn-export-pdf:focus-visible {
+    outline: 2px solid var(--accent-purple) !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 4px rgba(192, 132, 252, 0.3) !important;
+}
+
+/* --- Light Theme Adjustments --- */
 [data-theme="light"] .btn-export-word {
-    background: rgba(37, 99, 235, 0.12) !important;
-    border: 1px solid rgba(37, 99, 235, 0.5) !important;
-    color: #1D4ED8 !important;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.12) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid rgba(2, 132, 199, 0.4) !important;
+    color: #0F172A !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08) !important;
+}
+
+[data-theme="light"] .btn-export-word i,
+[data-theme="light"] .btn-export-word span {
+    color: #0F172A !important;
+}
+
+[data-theme="light"] .btn-export-word i {
+    color: #0284C7 !important;
 }
 
 [data-theme="light"] .btn-export-word:hover {
-    background: #2563EB !important;
+    background: #0284C7 !important;
+    border-color: #0284C7 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(2, 132, 199, 0.3) !important;
+}
+
+[data-theme="light"] .btn-export-word:hover i,
+[data-theme="light"] .btn-export-word:hover span {
     color: #FFFFFF !important;
 }
 
 [data-theme="light"] .btn-export-pdf {
-    background: rgba(220, 38, 38, 0.12) !important;
-    border: 1px solid rgba(220, 38, 38, 0.5) !important;
-    color: #DC2626 !important;
-    box-shadow: 0 2px 8px rgba(220, 38, 38, 0.12) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid rgba(225, 29, 72, 0.4) !important;
+    color: #0F172A !important;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08) !important;
+}
+
+[data-theme="light"] .btn-export-pdf i,
+[data-theme="light"] .btn-export-pdf span {
+    color: #0F172A !important;
+}
+
+[data-theme="light"] .btn-export-pdf i {
+    color: #E11D48 !important;
 }
 
 [data-theme="light"] .btn-export-pdf:hover {
-    background: #DC2626 !important;
+    background: #E11D48 !important;
+    border-color: #E11D48 !important;
+    color: #FFFFFF !important;
+    box-shadow: 0 4px 14px rgba(225, 29, 72, 0.3) !important;
+}
+
+[data-theme="light"] .btn-export-pdf:hover i,
+[data-theme="light"] .btn-export-pdf:hover span {
     color: #FFFFFF !important;
 }
 
