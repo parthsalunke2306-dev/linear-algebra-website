@@ -529,6 +529,13 @@ def cofactor_view(request):
     return render(request, 'linear_algebra/cofactor.html', context)
 
 @supabase_login_required
+def determinant_page_view(request):
+    """Topic 2.4: Interactive Matrix Determinant Solver (AJAX & API Driven)."""
+    context = {
+        'title': 'Matrix Determinant Solver',
+        'unit': 'Unit 2 • Topic 4'
+    }
+    return render(request, 'linear_algebra/determinant.html', context)
 def diagonalization_view(request):
     """Topic 2.3: Eigenvalues, Eigenvectors & Diagonalization."""
     result = None

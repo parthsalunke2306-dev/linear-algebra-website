@@ -117,6 +117,10 @@
                         <i class="bi bi-gem"></i>
                         <span>2.3 Diagonalization</span>
                     </a>
+                    <a href="{% url 'linear_algebra:determinant' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'determinant' %}active{% endif %}">
+                        <i class="bi bi-grid-3x3"></i>
+                        <span>2.4 Matrix Determinant</span>
+                    </a>
 
                     <!-- Unit 3 -->
                     <div class="sidebar-section-label">Unit 3 Topics</div>
@@ -258,6 +262,10 @@
                 <a href="{% url 'linear_algebra:diagonalization' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'diagonalization' %}active{% endif %}">
                     <i class="bi bi-gem"></i>
                     <span>2.3 Diagonalization</span>
+                </a>
+                <a href="{% url 'linear_algebra:determinant' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'determinant' %}active{% endif %}">
+                    <i class="bi bi-grid-3x3"></i>
+                    <span>2.4 Matrix Determinant</span>
                 </a>
 
                 <!-- Unit 3 -->

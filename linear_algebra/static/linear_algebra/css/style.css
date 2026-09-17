@@ -1489,4 +1489,171 @@ tr.table-secondary {
         background-color: #F1F5F9 !important;
         color: #0F172A !important;
     }
-}
+}
+
+/* ==========================================================================
+   PARTH'S DESIGN SYSTEM TOKENS & REUSABLE COMPONENTS
+   Educational SaaS + Scientific Precision Styling
+   ========================================================================== */
+
+:root {
+    --math-primary: #8B5CF6;
+    --math-primary-hover: #7C3AED;
+    --math-primary-glow: rgba(139, 92, 246, 0.25);
+    --math-accent: #06B6D4;
+    --math-success: #10B981;
+    --math-warning: #F59E0B;
+    --math-error: #EF4444;
+
+    --math-card-bg: rgba(30, 41, 59, 0.7);
+    --math-card-border: rgba(255, 255, 255, 0.1);
+    --math-cell-bg: rgba(15, 23, 42, 0.6);
+
+    --math-radius-sm: 6px;
+    --math-radius-md: 10px;
+    --math-radius-lg: 16px;
+}
+
+[data-theme="light"] {
+    --math-primary: #7C3AED;
+    --math-primary-hover: #6D28D9;
+    --math-primary-glow: rgba(124, 58, 237, 0.15);
+    --math-accent: #0284C7;
+    --math-card-bg: rgba(255, 255, 255, 0.9);
+    --math-card-border: rgba(15, 23, 42, 0.12);
+    --math-cell-bg: #F8FAFC;
+}
+
+/* Reusable Clean Card Component */
+.math-card {
+    background: var(--math-card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--math-card-border);
+    border-radius: var(--math-radius-lg);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.math-card:hover {
+    border-color: rgba(139, 92, 246, 0.35);
+}
+
+/* Primary Mathematical Action Button */
+.btn-math-primary {
+    background: linear-gradient(135deg, var(--math-primary), var(--math-accent));
+    color: #FFFFFF !important;
+    border: none;
+    border-radius: var(--math-radius-md);
+    padding: 10px 22px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 14px var(--math-primary-glow);
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-math-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px var(--math-primary-glow);
+    filter: brightness(1.08);
+}
+
+.btn-math-primary:active {
+    transform: translateY(0);
+}
+
+/* Dimension & Resizer Buttons */
+.btn-dim-pill {
+    padding: 5px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border-radius: 20px;
+    border: 1px solid var(--math-card-border);
+    background: var(--math-cell-bg);
+    color: var(--text-main);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-dim-pill:hover,
+.btn-dim-pill.active {
+    background: var(--math-primary);
+    color: #FFFFFF !important;
+    border-color: var(--math-primary);
+    box-shadow: 0 2px 10px var(--math-primary-glow);
+}
+
+/* Interactive Matrix Input Table & Cells */
+.matrix-interactive-grid {
+    display: inline-block;
+    padding: 12px;
+    background: var(--math-cell-bg);
+    border: 1.5px solid var(--math-card-border);
+    border-radius: var(--math-radius-md);
+}
+
+.matrix-interactive-grid table {
+    border-collapse: separate;
+    border-spacing: 6px;
+    margin: 0 auto;
+}
+
+.matrix-interactive-cell {
+    width: 54px;
+    height: 48px;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1.05rem;
+    font-weight: 600;
+    background: rgba(15, 23, 42, 0.4);
+    border: 1.5px solid var(--math-card-border);
+    border-radius: var(--math-radius-sm);
+    color: var(--text-main);
+    transition: all 0.2s ease;
+}
+
+[data-theme="light"] .matrix-interactive-cell {
+    background: #FFFFFF;
+    border-color: #CBD5E1;
+    color: #0F172A;
+}
+
+.matrix-interactive-cell:focus {
+    outline: none;
+    border-color: var(--math-primary);
+    box-shadow: 0 0 0 3px var(--math-primary-glow);
+    background: rgba(139, 92, 246, 0.08);
+}
+
+/* Step Accordion Card */
+.step-accordion-item {
+    background: var(--math-cell-bg);
+    border: 1px solid var(--math-card-border);
+    border-radius: var(--math-radius-md);
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.step-header {
+    padding: 12px 18px;
+    background: rgba(255, 255, 255, 0.02);
+    border-bottom: 1px solid var(--math-card-border);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.step-badge {
+    background: var(--math-primary);
+    color: #FFFFFF;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+

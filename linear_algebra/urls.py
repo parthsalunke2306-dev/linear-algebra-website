@@ -23,6 +23,7 @@ urlpatterns = [
     # Unit 2
     path('gram-schmidt/', views.gram_schmidt_view, name='gram_schmidt'),
     path('cofactor/', views.cofactor_view, name='cofactor'),
+    path('determinant/', views.determinant_page_view, name='determinant'),
     path('diagonalization/', views.diagonalization_view, name='diagonalization'),
     # Unit 3
     path('divisibility/', views.divisibility_view, name='divisibility'),

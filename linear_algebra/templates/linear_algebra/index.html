@@ -98,7 +98,7 @@
     </div>
     <div class="row g-3 g-md-4">
         <!-- Topic 2.1 -->
-        <div class="col-md-4">
+        <div class="col-md-6 col-lg-3">
             <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
                 <div>
                     <div class="d-flex align-items-center justify-content-between mb-3">
@@ -118,7 +118,7 @@
         </div>
 
         <!-- Topic 2.2 -->
-        <div class="col-md-4">
+        <div class="col-md-6 col-lg-3">
             <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
                 <div>
                     <div class="d-flex align-items-center justify-content-between mb-3">
@@ -138,7 +138,7 @@
         </div>
 
         <!-- Topic 2.3 -->
-        <div class="col-md-4">
+        <div class="col-md-6 col-lg-3">
             <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
                 <div>
                     <div class="d-flex align-items-center justify-content-between mb-3">
@@ -147,12 +147,30 @@
                     </div>
                     <h4>Diagonalization</h4>
                     <p class="text-muted small mb-0">
-                        Characteristic polynomial $\det(A - \lambda I) = 0$, eigenvalues, eigenspace basis vectors,
-                        algebraic vs geometric multiplicity, and $A = P D P^{-1}$.
+                        Characteristic polynomial $\det(A - \lambda I) = 0$, eigenvalues, eigenspaces, and $A = P D P^{-1}$.
                     </p>
                 </div>
                 <a href="{% url 'linear_algebra:diagonalization' %}" class="btn btn-gradient w-100 mt-3">
-                    Diagonalize Matrix <i class="bi bi-arrow-right ms-1"></i>
+                    Diagonalize <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Topic 2.4 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge-topic">TOPIC 2.4</span>
+                        <i class="bi bi-grid-3x3 text-info fs-3"></i>
+                    </div>
+                    <h4>Matrix Determinant</h4>
+                    <p class="text-muted small mb-0">
+                        Interactive $2\times 2$, $3\times 3$, and $N\times N$ determinant solver with instant AJAX API calculation and step-by-step derivation.
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:determinant' %}" class="btn btn-gradient w-100 mt-3">
+                    Calculate $\det(A)$ <i class="bi bi-arrow-right ms-1"></i>
                 </a>
             </div>
         </div>
