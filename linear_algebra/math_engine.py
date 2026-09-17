@@ -1042,7 +1042,7 @@ def solve_complex_to_polar(a: float, b: float):
     theta_deg = math.degrees(theta_rad)
     steps.append({
         'title': 'Argument (Phase Angle) Calculation',
-        'latex': fr"\theta = \operatorname{{atan2}}({clean_val_str(b)}, {clean_val_str(a)}) = {theta_rad:.4f}\text{ rad} = {theta_deg:.2f}^\circ",
+        'latex': fr"\theta = \operatorname{{atan2}}({clean_val_str(b)}, {clean_val_str(a)}) = {theta_rad:.4f}\text{{ rad}} = {theta_deg:.2f}^\circ",
         'explanation': f"The counter-clockwise angle formed with the positive real axis. Principal value in (-π, π]."
     })
 

@@ -67,12 +67,16 @@
 {% endif %}
 
 <!-- Card 2: Derivations & Step-by-Step Breakdown -->
-<div class="glass-card p-4 mb-4">
+<div class="glass-card p-4 mb-4" id="solutionSection">
     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
         <h4 class="text-white mb-0"><i class="bi bi-list-ol me-2" style="color: var(--accent-purple);"></i>Step-by-Step Limit Evaluation</h4>
-        <span class="badge {% if result.is_continuous %}bg-success{% else %}bg-warning text-dark{% endif %} px-3 py-2 fs-6 font-monospace">
-            {% if result.is_continuous %}CONTINUOUS AT x = {{ result.point_c }}{% else %}DISCONTINUOUS AT x = {{ result.point_c }}{% endif %}
-        </span>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="badge {% if result.is_continuous %}bg-success{% else %}bg-warning text-dark{% endif %} px-3 py-2 fs-6 font-monospace">
+                {% if result.is_continuous %}CONTINUOUS AT x = {{ result.point_c }}{% else %}DISCONTINUOUS AT x = {{ result.point_c }}{% endif %}
+            </span>
+            <button type="button" onclick="exportPageToWord('Limits_Continuity_Derivation')" class="btn-export-word no-print" title="Export as Microsoft Word Document"><i class="bi bi-file-earmark-word-fill"></i> <span>Export Word</span></button>
+            <button type="button" onclick="window.print()" class="btn-export-pdf no-print" title="Print / PDF"><i class="bi bi-file-earmark-pdf-fill"></i> <span>Export PDF</span></button>
+        </div>
     </div>
 
     <div class="p-3 p-md-4 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
