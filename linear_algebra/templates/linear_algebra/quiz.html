@@ -1,0 +1,83 @@
+{% extends 'linear_algebra/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge-unit">INTERACTIVE LAB</span>
+        <span class="badge-topic">QUIZ & PRACTICE</span>
+    </div>
+    <h2 class="text-white fw-bold mb-1">Procedural Math Practice Quiz Lab</h2>
+    <p class="text-muted">Test your mathematical skills with dynamically generated procedural questions across Euclidean algorithm, Prime divisibility, Complex numbers, Combinatorics, and Functions.</p>
+</div>
+
+<!-- Score & Streak Dashboard Header -->
+<div class="glass-card p-4 mb-4">
+    <div class="row g-3 text-center">
+        <div class="col-md-3 col-6">
+            <div class="p-3 rounded" style="background: var(--surface-slate);">
+                <small class="text-muted d-block">🔥 Current Streak</small>
+                <span class="fw-bold fs-4 text-warning">{{ stats.streak }}</span>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="p-3 rounded" style="background: var(--surface-slate);">
+                <small class="text-muted d-block">⚡ Experience Points (XP)</small>
+                <span class="fw-bold fs-4 text-info">{{ stats.xp }} XP</span>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="p-3 rounded" style="background: var(--surface-slate);">
+                <small class="text-muted d-block">🎯 Correct Answers</small>
+                <span class="fw-bold fs-4 text-success">{{ stats.correct }}</span>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="p-3 rounded" style="background: var(--surface-slate);">
+                <small class="text-muted d-block">📊 Total Attempted</small>
+                <span class="fw-bold fs-4 text-white">{{ stats.total }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Feedback Card if available -->
+{% if feedback %}
+<div class="alert {% if feedback.is_correct %}alert-success{% else %}alert-danger{% endif %} glass-card text-white mb-4 p-4">
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <i class="bi {% if feedback.is_correct %}bi-check-circle-fill fs-3{% else %}bi-x-circle-fill fs-3{% endif %}"></i>
+        <h4 class="mb-0">{{ feedback.message }}</h4>
+    </div>
+    <p class="mb-0">{{ feedback.explanation }}</p>
+</div>
+{% endif %}
+
+<!-- Question Card -->
+<div class="glass-card p-4 mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <span class="badge bg-secondary font-monospace"><i class="bi bi-tag-fill me-1"></i> {{ question.topic }}</span>
+        <span class="text-muted small">Select the best answer:</span>
+    </div>
+    <h4 class="text-white mb-4">{{ question.q }}</h4>
+
+    <form method="post" id="quizForm">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="answer">
+        <div class="row g-3 mb-4">
+            {% for opt in question.options %}
+            <div class="col-md-6">
+                <div class="form-check p-3 rounded-3" style="background: var(--surface-slate); border: 1.5px solid rgba(255, 255, 255, 0.08); cursor: pointer;">
+                    <input class="form-check-input ms-1 me-3" type="radio" name="selected_option" id="opt_{{ forloop.counter }}" value="{{ opt }}" required>
+                    <label class="form-check-label text-white fw-semibold fs-5 w-100" for="opt_{{ forloop.counter }}">
+                        {{ opt }}
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-gradient w-100 py-3 fs-5 fw-bold">
+            <i class="bi bi-send-check-fill me-2"></i> Submit Answer & Next Question
+        </button>
+    </form>
+</div>
+{% endblock %}

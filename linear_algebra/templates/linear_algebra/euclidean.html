@@ -1,0 +1,167 @@
+{% extends 'linear_algebra/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge-unit">UNIT 3</span>
+        <span class="badge-topic">TOPIC 3.2</span>
+    </div>
+    <h2 class="text-white fw-bold mb-1">Euclidean Algorithm & Extended GCD</h2>
+    <p class="text-muted">Compute the Greatest Common Divisor $\gcd(a, b)$, step-by-step division algorithm quotients and remainders, and Bézout identity coefficients $as + bt = \gcd(a, b)$.</p>
+</div>
+
+{% if error %}
+<div class="alert alert-danger glass-card text-white mb-4">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}
+</div>
+{% endif %}
+
+<!-- Card 1: Input & Presets -->
+<div class="glass-card p-4 mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <h5 class="text-white mb-0"><i class="bi bi-calculator me-2" style="color: var(--accent-purple);"></i>Input Values & Presets</h5>
+        
+        <div class="preset-container d-flex align-items-center gap-1 flex-wrap">
+            <span class="text-muted small font-monospace me-1"><i class="bi bi-lightning-charge-fill text-warning"></i>PRESETS:</span>
+            <button type="button" onclick="document.getElementById('id_a').value='1071'; document.getElementById('id_b').value='462';" class="btn btn-preset">1071 & 462</button>
+            <button type="button" onclick="document.getElementById('id_a').value='252'; document.getElementById('id_b').value='105';" class="btn btn-preset">252 & 105</button>
+            <button type="button" onclick="document.getElementById('id_a').value='357'; document.getElementById('id_b').value='221';" class="btn btn-preset">357 & 221</button>
+        </div>
+    </div>
+
+    <form method="post" id="euclideanForm">
+        {% csrf_token %}
+        <div class="row g-3 align-items-end mb-3">
+            <div class="col-md-5">
+                <label class="form-label text-muted small fw-semibold">First Integer $a$</label>
+                {{ form.a }}
+            </div>
+            <div class="col-md-5">
+                <label class="form-label text-muted small fw-semibold">Second Integer $b$</label>
+                {{ form.b }}
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-gradient w-100 py-2">
+                    <i class="bi bi-play-fill me-1"></i> Compute GCD
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% if result and result.is_valid %}
+<!-- Card 2: Derivations & Step-by-Step Breakdown -->
+<div class="glass-card p-4 mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+        <h4 class="text-white mb-0"><i class="bi bi-list-ol me-2" style="color: var(--accent-purple);"></i>Step-by-Step Euclidean Algorithm</h4>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <span class="badge bg-success px-3 py-2 fs-6 font-monospace">
+                <i class="bi bi-check-circle-fill me-1"></i> $\gcd = {{ result.gcd }}$
+            </span>
+            <button type="button" onclick="window.print()" class="btn-export-pdf no-print" title="Print / PDF"><i class="bi bi-file-earmark-pdf-fill"></i> <span>Export PDF</span></button>
+        </div>
+    </div>
+
+    <div class="p-3 p-md-4 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
+        {% for step in result.steps %}
+        <div class="single-step-section mb-4 pb-4 {% if not forloop.last %}border-bottom border-secondary{% endif %}" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h5 class="text-white mb-0">
+                    <span class="badge badge-topic me-2">Step {{ forloop.counter }}</span> {{ step.title }}
+                </h5>
+            </div>
+            <p class="text-muted small mb-2">{{ step.explanation }}</p>
+            <div class="latex-scroll-wrapper text-center my-2 p-3 rounded" style="background: var(--surface-slate);">
+                $${{ step.latex }}$$
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Extended Euclidean Table -->
+    {% if result.table_rows %}
+    <div class="p-3 p-md-4 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
+        <h5 class="text-white mb-3"><i class="bi bi-table me-2" style="color: var(--accent-purple);"></i>Extended Euclidean Algorithm Table</h5>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0 text-center">
+                <thead>
+                    <tr class="text-muted small border-bottom border-secondary">
+                        <th>Step $(i)$</th>
+                        <th>Dividend</th>
+                        <th>Divisor</th>
+                        <th>Quotient $(q)$</th>
+                        <th>Remainder $(r)$</th>
+                        <th>Bézout $s$</th>
+                        <th>Bézout $t$</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in result.table_rows %}
+                    <tr {% if row.is_gcd %}class="table-success text-white fw-bold"{% endif %}>
+                        <td>{{ row.step }}</td>
+                        <td>{{ row.dividend }}</td>
+                        <td>{{ row.divisor }}</td>
+                        <td>{{ row.q }}</td>
+                        <td>
+                            {{ row.r }}
+                            {% if row.is_gcd %}
+                            <span class="badge bg-success ms-1">GCD</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ row.x }}</td>
+                        <td>{{ row.y }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Final Summary Box -->
+    <div class="p-3 p-md-4 rounded-3 border" style="background: var(--glass-bg); border-color: var(--accent-purple) !important;">
+        <h5 class="mb-2" style="color: var(--accent-purple);"><i class="bi bi-check-circle-fill me-2"></i>Bézout Identity & Least Common Multiple</h5>
+        <div class="row g-3 text-center my-2">
+            <div class="col-md-4">
+                <div class="p-3 rounded" style="background: var(--surface-slate);">
+                    <small class="text-muted d-block">Greatest Common Divisor</small>
+                    <span class="fw-bold fs-4 text-success">$\gcd({{ result.a }}, {{ result.b }}) = {{ result.gcd }}$</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 rounded" style="background: var(--surface-slate);">
+                    <small class="text-muted d-block">Least Common Multiple</small>
+                    <span class="fw-bold fs-4 text-info">$\text{LCM} = {{ result.lcm }}$</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 rounded" style="background: var(--surface-slate);">
+                    <small class="text-muted d-block">Bézout Linear Equation</small>
+                    <span class="fw-bold fs-6 font-monospace text-warning">{{ result.bezout_str }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="latex-scroll-wrapper text-center mt-3 p-2 rounded" style="background: var(--surface-slate);">
+            $${{ result.solution_latex }}$$
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Card 3: Code Inspector -->
+<div class="accordion mb-4" id="codeAccordion">
+    <div class="accordion-item glass-card border-0">
+        <h2 class="accordion-header" id="headingCode">
+            <button class="accordion-button collapsed text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCode" style="background: transparent;">
+                <i class="bi bi-code-slash me-2" style="color: var(--accent-purple);"></i> View Python Engine Implementation (SymPy)
+            </button>
+        </h2>
+        <div id="collapseCode" class="accordion-collapse collapse" data-bs-parent="#codeAccordion">
+            <div class="accordion-body">
+                <pre class="m-0"><code class="language-python">{{ python_code }}</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

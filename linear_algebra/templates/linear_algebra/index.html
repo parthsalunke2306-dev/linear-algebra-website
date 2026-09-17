@@ -159,6 +159,214 @@
     </div>
 </div>
 
+
+<!-- UNIT 3 TOPICS -->
+<div class="mb-4 mb-md-5">
+    <div class="d-flex align-items-center gap-2 mb-3 mb-md-4">
+        <span class="badge-unit">UNIT 3</span>
+        <h3 class="mb-0">Integers, Primes & Euclidean GCD</h3>
+    </div>
+    <div class="row g-3 g-md-4">
+        <!-- Topic 3.1 -->
+        <div class="col-md-6">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge-topic">TOPIC 3.1</span>
+                        <i class="bi bi-123 text-info fs-3"></i>
+                    </div>
+                    <h4>Primes & Divisibility</h4>
+                    <p class="text-muted small mb-0">
+                        Prime factorization via Fundamental Theorem of Arithmetic, divisor enumeration, divisor counting function $\tau(n)$, and sum of divisors $\sigma(n)$.
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:divisibility' %}" class="btn btn-gradient w-100 mt-3">
+                    Factorize Integer <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Topic 3.2 -->
+        <div class="col-md-6">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge-topic">TOPIC 3.2</span>
+                        <i class="bi bi-calculator text-warning fs-3"></i>
+                    </div>
+                    <h4>Euclidean Algorithm & Extended GCD</h4>
+                    <p class="text-muted small mb-0">
+                        Step-by-step division algorithm quotients and remainders, tabular Extended Euclidean steps, and Bézout identity coefficients $as + bt = \gcd(a, b)$.
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:euclidean' %}" class="btn btn-gradient w-100 mt-3">
+                    Calculate GCD <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- UNIT 4 TOPICS -->
+<div class="mb-4 mb-md-5">
+    <div class="d-flex align-items-center gap-2 mb-3 mb-md-4">
+        <span class="badge-unit">UNIT 4</span>
+        <h3 class="mb-0">Complex Numbers & Geometry</h3>
+    </div>
+    <div class="row g-3 g-md-4">
+        <!-- Topic 4.1 -->
+        <div class="col-md-6">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge-topic">TOPIC 4.1</span>
+                        <i class="bi bi-crosshair text-success fs-3"></i>
+                    </div>
+                    <h4>Polar Form & Argand Diagram</h4>
+                    <p class="text-muted small mb-0">
+                        Modulus $r = |z|$, argument $\theta = \operatorname{atan2}(b, a)$, conjugate $\bar{z}$, Euler form $r e^{i\theta}$, and interactive Plotly Argand diagram.
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:complex_polar' %}" class="btn btn-gradient w-100 mt-3">
+                    Convert to Polar <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Topic 4.2 -->
+        <div class="col-md-6">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge-topic">TOPIC 4.2</span>
+                        <i class="bi bi-arrow-repeat text-danger fs-3"></i>
+                    </div>
+                    <h4>De Moivre's Theorem & Roots</h4>
+                    <p class="text-muted small mb-0">
+                        Complex powers $z^n = r^n(\cos n\theta + i\sin n\theta)$, all $n$ complex roots $w_k$, and interactive regular polygon visualization on Argand plane.
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:demoivre' %}" class="btn btn-gradient w-100 mt-3">
+                    Explore Roots <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- UNIT 5 & 6 & 7 TOPICS -->
+<div class="mb-4 mb-md-5">
+    <div class="d-flex align-items-center gap-2 mb-3 mb-md-4">
+        <span class="badge-unit">UNITS 5, 6 & 7</span>
+        <h3 class="mb-0">Combinatorics, Functions & Calculus</h3>
+    </div>
+    <div class="row g-3 g-md-4">
+        <!-- Topic 5.1 -->
+        <div class="col-md-4">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge-topic">TOPIC 5.1</span>
+                        <i class="bi bi-shuffle text-info fs-3"></i>
+                    </div>
+                    <h4>Permutations & Combinations</h4>
+                    <p class="text-muted small mb-0">
+                        Factorial expansions, $P(n, r) = \frac{n!}{(n-r)!}$, combinations $\binom{n}{r}$, circular arrangements $(n-1)!$, and Pascal identities.
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:permutations_combinations' %}" class="btn btn-gradient w-100 mt-3">
+                    Compute Counting <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Topic 6.1 -->
+        <div class="col-md-4">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge-topic">TOPIC 6.1</span>
+                        <i class="bi bi-diagram-2 text-warning fs-3"></i>
+                    </div>
+                    <h4>Functions & Set Theory</h4>
+                    <p class="text-muted small mb-0">
+                        Injective (1-to-1), Surjective (onto), Bijective classification, subset pre-images $f^{-1}(S)$, and interactive bipartite mapping diagrams.
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:functions' %}" class="btn btn-gradient w-100 mt-3">
+                    Classify Function <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Topic 7.1 -->
+        <div class="col-md-4">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge-topic">TOPIC 7.1</span>
+                        <i class="bi bi-graph-up text-success fs-3"></i>
+                    </div>
+                    <h4>Limits & Continuity</h4>
+                    <p class="text-muted small mb-0">
+                        Symbolic evaluation of limits $\lim_{x \to c} f(x)$, left/right hand approaches, continuity tests, and dynamic function curve visualization.
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:limits' %}" class="btn btn-gradient w-100 mt-3">
+                    Evaluate Limits <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- INTERACTIVE LAB TOOLS -->
+<div class="mb-4 mb-md-5">
+    <div class="d-flex align-items-center gap-2 mb-3 mb-md-4">
+        <span class="badge-unit">LAB & TUTOR</span>
+        <h3 class="mb-0">Interactive Practice & AI Assistant</h3>
+    </div>
+    <div class="row g-3 g-md-4">
+        <!-- Quiz -->
+        <div class="col-md-6">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between border-purple">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge bg-warning text-dark font-monospace fw-bold">INTERACTIVE LAB</span>
+                        <i class="bi bi-patch-question-fill text-warning fs-3"></i>
+                    </div>
+                    <h4>Procedural Math Practice Quiz</h4>
+                    <p class="text-muted small mb-0">
+                        Solve dynamically generated math questions across all syllabus topics, build answer streaks, and earn Experience Points (XP).
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:quiz' %}" class="btn btn-gradient w-100 mt-3">
+                    Start Practice Quiz <i class="bi bi-play-fill ms-1"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- AI Assistant -->
+        <div class="col-md-6">
+            <div class="glass-card h-100 p-4 d-flex flex-column justify-content-between border-purple">
+                <div>
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge bg-info text-dark font-monospace fw-bold">AI TUTOR</span>
+                        <i class="bi bi-stars text-info fs-3"></i>
+                    </div>
+                    <h4>AI Math Assistant</h4>
+                    <p class="text-muted small mb-0">
+                        Ask mathematical questions in plain English. The AI assistant detects the syllabus topic, computes results, and renders LaTeX step-by-step explanations.
+                    </p>
+                </div>
+                <a href="{% url 'linear_algebra:ai_tutor' %}" class="btn btn-gradient w-100 mt-3">
+                    Open AI Tutor <i class="bi bi-robot ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- About Us / Meet The Team Section -->
 <div class="mb-5">
     <div class="d-flex align-items-center gap-2 mb-3">

@@ -1,0 +1,72 @@
+{% extends 'linear_algebra/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge-unit">INTERACTIVE LAB</span>
+        <span class="badge-topic">AI ASSISTANT</span>
+    </div>
+    <h2 class="text-white fw-bold mb-1">AI Math Assistant & Concept Tutor</h2>
+    <p class="text-muted">Ask questions in natural language or enter math queries. The assistant detects topics, performs computations, and renders step-by-step LaTeX explanations.</p>
+</div>
+
+<!-- Prompt Query Input -->
+<div class="glass-card p-4 mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <h5 class="text-white mb-0"><i class="bi bi-stars me-2" style="color: var(--accent-purple);"></i>Ask a Mathematics Question</h5>
+        
+        <div class="preset-container d-flex align-items-center gap-1 flex-wrap">
+            <span class="text-muted small font-monospace me-1"><i class="bi bi-lightning-charge-fill text-warning"></i>TRY:</span>
+            <button type="button" onclick="document.getElementById('id_query').value='Find the GCD of 1071 and 462 using Euclidean algorithm';" class="btn btn-preset">GCD 1071, 462</button>
+            <button type="button" onclick="document.getElementById('id_query').value='Convert 3 + 4i to polar form';" class="btn btn-preset">Polar 3 + 4i</button>
+            <button type="button" onclick="document.getElementById('id_query').value='Factorize 360 and find its divisors';" class="btn btn-preset">Factorize 360</button>
+            <button type="button" onclick="document.getElementById('id_query').value='Calculate P(7, 3) and C(7, 3)';" class="btn btn-preset">P(7,3) & C(7,3)</button>
+        </div>
+    </div>
+
+    <form method="post" id="aiTutorForm">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.query }}
+        </div>
+        <button type="submit" class="btn btn-gradient w-100 py-2">
+            <i class="bi bi-lightning-charge-fill me-1"></i> Ask AI Math Assistant
+        </button>
+    </form>
+</div>
+
+{% if result %}
+<!-- AI Response Card -->
+<div class="glass-card p-4 mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h4 class="text-white mb-0"><i class="bi bi-robot me-2 text-info"></i>Assistant Response</h4>
+        <span class="badge bg-secondary font-monospace">{{ result.detected_topic }}</span>
+    </div>
+    
+    <div class="p-3 rounded-3 mb-3" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
+        <p class="text-white mb-2">{{ result.explanation }}</p>
+        {% if result.latex %}
+        <div class="latex-scroll-wrapper text-center my-2 p-3 rounded" style="background: var(--surface-slate);">
+            $${{ result.latex }}$$
+        </div>
+        {% endif %}
+    </div>
+
+    {% if result.result and result.result.steps %}
+    <div class="mt-4">
+        <h5 class="text-white mb-3"><i class="bi bi-list-check me-2" style="color: var(--accent-purple);"></i>Detailed Steps</h5>
+        {% for step in result.result.steps %}
+        <div class="mb-3 pb-3 border-bottom border-secondary" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+            <h6 class="text-white mb-1"><span class="badge badge-topic me-2">Step {{ forloop.counter }}</span> {{ step.title }}</h6>
+            <p class="text-muted small mb-1">{{ step.explanation }}</p>
+            <div class="latex-scroll-wrapper text-center my-1 p-2 rounded" style="background: var(--surface-slate);">
+                $${{ step.latex }}$$
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+{% endblock %}

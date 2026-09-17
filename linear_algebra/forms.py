@@ -223,4 +223,142 @@ class ProfileUpdateForm(forms.Form):
         return file
 
 
+# ==============================================================================
+# DISCRETE MATH & MATHMATE SOLVER FORMS
+# ==============================================================================
+
+class DivisibilityForm(forms.Form):
+    n = forms.IntegerField(
+        initial=360,
+        min_value=2,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 360'}),
+        help_text='Enter a positive integer n > 1 to factorize and analyze.'
+    )
+
+class EuclideanGCDForm(forms.Form):
+    a = forms.IntegerField(
+        initial=1071,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 1071'}),
+        help_text='First integer a'
+    )
+    b = forms.IntegerField(
+        initial=462,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 462'}),
+        help_text='Second integer b'
+    )
+
+class ComplexPolarForm(forms.Form):
+    a = forms.FloatField(
+        initial=3.0,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': 'any'}),
+        help_text='Real part Re(z) = a'
+    )
+    b = forms.FloatField(
+        initial=4.0,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': 'any'}),
+        help_text='Imaginary part Im(z) = b'
+    )
+
+class DeMoivreForm(forms.Form):
+    a = forms.FloatField(
+        initial=1.0,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': 'any'}),
+        help_text='Real part a'
+    )
+    b = forms.FloatField(
+        initial=1.732,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'step': 'any'}),
+        help_text='Imaginary part b'
+    )
+    n = forms.IntegerField(
+        initial=3,
+        min_value=1,
+        max_value=24,
+        widget=forms.NumberInput(attrs={'class': 'form-control'}),
+        help_text='Power or root index n (1 to 24)'
+    )
+    mode = forms.ChoiceField(
+        choices=[
+            ('roots', 'n-th Roots of Complex Number (z^(1/n))'),
+            ('powers', 'Power of Complex Number (z^n)')
+        ],
+        initial='roots',
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
+class PermutationCombinationForm(forms.Form):
+    n = forms.IntegerField(
+        initial=7,
+        min_value=0,
+        max_value=100,
+        widget=forms.NumberInput(attrs={'class': 'form-control'}),
+        help_text='Total items n'
+    )
+    r = forms.IntegerField(
+        initial=3,
+        min_value=0,
+        max_value=100,
+        widget=forms.NumberInput(attrs={'class': 'form-control'}),
+        help_text='Chosen items r (0 ≤ r ≤ n)'
+    )
+    calc_type = forms.ChoiceField(
+        choices=[
+            ('both', 'Compute Both Permutations P(n, r) & Combinations C(n, r)'),
+            ('perm', 'Permutations Only P(n, r)'),
+            ('comb', 'Combinations Only C(n, r)')
+        ],
+        initial='both',
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
+
+class FunctionsMappingForm(forms.Form):
+    domain = forms.CharField(
+        initial='1, 2, 3, 4',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 1, 2, 3, 4'}),
+        help_text='Comma-separated domain elements A'
+    )
+    codomain = forms.CharField(
+        initial='a, b, c, d',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. a, b, c, d'}),
+        help_text='Comma-separated codomain elements B'
+    )
+    mapping = forms.CharField(
+        initial='1:a, 2:b, 3:c, 4:d',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. 1:a, 2:b, 3:c, 4:d'}),
+        help_text='Mapping pairs in format x:y separated by commas'
+    )
+    target_subset = forms.CharField(
+        required=False,
+        initial='a, b',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'e.g. a, b'}),
+        help_text='Target subset S ⊆ B for calculating inverse image f⁻¹(S)'
+    )
+
+class LimitsContinuityForm(forms.Form):
+    expression = forms.CharField(
+        initial='sin(x)/x',
+        widget=forms.TextInput(attrs={'class': 'form-control font-monospace', 'placeholder': 'e.g. sin(x)/x or (x**2 - 1)/(x - 1)'}),
+        help_text='Mathematical expression f(x)'
+    )
+    variable = forms.CharField(
+        initial='x',
+        widget=forms.TextInput(attrs={'class': 'form-control font-monospace', 'style': 'max-width: 100px;'}),
+        help_text='Variable symbol'
+    )
+    point_c = forms.CharField(
+        initial='0',
+        widget=forms.TextInput(attrs={'class': 'form-control font-monospace', 'style': 'max-width: 120px;'}),
+        help_text='Approach point c (number or expression like pi/2)'
+    )
+
+class AIMathTutorForm(forms.Form):
+    query = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 3,
+            'placeholder': 'Ask any math question (e.g. "Find the GCD of 1071 and 462" or "Convert 3 + 4i into polar form")...'
+        })
+    )
+
+
 

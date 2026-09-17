@@ -30,6 +30,8 @@
         };
     </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- Plotly.js for interactive mathematical visualizers -->
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 </head>
 <body>
 
@@ -114,6 +116,60 @@
                     <a href="{% url 'linear_algebra:diagonalization' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'diagonalization' %}active{% endif %}">
                         <i class="bi bi-gem"></i>
                         <span>2.3 Diagonalization</span>
+                    </a>
+
+                    <!-- Unit 3 -->
+                    <div class="sidebar-section-label">Unit 3 Topics</div>
+                    <a href="{% url 'linear_algebra:divisibility' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'divisibility' %}active{% endif %}">
+                        <i class="bi bi-123"></i>
+                        <span>3.1 Primes & Divisibility</span>
+                    </a>
+                    <a href="{% url 'linear_algebra:euclidean' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'euclidean' %}active{% endif %}">
+                        <i class="bi bi-calculator"></i>
+                        <span>3.2 Euclidean GCD & Bézout</span>
+                    </a>
+
+                    <!-- Unit 4 -->
+                    <div class="sidebar-section-label">Unit 4 Topics</div>
+                    <a href="{% url 'linear_algebra:complex_polar' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'complex_polar' %}active{% endif %}">
+                        <i class="bi bi-crosshair"></i>
+                        <span>4.1 Polar Form & Argand</span>
+                    </a>
+                    <a href="{% url 'linear_algebra:demoivre' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'demoivre' %}active{% endif %}">
+                        <i class="bi bi-arrow-repeat"></i>
+                        <span>4.2 De Moivre & Roots</span>
+                    </a>
+
+                    <!-- Unit 5 -->
+                    <div class="sidebar-section-label">Unit 5 Topics</div>
+                    <a href="{% url 'linear_algebra:permutations_combinations' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'permutations_combinations' %}active{% endif %}">
+                        <i class="bi bi-shuffle"></i>
+                        <span>5.1 Permutations & Comb.</span>
+                    </a>
+
+                    <!-- Unit 6 -->
+                    <div class="sidebar-section-label">Unit 6 Topics</div>
+                    <a href="{% url 'linear_algebra:functions' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'functions' %}active{% endif %}">
+                        <i class="bi bi-diagram-2"></i>
+                        <span>6.1 Set Mappings & Types</span>
+                    </a>
+
+                    <!-- Unit 7 -->
+                    <div class="sidebar-section-label">Unit 7 Topics</div>
+                    <a href="{% url 'linear_algebra:limits' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'limits' %}active{% endif %}">
+                        <i class="bi bi-graph-up"></i>
+                        <span>7.1 Limits & Continuity</span>
+                    </a>
+
+                    <!-- Interactive Lab -->
+                    <div class="sidebar-section-label">Interactive Lab</div>
+                    <a href="{% url 'linear_algebra:quiz' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'quiz' %}active{% endif %}">
+                        <i class="bi bi-patch-question text-warning"></i>
+                        <span>Practice Quiz Lab</span>
+                    </a>
+                    <a href="{% url 'linear_algebra:ai_tutor' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'ai_tutor' %}active{% endif %}">
+                        <i class="bi bi-stars text-info"></i>
+                        <span>AI Math Assistant</span>
                     </a>
                 </div>
             </div>
@@ -202,6 +258,60 @@
                 <a href="{% url 'linear_algebra:diagonalization' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'diagonalization' %}active{% endif %}">
                     <i class="bi bi-gem"></i>
                     <span>2.3 Diagonalization</span>
+                </a>
+
+                <!-- Unit 3 -->
+                <div class="sidebar-section-label">Unit 3 Topics</div>
+                <a href="{% url 'linear_algebra:divisibility' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'divisibility' %}active{% endif %}">
+                    <i class="bi bi-123"></i>
+                    <span>3.1 Primes & Divisibility</span>
+                </a>
+                <a href="{% url 'linear_algebra:euclidean' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'euclidean' %}active{% endif %}">
+                    <i class="bi bi-calculator"></i>
+                    <span>3.2 Euclidean GCD & Bézout</span>
+                </a>
+
+                <!-- Unit 4 -->
+                <div class="sidebar-section-label">Unit 4 Topics</div>
+                <a href="{% url 'linear_algebra:complex_polar' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'complex_polar' %}active{% endif %}">
+                    <i class="bi bi-crosshair"></i>
+                    <span>4.1 Polar Form & Argand</span>
+                </a>
+                <a href="{% url 'linear_algebra:demoivre' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'demoivre' %}active{% endif %}">
+                    <i class="bi bi-arrow-repeat"></i>
+                    <span>4.2 De Moivre & Roots</span>
+                </a>
+
+                <!-- Unit 5 -->
+                <div class="sidebar-section-label">Unit 5 Topics</div>
+                <a href="{% url 'linear_algebra:permutations_combinations' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'permutations_combinations' %}active{% endif %}">
+                    <i class="bi bi-shuffle"></i>
+                    <span>5.1 Permutations & Comb.</span>
+                </a>
+
+                <!-- Unit 6 -->
+                <div class="sidebar-section-label">Unit 6 Topics</div>
+                <a href="{% url 'linear_algebra:functions' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'functions' %}active{% endif %}">
+                    <i class="bi bi-diagram-2"></i>
+                    <span>6.1 Set Mappings & Types</span>
+                </a>
+
+                <!-- Unit 7 -->
+                <div class="sidebar-section-label">Unit 7 Topics</div>
+                <a href="{% url 'linear_algebra:limits' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'limits' %}active{% endif %}">
+                    <i class="bi bi-graph-up"></i>
+                    <span>7.1 Limits & Continuity</span>
+                </a>
+
+                <!-- Interactive Lab -->
+                <div class="sidebar-section-label">Interactive Lab</div>
+                <a href="{% url 'linear_algebra:quiz' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'quiz' %}active{% endif %}">
+                    <i class="bi bi-patch-question text-warning"></i>
+                    <span>Practice Quiz Lab</span>
+                </a>
+                <a href="{% url 'linear_algebra:ai_tutor' %}" class="sidebar-nav-item {% if request.resolver_match.url_name == 'ai_tutor' %}active{% endif %}">
+                    <i class="bi bi-stars text-info"></i>
+                    <span>AI Math Assistant</span>
                 </a>
             </div>
         </div>

@@ -6,7 +6,9 @@ from django.http import HttpResponseRedirect
 from django.conf import settings
 from .forms import (
     GaussianForm, VectorsForm, GramSchmidtForm, CofactorForm, DiagonalizationForm, GF2Form,
-    LoginForm, SignUpForm, ForgotPasswordForm, ResetPasswordForm, ProfileUpdateForm
+    LoginForm, SignUpForm, ForgotPasswordForm, ResetPasswordForm, ProfileUpdateForm,
+    DivisibilityForm, EuclideanGCDForm, ComplexPolarForm, DeMoivreForm,
+    PermutationCombinationForm, FunctionsMappingForm, LimitsContinuityForm, AIMathTutorForm
 )
 
 
@@ -552,6 +554,345 @@ def diagonalization_view(request):
         'python_code': code_snippet
     }
     return render(request, 'linear_algebra/diagonalization.html', context)
+
+
+# ------------------------------------------------------------------------------
+# DISCRETE MATHEMATICS & CALCULUS VIEWS (MathMate Syllabus Units)
+# ------------------------------------------------------------------------------
+
+@supabase_login_required
+def divisibility_view(request):
+    """Topic 3.1: Integers and Divisibility (Prime Factorization, Divisors)."""
+    result = None
+    error = None
+    form = DivisibilityForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        n = form.cleaned_data['n']
+        try:
+            result = math_engine.solve_divisibility(n)
+            if not result.get('is_valid'):
+                error = result.get('error')
+        except Exception as e:
+            error = f"Error evaluating divisibility: {str(e)}"
+    else:
+        # Initial default result for display
+        result = math_engine.solve_divisibility(360)
+
+    code_snippet = inspect.getsource(math_engine.solve_divisibility)
+
+    context = {
+        'title': 'Integers, Primes & Divisibility',
+        'unit': 'Unit 3 • Topic 1',
+        'form': form,
+        'result': result,
+        'error': error,
+        'python_code': code_snippet
+    }
+    return render(request, 'linear_algebra/divisibility.html', context)
+
+@supabase_login_required
+def euclidean_view(request):
+    """Topic 3.2: Euclidean Algorithm & Extended Bézout Identity."""
+    result = None
+    error = None
+    form = EuclideanGCDForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        a = form.cleaned_data['a']
+        b = form.cleaned_data['b']
+        try:
+            result = math_engine.solve_gcd_euclidean(a, b)
+            if not result.get('is_valid'):
+                error = result.get('error')
+        except Exception as e:
+            error = f"Error computing Euclidean GCD: {str(e)}"
+    else:
+        result = math_engine.solve_gcd_euclidean(1071, 462)
+
+    code_snippet = inspect.getsource(math_engine.solve_gcd_euclidean)
+
+    context = {
+        'title': 'Euclidean Algorithm & Extended GCD',
+        'unit': 'Unit 3 • Topic 2',
+        'form': form,
+        'result': result,
+        'error': error,
+        'python_code': code_snippet
+    }
+    return render(request, 'linear_algebra/euclidean.html', context)
+
+@supabase_login_required
+def complex_polar_view(request):
+    """Topic 4.1: Complex Numbers & Polar Form (Argand Diagram)."""
+    result = None
+    error = None
+    form = ComplexPolarForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        a = form.cleaned_data['a']
+        b = form.cleaned_data['b']
+        try:
+            result = math_engine.solve_complex_to_polar(a, b)
+        except Exception as e:
+            error = f"Error converting complex number: {str(e)}"
+    else:
+        result = math_engine.solve_complex_to_polar(3.0, 4.0)
+
+    code_snippet = inspect.getsource(math_engine.solve_complex_to_polar)
+
+    context = {
+        'title': 'Complex Numbers & Polar Form',
+        'unit': 'Unit 4 • Topic 1',
+        'form': form,
+        'result': result,
+        'error': error,
+        'python_code': code_snippet
+    }
+    return render(request, 'linear_algebra/complex_polar.html', context)
+
+@supabase_login_required
+def demoivre_view(request):
+    """Topic 4.2: De Moivre's Theorem (Powers & n-th Roots)."""
+    result = None
+    error = None
+    form = DeMoivreForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        a = form.cleaned_data['a']
+        b = form.cleaned_data['b']
+        n = form.cleaned_data['n']
+        mode = form.cleaned_data['mode']
+        try:
+            result = math_engine.solve_demoivre(a, b, n, mode=mode)
+        except Exception as e:
+            error = f"Error applying De Moivre's Theorem: {str(e)}"
+    else:
+        result = math_engine.solve_demoivre(1.0, 1.732, 3, mode='roots')
+
+    code_snippet = inspect.getsource(math_engine.solve_demoivre)
+
+    context = {
+        'title': "De Moivre's Theorem & Complex Roots",
+        'unit': 'Unit 4 • Topic 2',
+        'form': form,
+        'result': result,
+        'error': error,
+        'python_code': code_snippet
+    }
+    return render(request, 'linear_algebra/demoivre.html', context)
+
+@supabase_login_required
+def permutations_combinations_view(request):
+    """Topic 5.1: Permutations & Combinations."""
+    result = {}
+    error = None
+    form = PermutationCombinationForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        n = form.cleaned_data['n']
+        r = form.cleaned_data['r']
+        calc_type = form.cleaned_data['calc_type']
+        try:
+            if calc_type in ['perm', 'both']:
+                result['perm'] = math_engine.solve_permutations(n, r)
+            if calc_type in ['comb', 'both']:
+                result['comb'] = math_engine.solve_combinations(n, r)
+        except Exception as e:
+            error = f"Error calculating counting formulas: {str(e)}"
+    else:
+        result['perm'] = math_engine.solve_permutations(7, 3)
+        result['comb'] = math_engine.solve_combinations(7, 3)
+
+    code_snippet = inspect.getsource(math_engine.solve_permutations) + "\n\n" + inspect.getsource(math_engine.solve_combinations)
+
+    context = {
+        'title': 'Permutations & Combinations',
+        'unit': 'Unit 5 • Topic 1',
+        'form': form,
+        'result': result,
+        'error': error,
+        'python_code': code_snippet
+    }
+    return render(request, 'linear_algebra/permutations_combinations.html', context)
+
+@supabase_login_required
+def functions_view(request):
+    """Topic 6.1: Functions (Injective, Surjective, Bijective, Inverse Image)."""
+    result = None
+    inv_result = None
+    error = None
+    form = FunctionsMappingForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        try:
+            domain = [x.strip() for x in form.cleaned_data['domain'].split(',') if x.strip()]
+            codomain = [x.strip() for x in form.cleaned_data['codomain'].split(',') if x.strip()]
+            mapping = {}
+            for pair in form.cleaned_data['mapping'].split(','):
+                if ':' in pair:
+                    k, v = pair.split(':', 1)
+                    mapping[k.strip()] = v.strip()
+
+            result = math_engine.solve_functions(domain, codomain, mapping)
+
+            target_str = form.cleaned_data.get('target_subset', '')
+            if target_str:
+                target_set = [x.strip() for x in target_str.split(',') if x.strip()]
+                inv_result = math_engine.solve_inverse_image(domain, codomain, mapping, target_set)
+        except Exception as e:
+            error = f"Error processing function sets and mappings: {str(e)}"
+    else:
+        domain = ['1', '2', '3', '4']
+        codomain = ['a', 'b', 'c', 'd']
+        mapping = {'1': 'a', '2': 'b', '3': 'c', '4': 'd'}
+        result = math_engine.solve_functions(domain, codomain, mapping)
+        inv_result = math_engine.solve_inverse_image(domain, codomain, mapping, ['a', 'b'])
+
+    code_snippet = inspect.getsource(math_engine.solve_functions)
+
+    context = {
+        'title': 'Functions & Set Mappings',
+        'unit': 'Unit 6 • Topic 1',
+        'form': form,
+        'result': result,
+        'inv_result': inv_result,
+        'error': error,
+        'python_code': code_snippet
+    }
+    return render(request, 'linear_algebra/functions.html', context)
+
+@supabase_login_required
+def limits_view(request):
+    """Topic 7.1: Limits & Continuity Analysis."""
+    result = None
+    error = None
+    form = LimitsContinuityForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        expr_str = form.cleaned_data['expression']
+        var_str = form.cleaned_data['variable']
+        point_c = form.cleaned_data['point_c']
+        try:
+            result = math_engine.solve_limits_continuity(expr_str, var_str, point_c)
+            if not result.get('is_valid'):
+                error = result.get('error')
+        except Exception as e:
+            error = f"Error calculating limit: {str(e)}"
+    else:
+        result = math_engine.solve_limits_continuity('sin(x)/x', 'x', 0)
+
+    code_snippet = inspect.getsource(math_engine.solve_limits_continuity)
+
+    context = {
+        'title': 'Limits & Continuity Analysis',
+        'unit': 'Unit 7 • Topic 1',
+        'form': form,
+        'result': result,
+        'error': error,
+        'python_code': code_snippet
+    }
+    return render(request, 'linear_algebra/limits.html', context)
+
+@supabase_login_required
+def quiz_view(request):
+    """Interactive Practice Quiz Lab with XP points and streak tracking."""
+    # Initialize user stats in session
+    if 'quiz_streak' not in request.session:
+        request.session['quiz_streak'] = 0
+    if 'quiz_xp' not in request.session:
+        request.session['quiz_xp'] = 0
+    if 'quiz_correct' not in request.session:
+        request.session['quiz_correct'] = 0
+    if 'quiz_total' not in request.session:
+        request.session['quiz_total'] = 0
+
+    feedback = None
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action == 'answer':
+            selected_option = request.POST.get('selected_option')
+            correct_answer = request.session.get('current_quiz_answer')
+            exp = request.session.get('current_quiz_exp', '')
+
+            request.session['quiz_total'] = request.session.get('quiz_total', 0) + 1
+
+            if selected_option and str(selected_option).strip() == str(correct_answer).strip():
+                request.session['quiz_streak'] = request.session.get('quiz_streak', 0) + 1
+                request.session['quiz_xp'] = request.session.get('quiz_xp', 0) + 20
+                request.session['quiz_correct'] = request.session.get('quiz_correct', 0) + 1
+                feedback = {
+                    'is_correct': True,
+                    'message': f"Correct! +20 XP Earned! 🎉",
+                    'explanation': exp
+                }
+            else:
+                request.session['quiz_streak'] = 0
+                feedback = {
+                    'is_correct': False,
+                    'message': f"Not quite. The correct answer was {correct_answer}.",
+                    'explanation': exp
+                }
+            # Generate new question for next round
+            new_q = math_engine.generate_procedural_question()
+            request.session['current_quiz_q'] = new_q['q']
+            request.session['current_quiz_topic'] = new_q['topic']
+            request.session['current_quiz_options'] = new_q['options']
+            request.session['current_quiz_answer'] = new_q['answer']
+            request.session['current_quiz_exp'] = new_q['exp']
+
+    # Retrieve or generate current active question
+    question = {
+        'q': request.session.get('current_quiz_q'),
+        'topic': request.session.get('current_quiz_topic'),
+        'options': request.session.get('current_quiz_options')
+    }
+    if not question['q']:
+        new_q = math_engine.generate_procedural_question()
+        request.session['current_quiz_q'] = new_q['q']
+        request.session['current_quiz_topic'] = new_q['topic']
+        request.session['current_quiz_options'] = new_q['options']
+        request.session['current_quiz_answer'] = new_q['answer']
+        request.session['current_quiz_exp'] = new_q['exp']
+        question = new_q
+
+    stats = {
+        'streak': request.session.get('quiz_streak', 0),
+        'xp': request.session.get('quiz_xp', 0),
+        'correct': request.session.get('quiz_correct', 0),
+        'total': request.session.get('quiz_total', 0)
+    }
+
+    context = {
+        'title': 'Interactive Practice Quiz Lab',
+        'unit': 'Interactive Lab',
+        'question': question,
+        'stats': stats,
+        'feedback': feedback
+    }
+    return render(request, 'linear_algebra/quiz.html', context)
+
+@supabase_login_required
+def ai_tutor_view(request):
+    """AI Math Assistant View."""
+    result = None
+    form = AIMathTutorForm(request.POST or None)
+
+    if request.method == 'POST' and form.is_valid():
+        query = form.cleaned_data['query']
+        result = math_engine.solve_ai_math_query(query)
+    else:
+        # Default prompt
+        result = math_engine.solve_ai_math_query("What is the gcd of 1071 and 462?")
+
+    context = {
+        'title': 'AI Math Assistant',
+        'unit': 'Interactive Lab',
+        'form': form,
+        'result': result
+    }
+    return render(request, 'linear_algebra/ai_tutor.html', context)
 
 
 # ------------------------------------------------------------------------------

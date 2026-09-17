@@ -1,0 +1,162 @@
+{% extends 'linear_algebra/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge-unit">UNIT 6</span>
+        <span class="badge-topic">TOPIC 6.1</span>
+    </div>
+    <h2 class="text-white fw-bold mb-1">Functions & Set Mappings — Injectivity, Surjectivity & Inverse Images</h2>
+    <p class="text-muted">Analyze mapping properties: Injective (one-to-one), Surjective (onto), Bijective (isomorphism), calculate inverse images $f^{-1}(S)$, and view interactive bipartite diagrams.</p>
+</div>
+
+{% if error %}
+<div class="alert alert-danger glass-card text-white mb-4">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}
+</div>
+{% endif %}
+
+<!-- Card 1: Input & Presets -->
+<div class="glass-card p-4 mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <h5 class="text-white mb-0"><i class="bi bi-diagram-2 me-2" style="color: var(--accent-purple);"></i>Function Sets & Mapping Definition</h5>
+        
+        <div class="preset-container d-flex align-items-center gap-1 flex-wrap">
+            <span class="text-muted small font-monospace me-1"><i class="bi bi-lightning-charge-fill text-warning"></i>PRESETS:</span>
+            <button type="button" onclick="document.getElementById('id_domain').value='1, 2, 3, 4'; document.getElementById('id_codomain').value='a, b, c, d'; document.getElementById('id_mapping').value='1:a, 2:b, 3:c, 4:d';" class="btn btn-preset">Bijective</button>
+            <button type="button" onclick="document.getElementById('id_domain').value='1, 2, 3, 4'; document.getElementById('id_codomain').value='a, b, c'; document.getElementById('id_mapping').value='1:a, 2:b, 3:b, 4:c';" class="btn btn-preset">Surjective Only</button>
+            <button type="button" onclick="document.getElementById('id_domain').value='1, 2, 3'; document.getElementById('id_codomain').value='a, b, c, d'; document.getElementById('id_mapping').value='1:a, 2:b, 3:c';" class="btn btn-preset">Injective Only</button>
+        </div>
+    </div>
+
+    <form method="post" id="functionsForm">
+        {% csrf_token %}
+        <div class="row g-3 mb-3">
+            <div class="col-md-6">
+                <label class="form-label text-muted small fw-semibold">Domain Set $A$</label>
+                {{ form.domain }}
+            </div>
+            <div class="col-md-6">
+                <label class="form-label text-muted small fw-semibold">Codomain Set $B$</label>
+                {{ form.codomain }}
+            </div>
+            <div class="col-md-8">
+                <label class="form-label text-muted small fw-semibold">Mapping Pairs $x:y$</label>
+                {{ form.mapping }}
+            </div>
+            <div class="col-md-4">
+                <label class="form-label text-muted small fw-semibold">Target Subset $S \subseteq B$ for $f^{-1}(S)$</label>
+                {{ form.target_subset }}
+            </div>
+        </div>
+        <button type="submit" class="btn btn-gradient w-100 py-2">
+            <i class="bi bi-play-fill me-1"></i> Classify Function & Compute Pre-Image
+        </button>
+    </form>
+</div>
+
+{% if result and result.is_valid %}
+<!-- Interactive Plotly Bipartite Diagram -->
+{% if result.plot_html %}
+<div class="glass-card p-4 mb-4">
+    <h4 class="text-white mb-3"><i class="bi bi-bezier2 me-2" style="color: var(--accent-purple);"></i>Interactive Bipartite Mapping Diagram</h4>
+    <div class="rounded-3 overflow-hidden" style="border: 1px solid var(--glass-border);">
+        {{ result.plot_html|safe }}
+    </div>
+</div>
+{% endif %}
+
+<!-- Card 2: Derivations & Step-by-Step Breakdown -->
+<div class="glass-card p-4 mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+        <h4 class="text-white mb-0"><i class="bi bi-list-ol me-2" style="color: var(--accent-purple);"></i>Function Classification Proofs</h4>
+        <span class="badge bg-success px-3 py-2 fs-6 font-monospace">
+            {{ result.class_type }}
+        </span>
+    </div>
+
+    <div class="p-3 p-md-4 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
+        {% for step in result.steps %}
+        <div class="single-step-section mb-4 pb-4 {% if not forloop.last %}border-bottom border-secondary{% endif %}" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h5 class="text-white mb-0">
+                    <span class="badge badge-topic me-2">Step {{ forloop.counter }}</span> {{ step.title }}
+                </h5>
+            </div>
+            <p class="text-muted small mb-2">{{ step.explanation }}</p>
+            <div class="latex-scroll-wrapper text-center my-2 p-3 rounded" style="background: var(--surface-slate);">
+                $${{ step.latex }}$$
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pre-Image Result -->
+    {% if inv_result and inv_result.is_valid %}
+    <div class="p-3 p-md-4 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
+        <h5 class="text-white mb-3"><i class="bi bi-arrow-left-circle me-2" style="color: var(--accent-purple);"></i>Inverse Image $f^{-1}(S)$</h5>
+        {% for step in inv_result.steps %}
+        <div class="mb-3">
+            <h6 class="text-white mb-1"><span class="badge bg-secondary me-2">Pre-Image</span> {{ step.title }}</h6>
+            <p class="text-muted small mb-1">{{ step.explanation }}</p>
+            <div class="latex-scroll-wrapper text-center my-1 p-2 rounded" style="background: var(--surface-slate);">
+                $${{ step.latex }}$$
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Final Summary Box -->
+    <div class="p-3 p-md-4 rounded-3 border" style="background: var(--glass-bg); border-color: var(--accent-purple) !important;">
+        <h5 class="mb-2" style="color: var(--accent-purple);"><i class="bi bi-check-circle-fill me-2"></i>Function Properties Summary</h5>
+        <div class="row g-3 text-center my-2">
+            <div class="col-md-4">
+                <div class="p-3 rounded" style="background: var(--surface-slate);">
+                    <small class="text-muted d-block">Injective (1-to-1)</small>
+                    <span class="fw-bold fs-5 {% if result.is_injective %}text-success{% else %}text-danger{% endif %}">
+                        {% if result.is_injective %}YES{% else %}NO{% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 rounded" style="background: var(--surface-slate);">
+                    <small class="text-muted d-block">Surjective (Onto)</small>
+                    <span class="fw-bold fs-5 {% if result.is_surjective %}text-success{% else %}text-danger{% endif %}">
+                        {% if result.is_surjective %}YES{% else %}NO{% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 rounded" style="background: var(--surface-slate);">
+                    <small class="text-muted d-block">Bijective (Invertible)</small>
+                    <span class="fw-bold fs-5 {% if result.is_bijective %}text-success{% else %}text-warning{% endif %}">
+                        {% if result.is_bijective %}YES{% else %}NO{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="latex-scroll-wrapper text-center mt-3 p-2 rounded" style="background: var(--surface-slate);">
+            $${{ result.solution_latex }}$$
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Card 3: Code Inspector -->
+<div class="accordion mb-4" id="codeAccordion">
+    <div class="accordion-item glass-card border-0">
+        <h2 class="accordion-header" id="headingCode">
+            <button class="accordion-button collapsed text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCode" style="background: transparent;">
+                <i class="bi bi-code-slash me-2" style="color: var(--accent-purple);"></i> View Python Engine Implementation (SymPy)
+            </button>
+        </h2>
+        <div id="collapseCode" class="accordion-collapse collapse" data-bs-parent="#codeAccordion">
+            <div class="accordion-body">
+                <pre class="m-0"><code class="language-python">{{ python_code }}</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

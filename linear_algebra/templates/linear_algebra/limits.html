@@ -1,0 +1,139 @@
+{% extends 'linear_algebra/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="mb-4">
+    <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge-unit">UNIT 7</span>
+        <span class="badge-topic">TOPIC 7.1</span>
+    </div>
+    <h2 class="text-white fw-bold mb-1">Limits & Continuity Analysis</h2>
+    <p class="text-muted">Symbolic evaluation of limits $\lim_{x \to c} f(x)$, left/right hand approaches, continuity tests, and dynamic function curve visualization.</p>
+</div>
+
+{% if error %}
+<div class="alert alert-danger glass-card text-white mb-4">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}
+</div>
+{% endif %}
+
+<!-- Card 1: Input & Presets -->
+<div class="glass-card p-4 mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
+        <h5 class="text-white mb-0"><i class="bi bi-graph-up me-2" style="color: var(--accent-purple);"></i>Limit Specification & Presets</h5>
+        
+        <div class="preset-container d-flex align-items-center gap-1 flex-wrap">
+            <span class="text-muted small font-monospace me-1"><i class="bi bi-lightning-charge-fill text-warning"></i>PRESETS:</span>
+            <button type="button" onclick="document.getElementById('id_expression').value='sin(x)/x'; document.getElementById('id_point_c').value='0';" class="btn btn-preset">sin(x)/x as x→0</button>
+            <button type="button" onclick="document.getElementById('id_expression').value='(x**2 - 1)/(x - 1)'; document.getElementById('id_point_c').value='1';" class="btn btn-preset">(x² - 1)/(x - 1) as x→1</button>
+            <button type="button" onclick="document.getElementById('id_expression').value='1/x'; document.getElementById('id_point_c').value='0';" class="btn btn-preset">1/x as x→0 (DNE)</button>
+        </div>
+    </div>
+
+    <form method="post" id="limitsForm">
+        {% csrf_token %}
+        <div class="row g-3 align-items-end mb-3">
+            <div class="col-md-6">
+                <label class="form-label text-muted small fw-semibold">Function Expression $f(x)$</label>
+                {{ form.expression }}
+                <div class="form-text text-muted">{{ form.expression.help_text }}</div>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label text-muted small fw-semibold">Variable</label>
+                {{ form.variable }}
+            </div>
+            <div class="col-md-2">
+                <label class="form-label text-muted small fw-semibold">Approach Point $c$</label>
+                {{ form.point_c }}
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-gradient w-100 py-2">
+                    <i class="bi bi-play-fill me-1"></i> Evaluate Limit
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% if result and result.is_valid %}
+<!-- Interactive Plotly Limit Curve -->
+{% if result.plot_html %}
+<div class="glass-card p-4 mb-4">
+    <h4 class="text-white mb-3"><i class="bi bi-activity me-2" style="color: var(--accent-purple);"></i>Function Behavior Curve</h4>
+    <div class="rounded-3 overflow-hidden" style="border: 1px solid var(--glass-border);">
+        {{ result.plot_html|safe }}
+    </div>
+</div>
+{% endif %}
+
+<!-- Card 2: Derivations & Step-by-Step Breakdown -->
+<div class="glass-card p-4 mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+        <h4 class="text-white mb-0"><i class="bi bi-list-ol me-2" style="color: var(--accent-purple);"></i>Step-by-Step Limit Evaluation</h4>
+        <span class="badge {% if result.is_continuous %}bg-success{% else %}bg-warning text-dark{% endif %} px-3 py-2 fs-6 font-monospace">
+            {% if result.is_continuous %}CONTINUOUS AT x = {{ result.point_c }}{% else %}DISCONTINUOUS AT x = {{ result.point_c }}{% endif %}
+        </span>
+    </div>
+
+    <div class="p-3 p-md-4 rounded-3 mb-4" style="background: rgba(15, 23, 42, 0.55); border: 1px solid var(--glass-border);">
+        {% for step in result.steps %}
+        <div class="single-step-section mb-4 pb-4 {% if not forloop.last %}border-bottom border-secondary{% endif %}" style="border-color: rgba(255, 255, 255, 0.1) !important;">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+                <h5 class="text-white mb-0">
+                    <span class="badge badge-topic me-2">Step {{ forloop.counter }}</span> {{ step.title }}
+                </h5>
+            </div>
+            <p class="text-muted small mb-2">{{ step.explanation }}</p>
+            <div class="latex-scroll-wrapper text-center my-2 p-3 rounded" style="background: var(--surface-slate);">
+                $${{ step.latex }}$$
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Final Summary Box -->
+    <div class="p-3 p-md-4 rounded-3 border" style="background: var(--glass-bg); border-color: var(--accent-purple) !important;">
+        <h5 class="mb-2" style="color: var(--accent-purple);"><i class="bi bi-check-circle-fill me-2"></i>Limit Analysis Summary</h5>
+        <div class="row g-3 text-center my-2">
+            <div class="col-md-4">
+                <div class="p-3 rounded" style="background: var(--surface-slate);">
+                    <small class="text-muted d-block">Left-Hand Limit ($x \to c^-$)</small>
+                    <span class="fw-bold fs-5 text-info">${{ result.lim_left }}$</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 rounded" style="background: var(--surface-slate);">
+                    <small class="text-muted d-block">Right-Hand Limit ($x \to c^+$)</small>
+                    <span class="fw-bold fs-5 text-info">${{ result.lim_right }}$</span>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-3 rounded" style="background: var(--surface-slate);">
+                    <small class="text-muted d-block">Two-Sided Limit</small>
+                    <span class="fw-bold fs-5 text-success">${{ result.lim_both }}$</span>
+                </div>
+            </div>
+        </div>
+        <div class="latex-scroll-wrapper text-center mt-3 p-2 rounded" style="background: var(--surface-slate);">
+            $${{ result.solution_latex }}$$
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Card 3: Code Inspector -->
+<div class="accordion mb-4" id="codeAccordion">
+    <div class="accordion-item glass-card border-0">
+        <h2 class="accordion-header" id="headingCode">
+            <button class="accordion-button collapsed text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseCode" style="background: transparent;">
+                <i class="bi bi-code-slash me-2" style="color: var(--accent-purple);"></i> View Python Engine Implementation (SymPy)
+            </button>
+        </h2>
+        <div id="collapseCode" class="accordion-collapse collapse" data-bs-parent="#codeAccordion">
+            <div class="accordion-body">
+                <pre class="m-0"><code class="language-python">{{ python_code }}</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
