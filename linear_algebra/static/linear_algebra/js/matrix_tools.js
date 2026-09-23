@@ -3,9 +3,9 @@
  * Renders raw textareas into interactive visual 2D HTML matrix input tables
  */
 
-// 1. Light/Dark Theme Switcher
+// 1. Light/Dark Theme Switcher (Bloom Tracking Default)
 document.addEventListener('DOMContentLoaded', () => {
-    const savedTheme = localStorage.getItem('theme') || 'dark';
+    const savedTheme = localStorage.getItem('theme') || 'light';
     document.documentElement.setAttribute('data-theme', savedTheme);
     updateThemeIcon(savedTheme);
 });
@@ -25,8 +25,8 @@ function updateThemeIcon(theme) {
     const themeBtnLabel = document.getElementById('themeToggleLabel');
     const themeBtnLabelMobile = document.getElementById('themeToggleLabelMobile');
     const content = theme === 'light' 
-        ? '<i class="bi bi-moon-stars-fill me-2 text-info"></i> Dark Mode' 
-        : '<i class="bi bi-sun-fill me-2 text-warning"></i> Light Mode';
+        ? '<i class="bi bi-moon-stars-fill me-2 text-forest"></i> Dark Forest' 
+        : '<i class="bi bi-sun-fill me-2 text-warning"></i> Bloom Light';
 
     if (themeBtnLabel) {
         themeBtnLabel.innerHTML = content;
