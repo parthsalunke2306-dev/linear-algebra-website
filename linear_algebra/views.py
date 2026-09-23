@@ -536,6 +536,8 @@ def determinant_page_view(request):
         'unit': 'Unit 2 • Topic 4'
     }
     return render(request, 'linear_algebra/determinant.html', context)
+
+@supabase_login_required
 def diagonalization_view(request):
     """Topic 2.3: Eigenvalues, Eigenvectors & Diagonalization."""
     result = None
