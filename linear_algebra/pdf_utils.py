@@ -4,8 +4,11 @@ import re
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from django.http import HttpResponse
-from xhtml2pdf import pisa
+try:
+    from xhtml2pdf import pisa
+except Exception:
+    pisa = None
+
 
 def build_matrix_grid_html(matrix, is_augmented=True):
     """
@@ -170,10 +173,17 @@ def prepare_latex_for_pdf(latex_str, default_color='#0f172a'):
     return f'<span style="font-family: monospace;">{latex_str}</span>'
 
 
+from django.http import HttpResponse
+
 def generate_pdf_response(rendered_html, filename="Linear_Algebra_Solution.pdf"):
     """
     Converts HTML into a downloadable PDF response using xhtml2pdf.
     """
+    if pisa is None:
+        response = HttpResponse(rendered_html, content_type='text/html')
+        response['Content-Disposition'] = f'inline; filename="{filename}.html"'
+        return response
+
     pdf_out = io.BytesIO()
     pisa_status = pisa.CreatePDF(rendered_html, dest=pdf_out)
     

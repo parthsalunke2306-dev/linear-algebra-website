@@ -302,7 +302,6 @@ def reset_password_confirm_view(request):
     }
     return render(request, 'linear_algebra/reset_password_confirm.html', context)
 
-@supabase_login_required
 def profile_view(request):
     """Authenticated User Profile & Account Management."""
     user = getattr(request, 'supabase_user', None) or {}
@@ -390,10 +389,9 @@ def profile_view(request):
 
 
 # ------------------------------------------------------------------------------
-# PROTECTED MATH SOLVER & VISUALIZER VIEWS (Requires Supabase Auth)
+# MATH SOLVER & VISUALIZER VIEWS (Public Access)
 # ------------------------------------------------------------------------------
 
-@supabase_login_required
 def gaussian_view(request):
     """Topic 1.1: Systems of Linear Equations & Gaussian Elimination."""
     result = None
@@ -420,7 +418,6 @@ def gaussian_view(request):
     }
     return render(request, 'linear_algebra/gaussian.html', context)
 
-@supabase_login_required
 def gf2_view(request):
     """Topic 1.2: Field Axioms via GF(2)."""
     result = math_engine.analyze_gf2_field()
@@ -445,7 +442,6 @@ def gf2_view(request):
 
 
 
-@supabase_login_required
 def vectors_view(request):
     """Topic 1.3: 3D Vector Dot Product, Cross Product & Projections."""
     result = None
@@ -472,7 +468,6 @@ def vectors_view(request):
     }
     return render(request, 'linear_algebra/vectors.html', context)
 
-@supabase_login_required
 def gram_schmidt_view(request):
     """Topic 2.1: Gram-Schmidt Orthogonalization Process."""
     result = None
@@ -499,7 +494,6 @@ def gram_schmidt_view(request):
     }
     return render(request, 'linear_algebra/gram_schmidt.html', context)
 
-@supabase_login_required
 def cofactor_view(request):
     """Topic 2.2: Cofactor Expansion for Determinants."""
     result = None
@@ -528,7 +522,6 @@ def cofactor_view(request):
     }
     return render(request, 'linear_algebra/cofactor.html', context)
 
-@supabase_login_required
 def determinant_page_view(request):
     """Topic 2.4: Interactive Matrix Determinant Solver (AJAX & API Driven)."""
     context = {
@@ -537,7 +530,6 @@ def determinant_page_view(request):
     }
     return render(request, 'linear_algebra/determinant.html', context)
 
-@supabase_login_required
 def diagonalization_view(request):
     """Topic 2.3: Eigenvalues, Eigenvectors & Diagonalization."""
     result = None
@@ -569,7 +561,6 @@ def diagonalization_view(request):
 # DISCRETE MATHEMATICS & CALCULUS VIEWS (MathMate Syllabus Units)
 # ------------------------------------------------------------------------------
 
-@supabase_login_required
 def divisibility_view(request):
     """Topic 3.1: Integers and Divisibility (Prime Factorization, Divisors)."""
     result = None
@@ -600,7 +591,6 @@ def divisibility_view(request):
     }
     return render(request, 'linear_algebra/divisibility.html', context)
 
-@supabase_login_required
 def euclidean_view(request):
     """Topic 3.2: Euclidean Algorithm & Extended Bézout Identity."""
     result = None
@@ -631,7 +621,6 @@ def euclidean_view(request):
     }
     return render(request, 'linear_algebra/euclidean.html', context)
 
-@supabase_login_required
 def complex_polar_view(request):
     """Topic 4.1: Complex Numbers & Polar Form (Argand Diagram)."""
     result = None
@@ -660,7 +649,6 @@ def complex_polar_view(request):
     }
     return render(request, 'linear_algebra/complex_polar.html', context)
 
-@supabase_login_required
 def demoivre_view(request):
     """Topic 4.2: De Moivre's Theorem (Powers & n-th Roots)."""
     result = None
@@ -691,7 +679,6 @@ def demoivre_view(request):
     }
     return render(request, 'linear_algebra/demoivre.html', context)
 
-@supabase_login_required
 def permutations_combinations_view(request):
     """Topic 5.1: Permutations & Combinations."""
     result = {}
@@ -725,7 +712,6 @@ def permutations_combinations_view(request):
     }
     return render(request, 'linear_algebra/permutations_combinations.html', context)
 
-@supabase_login_required
 def functions_view(request):
     """Topic 6.1: Functions (Injective, Surjective, Bijective, Inverse Image)."""
     result = None
@@ -771,7 +757,6 @@ def functions_view(request):
     }
     return render(request, 'linear_algebra/functions.html', context)
 
-@supabase_login_required
 def limits_view(request):
     """Topic 7.1: Limits & Continuity Analysis."""
     result = None
@@ -803,7 +788,6 @@ def limits_view(request):
     }
     return render(request, 'linear_algebra/limits.html', context)
 
-@supabase_login_required
 def quiz_view(request):
     """Interactive Practice Quiz Lab with XP points and streak tracking."""
     # Initialize user stats in session
@@ -882,7 +866,6 @@ def quiz_view(request):
     }
     return render(request, 'linear_algebra/quiz.html', context)
 
-@supabase_login_required
 def ai_tutor_view(request):
     """AI Math Assistant View."""
     result = None
@@ -905,10 +888,9 @@ def ai_tutor_view(request):
 
 
 # ------------------------------------------------------------------------------
-# UNIVERSAL PDF EXPORT VIEW (Secured by Supabase Auth)
+# UNIVERSAL PDF EXPORT VIEW
 # ------------------------------------------------------------------------------
 
-@supabase_login_required
 def export_pdf_view(request, solver_type):
     """Generates and downloads a clean PDF solution document matching web screenshot layout."""
     from datetime import datetime

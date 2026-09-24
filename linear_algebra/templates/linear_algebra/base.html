@@ -57,21 +57,9 @@
             </a>
         </div>
         <div>
-            {% if request.supabase_user or request.session.is_authenticated %}
-            <a href="{% url 'linear_algebra:profile' %}" class="d-inline-flex text-decoration-none" title="User Profile">
-                {% if request.supabase_user.avatar_url or session_user_avatar %}
-                <img src="{{ request.supabase_user.avatar_url|default:session_user_avatar }}" alt="Avatar" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover; border: 2px solid var(--accent-purple);">
-                {% else %}
-                <div class="rounded-circle d-flex align-items-center justify-content-center text-white font-monospace fw-bold" style="background: var(--accent-purple); width: 32px; height: 32px; font-size: 0.85rem;">
-                    {{ request.supabase_user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
-                </div>
-                {% endif %}
-            </a>
-            {% else %}
-            <a href="{% url 'linear_algebra:login' %}" class="btn btn-gradient btn-sm py-1 px-2 fw-bold text-center">
-                Sign In
-            </a>
-            {% endif %}
+            <button onclick="toggleTheme()" class="btn btn-sidebar-control btn-sm py-1 px-2 d-flex align-items-center gap-1" aria-label="Toggle Theme">
+                <i class="bi bi-moon-stars-fill text-forest"></i>
+            </button>
         </div>
     </header>
 
@@ -183,35 +171,8 @@
                 </div>
             </div>
 
-            <!-- UNIFIED USER PROFILE & THEME CONTROLS CARD -->
+            <!-- THEME CONTROLS CARD -->
             <div class="sidebar-accessibility-box mt-auto">
-                {% if request.supabase_user or request.session.is_authenticated %}
-                <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom border-secondary opacity-75">
-                    <a href="{% url 'linear_algebra:profile' %}" class="d-flex align-items-center gap-2 overflow-hidden text-decoration-none" title="View Profile">
-                        {% if request.supabase_user.avatar_url or session_user_avatar %}
-                        <img src="{{ request.supabase_user.avatar_url|default:session_user_avatar }}" alt="Avatar" class="rounded-circle flex-shrink-0" style="width: 34px; height: 34px; object-fit: cover; border: 2px solid var(--accent-purple);">
-                        {% else %}
-                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white font-monospace fw-bold flex-shrink-0" style="background: var(--accent-purple); width: 34px; height: 34px; font-size: 0.85rem;">
-                            {{ request.supabase_user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
-                        </div>
-                        {% endif %}
-                        <div class="overflow-hidden" style="line-height: 1.2;">
-                            <div class="fw-semibold text-truncate small text-white">{{ request.supabase_user.full_name|default:session_user_name|default:"Authenticated User" }}</div>
-                            <small class="text-muted d-block text-truncate" style="font-size: 0.7rem;">{{ request.supabase_user.email|default:session_user_email }}</small>
-                        </div>
-                    </a>
-                    <a href="{% url 'linear_algebra:logout' %}" class="text-danger ms-1 p-1 flex-shrink-0" title="Sign Out">
-                        <i class="bi bi-power fs-6"></i>
-                    </a>
-                </div>
-                {% else %}
-                <div class="d-grid gap-2 mb-2 pb-2 border-bottom border-secondary opacity-75">
-                    <a href="{% url 'linear_algebra:login' %}" class="btn btn-gradient btn-sm py-1 fw-bold text-center">
-                        <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
-                    </a>
-                </div>
-                {% endif %}
-
                 <!-- THEME TOGGLE BUTTON -->
                 <button id="themeToggleBtnMobile" onclick="toggleTheme()" class="btn btn-sidebar-control mb-0 w-100">
                     <span id="themeToggleLabelMobile"><i class="bi bi-moon-stars-fill me-2 text-forest"></i> Dark Forest</span>
@@ -329,35 +290,8 @@
             </div>
         </div>
 
-        <!-- UNIFIED USER PROFILE & THEME CONTROLS CARD (DESKTOP) -->
+        <!-- THEME CONTROLS CARD (DESKTOP) -->
         <div class="sidebar-accessibility-box">
-            {% if request.supabase_user or request.session.is_authenticated %}
-            <div class="d-flex align-items-center justify-content-between mb-2 pb-2 border-bottom border-secondary opacity-75">
-                <a href="{% url 'linear_algebra:profile' %}" class="d-flex align-items-center gap-2 overflow-hidden text-decoration-none" title="View Profile">
-                    {% if request.supabase_user.avatar_url or session_user_avatar %}
-                    <img src="{{ request.supabase_user.avatar_url|default:session_user_avatar }}" alt="Avatar" class="rounded-circle flex-shrink-0" style="width: 36px; height: 36px; object-fit: cover; border: 2px solid var(--accent-purple);">
-                    {% else %}
-                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white font-monospace fw-bold flex-shrink-0" style="background: var(--accent-purple); width: 36px; height: 36px; font-size: 0.9rem;">
-                        {{ request.supabase_user.full_name|default:session_user_name|default:"U"|slice:":1"|upper }}
-                    </div>
-                    {% endif %}
-                    <div class="overflow-hidden" style="line-height: 1.2;">
-                        <div class="fw-semibold text-truncate small text-white">{{ request.supabase_user.full_name|default:session_user_name|default:"Authenticated User" }}</div>
-                        <small class="text-muted d-block text-truncate" style="font-size: 0.7rem;">{{ request.supabase_user.email|default:session_user_email }}</small>
-                    </div>
-                </a>
-                <a href="{% url 'linear_algebra:logout' %}" class="text-danger ms-1 p-1 flex-shrink-0" title="Sign Out">
-                    <i class="bi bi-power fs-6"></i>
-                </a>
-            </div>
-            {% else %}
-            <div class="d-grid gap-2 mb-2 pb-2 border-bottom border-secondary opacity-75">
-                <a href="{% url 'linear_algebra:login' %}" class="btn btn-gradient btn-sm py-1 fw-bold text-center">
-                    <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
-                </a>
-            </div>
-            {% endif %}
-
             <!-- THEME TOGGLE BUTTON -->
             <button id="themeToggleBtn" onclick="toggleTheme()" class="btn btn-sidebar-control mb-0 w-100">
                 <span id="themeToggleLabel"><i class="bi bi-moon-stars-fill me-2 text-forest"></i> Dark Forest</span>

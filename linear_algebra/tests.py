@@ -51,40 +51,29 @@ class SolverViewsTests(TestCase):
         response = self.client.get(reverse('linear_algebra:index'))
         self.assertEqual(response.status_code, 200)
 
-    def test_protected_routes_redirect_unauthenticated(self):
-        protected_urls = [
+    def test_solver_routes_publicly_accessible(self):
+        solver_urls = [
             reverse('linear_algebra:gaussian'),
             reverse('linear_algebra:gf2'),
             reverse('linear_algebra:vectors'),
             reverse('linear_algebra:gram_schmidt'),
             reverse('linear_algebra:cofactor'),
             reverse('linear_algebra:diagonalization'),
+            reverse('linear_algebra:divisibility'),
+            reverse('linear_algebra:euclidean'),
+            reverse('linear_algebra:complex_polar'),
+            reverse('linear_algebra:demoivre'),
+            reverse('linear_algebra:permutations_combinations'),
+            reverse('linear_algebra:functions'),
+            reverse('linear_algebra:limits'),
+            reverse('linear_algebra:quiz'),
+            reverse('linear_algebra:ai_tutor'),
             reverse('linear_algebra:profile'),
         ]
-        for url in protected_urls:
-            response = self.client.get(url)
-            self.assertEqual(response.status_code, 302)
-
-    def test_protected_routes_authenticated(self):
-        # Authenticate via login
-        login_res = self.client.post(reverse('linear_algebra:login'), {
-            'email': 'parthsalunke2306@gmail.com',
-            'password': 'password123'
-        })
-        self.assertEqual(login_res.status_code, 302)
-
-        protected_urls = [
-            reverse('linear_algebra:gaussian'),
-            reverse('linear_algebra:gf2'),
-            reverse('linear_algebra:vectors'),
-            reverse('linear_algebra:gram_schmidt'),
-            reverse('linear_algebra:cofactor'),
-            reverse('linear_algebra:diagonalization'),
-            reverse('linear_algebra:profile'),
-        ]
-        for url in protected_urls:
+        for url in solver_urls:
             response = self.client.get(url)
             self.assertEqual(response.status_code, 200)
+
 
 class ProfileAvatarTests(TestCase):
     def setUp(self):
